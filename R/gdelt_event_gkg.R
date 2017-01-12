@@ -1,3 +1,56 @@
+
+# utilities ---------------------------------------------------------------
+#' Filters a gdelt data frame to specified sources
+#'
+#' @param data gkg or vgkg data frame
+#' @param sources vector of sources
+#'
+#' @return
+#' @export
+#'
+#' @examples
+filter_sources <-
+  function(data, sources = c('netsdaily', 'realdeal', 'curbed', 'law360', 'dailymail', 'wsj.com', 'law360',
+                             'pehub', 'techcrunch', 'washingtonpost', 'bloomberg', 'archdaily', 'espn.com', 'venturebeat')) {
+    sources <-
+      sources %>%
+      stringr::str_to_lower() %>%
+      paste0(collapse = '|')
+    if (!'documentSource' %in% names(data)) {
+      stop("Data must count the documentSource colum")
+    }
+    data <-
+      data %>%
+      filter(documentSource %>% str_detect(sources))
+
+    return(data)
+  }
+
+resolve_long_names <-
+  function(data) {
+    data <-
+      data %>%
+      mutate(numberItem = ifelse(item %>% str_detect("idADM"),
+                                 item %>% str_replace_all("idADM1", '') %>% readr::parse_number(),
+                                 item %>% readr::parse_number()),
+             numberItem = ifelse(numberItem %>% is.na(), 0 , numberItem),
+             item = item %>% str_replace_all("^\\d+|\\d+$", '')) %>%
+      distinct() %>%
+      suppressWarnings()
+
+    data <-
+      data %>%
+      tidyr::spread(item, value) %>%
+      suppressWarnings()
+
+    data <-
+      data %>%
+      mutate_at(data %>% select(matches("^score|^count|^amount|^value|^face|^angle|^latitude|^longitude|^day|^month|^year|^idTypeLocation")) %>% names,
+                funs(. %>% readr::parse_number()))
+
+    return(data)
+  }
+
 #' Loads needed packages
 #'
 #' @param required_packages
@@ -15,6 +68,11 @@ load_needed_packages <- function(required_packages = c('dplyr')) {
     lapply(package_to_load, library, character.only = T)
   }
 }
+
+
+# logs --------------------------------------------------------------------
+
+
 
 #' Loads gdelt v2 Global Knowledge Graph master log data, updated every 15 minutes
 #'
@@ -2195,6 +2253,11 @@ parse_gkg_mentioned_numerics <- function(gdelt_data,
     dplyr::select(-c(dateTime, GKG)) %>%
     suppressWarnings()
 
+  if (!return_wide) {
+    all_counts <-
+      all_counts %>%
+      resolve_long_names()
+  }
 
   return(all_counts)
 }
@@ -2351,6 +2414,12 @@ parse_gkg_mentioned_people <- function(gdelt_data,
     arrange(dateTime) %>%
     dplyr::select(-c(dateTime, GKG)) %>%
     suppressWarnings()
+
+  if (!return_wide) {
+    all_counts <-
+      all_counts %>%
+      resolve_long_names()
+  }
 
   return(all_counts)
 }
@@ -2512,6 +2581,12 @@ parse_gkg_mentioned_organizations <- function(gdelt_data,
     dplyr::select(-c(dateTime, GKG)) %>%
     suppressWarnings()
 
+  if (!return_wide) {
+    all_counts <-
+      all_counts %>%
+      resolve_long_names()
+  }
+
 
   return(all_counts)
 }
@@ -2639,6 +2714,11 @@ parse_gkg_mentioned_names <- function(gdelt_data,
     dplyr::select(-c(dateTime, GKG)) %>%
     suppressWarnings()
 
+  if (!return_wide) {
+    all_counts <-
+      all_counts %>%
+      resolve_long_names()
+  }
 
   return(all_counts)
 }
@@ -2795,6 +2875,12 @@ parse_gkg_mentioned_themes <- function(gdelt_data,
     dplyr::select(-c(dateTime, GKG)) %>%
     suppressWarnings()
 
+  if (!return_wide) {
+    all_counts <-
+      all_counts %>%
+      resolve_long_names()
+  }
+
   return(all_counts)
 }
 
@@ -2930,7 +3016,7 @@ parse_gkg_mentioned_social_embeds <-
 
     if (social_embed_column == 'urlSocialMediaImageEmbeds') {
       names(all_counts)[3] <-
-        c('urlSocialMediaImage.embed')
+        c('urlSocialMediaImageEmbed')
 
       names(all_counts)[1] <-
         c('idArticleSocialMediaImageEmbed')
@@ -2963,6 +3049,12 @@ parse_gkg_mentioned_social_embeds <-
       dplyr::select(-c(dateTime, GKG)) %>%
       suppressWarnings()
 
+    if (!return_wide) {
+      all_counts <-
+        all_counts %>%
+        gather(item, value, -idGKG, na.rm = TRUE) %>%
+        resolve_long_names()
+    }
 
     return(all_counts)
   }
@@ -2977,7 +3069,8 @@ parse_gkg_mentioned_social_embeds <-
 #' @export
 #'
 #' @examples
-parse_gkg_mentioned_article_tone <- function(gdelt_data,
+parse_gkg_mentioned_article_tone <-
+  function(gdelt_data,
                                              filter_na = T,
                                              return_wide = T) {
   parse_article_tones <-
@@ -3069,6 +3162,12 @@ parse_gkg_mentioned_article_tone <- function(gdelt_data,
     arrange(dateTime) %>%
     dplyr::select(-c(dateTime, GKG)) %>%
     suppressWarnings()
+
+  if (!return_wide) {
+    all_counts <-
+      all_counts %>%
+      resolve_long_names()
+  }
 
   return(all_counts)
 }
@@ -3254,19 +3353,14 @@ parse_gkg_mentioned_event_counts <- function(gdelt_data,
   }
 
   all_counts <-
-    1:length(counts_data$count_col) %>%
-    purrr::map_df(function(x) {
-      parse_field_count(field = counts_data$count_col[x],
-                        return_wide = F) %>%
-        dplyr::mutate(idGKG = counts_data$idGKG[x])
-    }) %>%
-    dplyr::select(idGKG, everything())
-
-  if (count_column == "counts") {
-    all_counts <-
-      all_counts %>%
-      dplyr::select(-charLoc)
-  }
+      1:length(counts_data$count_col) %>%
+      purrr::map_df(function(x) {
+        parse_field_count(field = counts_data$count_col[x],
+                          return_wide = F) %>%
+          dplyr::mutate(idGKG = counts_data$idGKG[x])
+      }) %>%
+      dplyr::select(idGKG, everything()) %>%
+    select(which(colMeans(is.na(.)) < 1))
 
   all_counts <-
     all_counts %>%
@@ -3281,6 +3375,12 @@ parse_gkg_mentioned_event_counts <- function(gdelt_data,
     arrange(dateTime) %>%
     dplyr::select(-c(dateTime, GKG)) %>%
     suppressWarnings()
+
+  if (!return_wide) {
+    all_counts <-
+      all_counts %>%
+      resolve_long_names()
+  }
 
   return(all_counts)
 }
@@ -3297,7 +3397,8 @@ parse_gkg_mentioned_event_counts <- function(gdelt_data,
 #' @export
 #'
 #' @examples
-parse_gkg_mentioned_locations <- function(gdelt_data,
+parse_gkg_mentioned_locations <-
+  function(gdelt_data,
                                           location_column = 'locations',
                                           isCharLoc = F,
                                           filter_na = T,
@@ -3508,6 +3609,12 @@ parse_gkg_mentioned_locations <- function(gdelt_data,
     dplyr::select(-c(dateTime, GKG)) %>%
     suppressWarnings()
 
+  if (!return_wide) {
+    all_counts <-
+      all_counts %>%
+      resolve_long_names()
+  }
+
 
   return(all_counts)
 }
@@ -3645,6 +3752,12 @@ parse_gkg_mentioned_dates <- function(gdelt_data,
     dplyr::select(-c(dateTime, GKG)) %>%
     suppressWarnings()
 
+  if (!return_wide) {
+    all_counts <-
+      all_counts %>%
+      resolve_long_names()
+  }
+
   return(all_counts)
 }
 
@@ -3658,7 +3771,8 @@ parse_gkg_mentioned_dates <- function(gdelt_data,
 #' @export
 #'
 #' @examples
-parse_gkg_mentioned_quotes <- function(gdelt_data,
+parse_gkg_mentioned_quotes <-
+  function(gdelt_data,
                                        filter_na = T,
                                        return_wide = T) {
   parse_quotes <-
@@ -3778,6 +3892,14 @@ parse_gkg_mentioned_quotes <- function(gdelt_data,
     arrange(dateTime) %>%
     dplyr::select(-c(dateTime, GKG)) %>%
     suppressWarnings()
+
+  if (!return_wide) {
+
+    all_counts <-
+      all_counts %>%
+      gather(item, value, -idGKG, na.rm = TRUE) %>%
+      resolve_long_names()
+  }
 
   return(all_counts)
 }
@@ -3920,6 +4042,11 @@ parse_gkg_mentioned_gcams <- function(gdelt_data,
     dplyr::select(-c(dateTime, GKG)) %>%
     suppressWarnings()
 
+  if (!return_wide) {
+    all_counts <-
+      all_counts %>%
+      resolve_long_names()
+  }
 
   return(all_counts)
 }
@@ -4052,6 +4179,12 @@ parse_gkg_mentioned_source_data <-
     all_counts <-
       all_counts %>%
       dplyr::select(idGKG, everything())
+
+    if (!return_wide) {
+      all_counts <-
+        all_counts %>%
+        resolve_long_names()
+    }
 
     return(all_counts)
   }
@@ -5131,6 +5264,12 @@ parse_vgkg_labels <- function(gdelt_data,
     allxmlLabels %>%
     get_clean_count_vkg_data(count_col = 'idImageLabel', return_wide = return_wide)
 
+  if (!return_wide) {
+    allxmlLabels <-
+      allxmlLabels %>%
+      resolve_long_names()
+  }
+
   return(allxmlLabels)
 }
 
@@ -5189,7 +5328,6 @@ parse_xml_landmarks <-
         dplyr::select(idVGKG, idLandmarkImage, everything()) %>%
         suppressWarnings()
     }
-
     return(xml_df)
 
   }
@@ -5227,7 +5365,11 @@ parse_vgkg_landmarks <- function(gdelt_data,
     all_data %>%
     get_clean_count_vkg_data(count_col = 'idLandmarkImage', return_wide = return_wide)
 
-
+  if (!return_wide) {
+    all_data <-
+      all_data %>%
+      resolve_long_names()
+  }
   return(all_data)
 }
 
@@ -5313,6 +5455,13 @@ parse_vgkg_logos <- function(gdelt_data,
     all_data %>%
     get_clean_count_vkg_data(count_col = 'idLogoImage', return_wide = return_wide)
 
+  if (!return_wide) {
+    all_data <-
+      all_data %>%
+      resolve_long_names() %>%
+      suppressWarnings()
+  }
+
   return(all_data)
 }
 
@@ -5395,6 +5544,12 @@ parse_vgkg_safe_search <- function(gdelt_data,
     all_data <-
       all_data %>%
       dplyr::filter(!idSafeSearchImage %>% is.na)
+  }
+
+  if (!return_wide) {
+    all_data <-
+      all_data %>%
+      resolve_long_names()
   }
 
   return(all_data)
@@ -5499,6 +5654,11 @@ parse_vgkg_faces <- function(gdelt_data,
     all_data %>%
     get_clean_count_vkg_data(count_col = 'idFace', return_wide = return_wide)
 
+  if (!return_wide) {
+    all_data <-
+      all_data %>%
+      resolve_long_names()
+  }
 
   return(all_data)
 }
@@ -5539,7 +5699,6 @@ parse_xml_ocr <-
         suppressWarnings() %>%
         distinct()
     }
-
     return(xml_df)
 
   }
@@ -5577,6 +5736,11 @@ parse_vgkg_ocr <- function(gdelt_data,
     all_data %>%
     get_clean_count_vkg_data(count_col = 'idItemOCR', return_wide = return_wide)
 
+  if (!return_wide) {
+    all_data <-
+      all_data %>%
+      resolve_long_names()
+  }
 
   return(all_data)
 }
@@ -5650,6 +5814,12 @@ parse_vgkg_languages <- function(gdelt_data,
   all_data <-
     all_data %>%
     get_clean_count_vkg_data(count_col = 'idItemLanguage', return_wide = return_wide)
+
+  if (!return_wide) {
+    all_data <-
+      all_data %>%
+      resolve_long_names()
+  }
 
   return(all_data)
 }
