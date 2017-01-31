@@ -19,4 +19,3 @@ date_columns_to_numeric(data, column_keyword = "date",
 \description{
 Convert date columns to numeric
 }
-

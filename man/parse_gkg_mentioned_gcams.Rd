@@ -13,4 +13,3 @@ parse_gkg_mentioned_gcams(gdelt_data, merge_gcam_codes = F, filter_na = T,
 \description{
 Returns GCAM codes from a gkg data frame
 }
-

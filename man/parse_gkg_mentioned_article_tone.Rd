@@ -12,4 +12,3 @@ parse_gkg_mentioned_article_tone(gdelt_data, filter_na = T, return_wide = T)
 \description{
 Returns article tones from a gkg data frame
 }
-

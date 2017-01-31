@@ -15,4 +15,3 @@ Gets Global Knowledge Graph TV Summary Files
 \examples{
 get_urls_gkg_daily_summaries(remove_count_files = T)
 }
-

@@ -17,4 +17,3 @@ get_data_gdelt_period_event(period = 1983, file_directory = NULL,
 \description{
 Retreive GDELT data for a given period
 }
-

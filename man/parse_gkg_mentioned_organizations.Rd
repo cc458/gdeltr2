@@ -15,4 +15,3 @@ parse_gkg_mentioned_organizations(gdelt_data,
 \description{
 Returns long or wide mentioned organizations from a GKG data frame
 }
-

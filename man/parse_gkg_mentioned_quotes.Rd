@@ -12,4 +12,3 @@ parse_gkg_mentioned_quotes(gdelt_data, filter_na = T, return_wide = T)
 \description{
 Returns mentioned quotes from a gkg data frame
 }
-

@@ -12,4 +12,3 @@ parse_vgkg_ocr(gdelt_data, filter_na = T, return_wide = T)
 \description{
 Parses Cloud Vision OCR
 }
-

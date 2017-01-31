@@ -12,4 +12,3 @@ parse_gkg_mentioned_names(gdelt_data, filter_na = T, return_wide = T)
 \description{
 Returns mentioned names from a GKG data frame.
 }
-

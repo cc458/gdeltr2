@@ -41,4 +41,3 @@ get_data_wordcloud_ft_api_terms(terms = c("\\"Donald Trump\\"",
 \description{
 Returns GDELT free text API word clouds for a given term, can be domain restricted
 }
-

@@ -34,4 +34,3 @@ get_data_locations_instability_api(location_ids = c("US", "IS", "TU"),
 \description{
 Returns instability data for given locations
 }
-

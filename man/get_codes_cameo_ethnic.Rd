@@ -12,4 +12,3 @@ Retrieves GDELT CAMEO ethnic code book
 \examples{
 get_codes_cameo_ethnic()
 }
-

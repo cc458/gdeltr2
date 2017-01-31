@@ -21,4 +21,3 @@ Retrieves GDELT event summary by period
 \examples{
 get_data_gdelt_period_event_totals(period = 'monthly', by_country = T)
 }
-

@@ -14,4 +14,3 @@ Returns GDELT event data for a given periods
 \examples{
 get_data_gdelt_periods_event (periods = c(1983))
 }
-

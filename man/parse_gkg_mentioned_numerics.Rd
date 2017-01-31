@@ -10,4 +10,3 @@ parse_gkg_mentioned_numerics(gdelt_data, filter_na = T,
 \description{
 Returns long or wide mentioned numerics from a GKG data frame
 }
-

@@ -17,4 +17,3 @@ Returns GDELT free text API results for multiple webdomains
 \examples{
 get_data_ft_api_domains(domains = c('realdeal.com', 'pehub.com', 'sbnation.com', 'wsj.com', 'seekingalpha.com')) \%>\% View
 }
-

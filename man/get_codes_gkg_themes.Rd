@@ -12,4 +12,3 @@ Retrieves GKG theme code book
 \examples{
 get_codes_gkg_themes()
 }
-

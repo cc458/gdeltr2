@@ -16,4 +16,3 @@ get_data_wordcloud_ft_api_domains(domains = c("nytimes.com",
 \description{
 Returns GDELT free text API word clouds for a given domain, can be term restricted
 }
-

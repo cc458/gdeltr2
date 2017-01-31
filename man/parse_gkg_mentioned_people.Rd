@@ -15,4 +15,3 @@ parse_gkg_mentioned_people(gdelt_data, people_column = "persons",
 \description{
 Returns long or wide mentioned people from a GKG data frame
 }
-

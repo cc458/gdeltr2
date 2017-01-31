@@ -11,4 +11,3 @@ get_data_vgkg_dates(dates = c("2016-06-09", "2016-06-08"),
 \description{
 Gets CV Data for stated periods
 }
-

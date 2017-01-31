@@ -15,4 +15,3 @@ Gets GDELT Event data, by year from 1979-2005, by year month 2006 - 2013, then b
 \examples{
 get_urls_gdelt_event_log()
 }
-

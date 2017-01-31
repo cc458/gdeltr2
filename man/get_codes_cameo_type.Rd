@@ -12,4 +12,3 @@ Retrieves GDELT CAMEO type code book
 \examples{
 get_codes_cameo_type()
 }
-

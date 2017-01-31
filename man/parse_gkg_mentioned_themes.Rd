@@ -13,4 +13,3 @@ parse_gkg_mentioned_themes(gdelt_data, filter_na = T,
 \description{
 Returns mentioned themes from a gkg data frame
 }
-

@@ -4753,11 +4753,11 @@ get_urls_vgkg_most_recent  <- function() {
 
 get_data_vgkg_url <-
   function(url = 'http://data.gdeltproject.org/gdeltv2_cloudvision/20160606234500.imagetagsv1.csv.gz',
-           remove_json_column = T,
-           return_message = T) {
+           remove_json_column = TRUE,
+           return_message = TRUE) {
     ok_url <-
-      url %>% httr::url_ok %>% suppressWarnings()
-    if (ok_url == FALSE) {
+      url %>% httr::url_ok() %>% suppressWarnings()
+    if (!ok_url) {
       stop("Invalid url")
     }
     cloud_vision_data <-
@@ -4812,7 +4812,8 @@ get_data_vgkg_day <-
 
     date_data <-
       date_data %>%
-      ymd %>% as.Date()
+      lubridate::ymd() %>%
+      as.Date()
 
     if (date_data < "2016-02-22") {
       stop("Sorry data starts on February 22, 2016")
@@ -4885,7 +4886,7 @@ get_data_vgkg_day <-
 #' @param return_message
 #' @importFrom urltools domain
 #' @importFrom httr url_ok
-#' @import stringr
+#' @import stringr dplyr purrr curl lubridate tidyr
 #' @importFrom purrr flatten_chr
 #' @importFrom curl curl_download
 #' @importFrom readr read_tsv
@@ -4928,12 +4929,13 @@ get_data_vgkg_dates <-
       mutate(idVGKG = VGKG %>% paste0('-', count)) %>%
       dplyr::select(-c(count, idDateTime, remove, VGKG)) %>%
       dplyr::select(idVGKG, everything()) %>%
-      ungroup
+      ungroup()
 
     all_data <-
       all_data %>%
       mutate(domainSource = documentSource %>% urltools::domain()) %>%
       dplyr::select(idVGKG:dateTimeDocument, domainSource, everything())
+
     return(all_data)
 
   }

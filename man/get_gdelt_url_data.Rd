@@ -16,4 +16,3 @@
 \description{
 Get GDELT url data
 }
-

@@ -15,4 +15,3 @@ parse_language_types(data, id_vgkg = 1)
 \description{
 Parses XML Language Type
 }
-

@@ -15,4 +15,3 @@ parse_xml_landmarks(data, id_vgkg = "20160610194500-2247")
 \description{
 Parses XML Landmarks
 }
-

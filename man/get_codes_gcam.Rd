@@ -12,4 +12,3 @@ Retrives most recent GDELT Global Content Analysis Measures (GCAM) code book
 \examples{
 get_codes_gcam()
 }
-

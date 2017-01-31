@@ -29,4 +29,3 @@ get_data_gkg_day_summary(date_data = "2016-06-01", file_directory = NULL,
 \description{
 Retrieves gkg summary file for a given day
 }
-

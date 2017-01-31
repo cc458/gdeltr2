@@ -9,4 +9,3 @@ get_vgkg_schema()
 \description{
 get_vgkg_schema
 }
-

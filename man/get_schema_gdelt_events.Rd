@@ -12,4 +12,3 @@ Retrieves GDELT event database schema
 \examples{
 get_schema_gdelt_events
 }
-

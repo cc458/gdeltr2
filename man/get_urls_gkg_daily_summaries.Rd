@@ -15,4 +15,3 @@ Gets Global Knowledge Graph summary files by day since April 2013
 \examples{
 get_urls_gkg_daily_summaries(remove_count_files = T)
 }
-

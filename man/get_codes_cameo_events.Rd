@@ -12,4 +12,3 @@ Retrieves CAMEO CAMEO event code book
 \examples{
 get_codes_cameo_events()
 }
-

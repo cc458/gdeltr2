@@ -12,4 +12,3 @@ Loads gdelt v2 Global Knowledge Graph master log data, updated every 15 minutes
 \examples{
 get_urls_gkg_15_minute_log()
 }
-

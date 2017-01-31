@@ -12,4 +12,3 @@ Retrieves GDELT CAMEO country code book
 \examples{
 get_codes_cameo_country
 }
-

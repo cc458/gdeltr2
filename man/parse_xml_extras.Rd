@@ -12,4 +12,3 @@ parse_xml_extras(data, return_wide = FALSE)
 \description{
 Parse XML Extra
 }
-

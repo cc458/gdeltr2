@@ -12,4 +12,3 @@ parse_vgkg_labels(gdelt_data, filter_na = T, return_wide = T)
 \description{
 Parses Cloud Vision Lables
 }
-

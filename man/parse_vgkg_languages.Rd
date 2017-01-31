@@ -12,4 +12,3 @@ parse_vgkg_languages(gdelt_data, filter_na = T, return_wide = T)
 \description{
 Parses Cloud Vision Languages
 }
-

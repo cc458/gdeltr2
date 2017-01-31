@@ -15,4 +15,3 @@ Gets gkg mention schema
 \examples{
 get_schema_gkg_mentions()
 }
-

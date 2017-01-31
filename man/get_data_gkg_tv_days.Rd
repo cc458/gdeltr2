@@ -18,4 +18,3 @@ get_data_gkg_tv_days(dates = c("2016-06-01", "2016-02-01"),
 \description{
 Gets GKG TV data for specified days
 }
-

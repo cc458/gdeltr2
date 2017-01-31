@@ -15,4 +15,3 @@ Gets gkg general schema
 \examples{
 get_schema_gkg_general()
 }
-

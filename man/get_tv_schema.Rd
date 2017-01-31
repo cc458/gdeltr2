@@ -12,4 +12,3 @@ Retrieves GKG TV Schema
 \examples{
 get_tv_schema
 }
-

@@ -15,4 +15,3 @@ parse_gkg_mentioned_event_counts(gdelt_data, count_column = "counts",
 \description{
 Returns mentioned CAMEO event count from a gkg data frame
 }
-

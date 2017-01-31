@@ -16,4 +16,3 @@ parse_gkg_mentioned_social_embeds(gdelt_data,
 \description{
 Returns social embed information from a gkg data frame
 }
-

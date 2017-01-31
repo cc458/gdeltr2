@@ -12,4 +12,3 @@ Retrieves GDELT CAMEO known group code book
 \examples{
 get_codes_cameo_known_groups()
 }
-

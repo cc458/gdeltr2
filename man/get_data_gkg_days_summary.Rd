@@ -17,4 +17,3 @@ Gets days summary GDELT GKG data by table
 \examples{
 get_data_gkg_days_summary(dates = c("2016-07-18"), is_count_file = c(T, F))
 }
-

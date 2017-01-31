@@ -12,4 +12,3 @@ Gets most recent GKG TV log URLs
 \examples{
 get_urls_gkg_most_recent_log()
 }
-

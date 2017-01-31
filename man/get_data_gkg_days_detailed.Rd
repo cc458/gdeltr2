@@ -28,4 +28,3 @@ options \code{c('gkg', 'export', 'mentions'))}}
 \description{
 Get dates detailed data from a specified table
 }
-

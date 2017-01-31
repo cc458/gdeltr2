@@ -16,4 +16,3 @@ filter_sources(data, sources = c("netsdaily", "realdeal", "curbed", "law360",
 \description{
 Filters a gdelt data frame to specified sources
 }
-

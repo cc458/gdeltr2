@@ -17,4 +17,3 @@ Returns GDELT free text API results for multiple terms
 \examples{
 get_data_ft_api_terms(terms = c('"Kevin Durant"','"Stephen Curry"'), only_english = T)
 }
-

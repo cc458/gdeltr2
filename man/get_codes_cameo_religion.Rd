@@ -12,4 +12,3 @@ Retrives GDELT CAMEO religion code book
 \examples{
 get_codes_cameo_religion
 }
-

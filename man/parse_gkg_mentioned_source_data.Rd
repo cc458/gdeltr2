@@ -13,4 +13,3 @@ parse_gkg_mentioned_source_data(gdelt_data, source_column = "sources",
 \description{
 Returns source name or source url from a gkg data frame
 }
-

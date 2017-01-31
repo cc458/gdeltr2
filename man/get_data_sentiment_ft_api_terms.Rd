@@ -21,4 +21,3 @@ Returns GDELT free text API sentiment for a given term, can be domain restricted
 \examples{
 get_data_sentiment_ft_api_terms(terms = c("Zika", '"Golden State Warriors"')) \%>\% View
 }
-

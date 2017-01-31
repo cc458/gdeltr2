@@ -15,4 +15,3 @@ parse_gkg_mentioned_locations(gdelt_data, location_column = "locations",
 \description{
 Returns mentioned locations from a gkg data frame
 }
-

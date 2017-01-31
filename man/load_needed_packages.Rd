@@ -12,4 +12,3 @@ load_needed_packages(required_packages = c("dplyr"))
 \description{
 Loads needed packages
 }
-

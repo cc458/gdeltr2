@@ -16,4 +16,3 @@ get_clean_count_data(all_counts, extra_key = NA,
 \description{
 Gets clean count data
 }
-
