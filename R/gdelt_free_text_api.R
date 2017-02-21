@@ -1,3 +1,20 @@
+
+# trelliscope -------------------------------------------------------------
+
+check_for_trelliscope_js <-
+  function() {
+    missing <-
+      installed.packages() %>% as_data_frame() %>%
+      filter(Package == 'trelliscopejs') %>%
+      nrow() == 0
+    if (missing) {
+      devtools::install_github("hafen/trelliscopejs")
+    }
+  }
+
+# parse -------------------------------------------------------------------
+
+
 parse_source <-
   function(source = "netsdaily.com - writedate('06/02/2016 12:00 UTC'); (English / United States)") {
     source_df <-
@@ -367,7 +384,7 @@ get_data_ft_api_term <-
 #' @param dedeup_results
 #' @param only_english
 #' @param return_message
-#' @import tidyr stringr rvest tidyverse
+#' @import tidyr stringr rvest tidyverse dplyr trelliscopejs devtools
 #' @importFrom lubridate with_tz
 #' @importFrom lubridate mdy_hm
 #' @importFrom magrittr %<>%
@@ -382,6 +399,7 @@ get_data_ft_api_term <-
 #' get_data_ft_api_terms(terms = c('"Kevin Durant"','"Stephen Curry"'), only_english = T)
 get_data_ft_api_terms <-
   function(terms = c('"Kevin Durant"','"Stephen Curry"'),
+           visualize_results = TRUE,
            domain = NA,
            dedeup_results = T,
            restrict_to_usa = F,
@@ -394,9 +412,6 @@ get_data_ft_api_terms <-
            sort_by = 'date',
            nest_data = F,
            return_message = T) {
-
-    get_data_ft_api_term_safe <-
-      possibly(get_data_ft_api_term, NULL)
 
     var_matrix <-
       expand.grid(
@@ -413,12 +428,13 @@ get_data_ft_api_terms <-
       ) %>%
       as_data_frame() %>%
       suppressWarnings()
-
+    get_data_ft_api_term_safe <-
+      purrr::possibly(get_data_ft_api_term, data_frame())
     all_data <-
       1:nrow(var_matrix) %>%
       purrr::map_df(
         function(x) {
-          get_data_ft_api_term(
+          get_data_ft_api_term_safe(
             term = var_matrix$term[x],
             domain = var_matrix$domain[x],
             return_image_url = var_matrix$return_image_url[x],
@@ -435,6 +451,31 @@ get_data_ft_api_terms <-
       ) %>%
       arrange(desc(dateTimeArticle))
 
+    if (visualize_results) {
+      check_for_trelliscope_js()
+      title <-
+        list("GDELT Term Search as of ", Sys.time()) %>%
+        purrr::reduce(paste0)
+
+      viz <-
+        all_data %>%
+        mutate(idArticle = 1:n(),
+               panel = trelliscopejs::img_panel(urlThumbnail),
+               urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
+        select(idArticle, everything()) %>%
+        arrange(idArticle) %>%
+        trelliscopejs::trelliscope(
+          name = title,
+          nrow = 2,
+          ncol = 3,
+          state = list(labels = c(
+            "term", "titleArticle", "urlArticle"
+          ))
+        )
+      return(viz)
+
+    }
+
     if (nest_data) {
       all_data <-
         all_data %>%
@@ -450,6 +491,7 @@ get_data_ft_api_terms <-
 #' Returns GDELT free text API results for multiple webdomains
 #'
 #' @param term
+#' @param visualize_results
 #' @param domains
 #' @param return_image_url
 #' @param last_minutes
@@ -461,16 +503,17 @@ get_data_ft_api_terms <-
 #' @param only_english
 #' @param return_message
 #' @param nest_data
-#' @import tidyr stringr rvest tidyverse
+#' @import tidyr stringr rvest tidyverse trelliscopejs purrr dplyr devtools
 #' @importFrom xml2 read_html
 #' @return
 #' @export
 #'
 #' @examples
-#' get_data_ft_api_domains(domains = c('realdeal.com', 'pehub.com', 'sbnation.com', 'wsj.com', 'seekingalpha.com')) %>% View
+#' get_data_ft_api_domains(domains = c('realdeal.com', 'pehub.com', 'sbnation.com', 'wsj.com', 'seekingalpha.com', 'washingtonpost.com', 'nytimes.com')) %>% View
 
 get_data_ft_api_domains <-
   function(domains = c('washingtonpost.com', 'nytimes.com'),
+           visualize_results = TRUE,
            use_exact_domains = F,
            term = NA,
            return_image_url = T,
@@ -485,7 +528,7 @@ get_data_ft_api_domains <-
            nest_data = F,
            return_message = T) {
     get_data_ft_api_term_safe <-
-      failwith(NULL, get_data_ft_api_term)
+      purrr::possibly(get_data_ft_api_term, data_frame())
 
     var_matrix <-
       expand.grid(
@@ -504,7 +547,7 @@ get_data_ft_api_domains <-
       suppressWarnings()
 
     all_data <-
-      seq_len(var_matrix %>% nrow) %>%
+      seq_len(var_matrix %>% nrow()) %>%
       purrr::map_df(
         function(x)
           get_data_ft_api_term_safe(
@@ -520,7 +563,7 @@ get_data_ft_api_domains <-
             only_english = var_matrix$only_english[x],
             dedeup_results = dedeup_results
           ) %>%
-          suppressWarnings
+          suppressWarnings()
       ) %>%
       arrange(desc(dateTimeArticle))
 
@@ -530,10 +573,36 @@ get_data_ft_api_domains <-
         dplyr::select(-term)
     }
 
-    if (use_exact_domains == T) {
+    if (use_exact_domains) {
       all_data <-
         all_data %>%
         dplyr::filter(domainArticle %in% domains)
+    }
+
+    if (visualize_results) {
+      check_for_trelliscope_js()
+
+      title <-
+        list("GDELT Domain Search as of ", Sys.time()) %>%
+        purrr::reduce(paste0)
+
+      viz <-
+        all_data %>%
+        mutate(idArticle = 1:n(),
+               panel = trelliscopejs::img_panel(urlThumbnail),
+               urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
+        select(idArticle, everything()) %>%
+        arrange(idArticle) %>%
+        trelliscopejs::trelliscope(
+          name = title,
+          nrow = 2,
+          ncol = 3,
+          state = list(labels = c(
+            "domainSearch", "titleArticle", "urlArticle"
+          ))
+        )
+      return(viz)
+
     }
 
     if (nest_data) {
