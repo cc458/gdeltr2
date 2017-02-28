@@ -1,14 +1,37 @@
 
+# utilities ---------------------------------------------------------------
+
+remove_full_na_column <-
+  function(data) {
+    data <-
+      data %>%
+      dplyr::select(which(colMeans(is.na(.)) < 1))
+    return(data)
+  }
+
+
+
 # trelliscope -------------------------------------------------------------
 
 check_for_trelliscope_js <-
   function() {
     missing <-
-      installed.packages() %>% as_data_frame() %>%
-      filter(Package == 'trelliscopejs') %>%
+      installed.packages() %>% dplyr::as_data_frame() %>%
+      dplyr::filter(Package == 'trelliscopejs') %>%
       nrow() == 0
     if (missing) {
       devtools::install_github("hafen/trelliscopejs")
+    }
+  }
+
+check_for_hrb <-
+  function() {
+    missing <-
+      installed.packages() %>% dplyr::as_data_frame() %>%
+      dplyr::filter(Package == 'hrbrthemes') %>%
+      nrow() == 0
+    if (missing) {
+      devtools::install_github("hrbmstr/hrbrthemes")
     }
   }
 
@@ -42,6 +65,8 @@ parse_source <-
     return(source_df)
   }
 
+
+# terms -------------------------------------------------------------------
 get_data_ft_api_term <-
   function(term = "'Donald Trump'",
            domain = NA,
@@ -363,7 +388,7 @@ get_data_ft_api_term <-
 
     if (return_message == T) {
       "You got " %>%
-        paste0(url_df %>% nrow, ' urls for ', term_word, ' at ', Sys.time()) %>%
+        paste0(url_df %>% nrow(), ' urls for ', term_word, ' at ', Sys.time()) %>%
         message()
     }
 
@@ -373,17 +398,19 @@ get_data_ft_api_term <-
 
 #' Returns GDELT free text API results for multiple terms
 #'
-#' @param terms
-#' @param domain
-#' @param return_image_url
-#' @param last_minutes
-#' @param max_rows
-#' @param search_language
-#' @param source_language
-#' @param sort_by
-#' @param dedeup_results
-#' @param only_english
-#' @param return_message
+#' @param terms vector of words to search
+#' @param visualize_results if \code{TRUE} returns an interactive trelliscope
+#' @param domain domains you wish to restrict the search to
+#' @param return_image_url if \code{TRUE} returns only articles with photos
+#' @param last_minutes restrict to last x minutes
+#' @param max_rows maximum rows
+#' @param search_language article language to search
+#' @param source_language source article search
+#' @param sort_by sort by
+#' @param dedeup_results if \code{TRUE} remove duplicate results
+#' @param only_english if \code{TRUE} returns only english results
+#' @param nest_data if \code{TRUE} retrns a nested data frame
+#' @param return_message if \code{TRUE} return a messag
 #' @import tidyr stringr rvest tidyverse dplyr trelliscopejs devtools
 #' @importFrom lubridate with_tz
 #' @importFrom lubridate mdy_hm
@@ -392,26 +419,28 @@ get_data_ft_api_term <-
 #' @importFrom httr GET
 #' @importFrom purrr flatten_df
 #' @importFrom xml2 read_html
-#' @return
+#' @return if \code{visualize_results} an interactive trelliscope else a \code{data_frame}
 #' @export
 #'
 #' @examples
-#' get_data_ft_api_terms(terms = c('"Kevin Durant"','"Stephen Curry"'), only_english = T)
+#' \donotrun{
+#' get_data_ft_api_terms(terms = c('"Kevin Durant"','"Stephen Curry"', "Donald Trump", '"Blackstone Real Estate"', "'Cap Rate'"), only_english = T)
+#' }
 get_data_ft_api_terms <-
   function(terms = c('"Kevin Durant"','"Stephen Curry"'),
            visualize_results = TRUE,
            domain = NA,
-           dedeup_results = T,
+           dedeup_results = TRUE,
            restrict_to_usa = F,
            only_english = F,
-           return_image_url = T,
+           return_image_url = TRUE,
            last_minutes = NA,
-           max_rows = 1000,
+           max_rows = 1000000,
            search_language = 'English',
            source_language = 'English',
            sort_by = 'date',
-           nest_data = F,
-           return_message = T) {
+           nest_data = FALSE,
+           return_message = TRUE) {
 
     var_matrix <-
       expand.grid(
@@ -454,7 +483,7 @@ get_data_ft_api_terms <-
     if (visualize_results) {
       check_for_trelliscope_js()
       title <-
-        list("GDELT Term Search as of ", Sys.time()) %>%
+        list("GDELT Term Search for ", Sys.Date()) %>%
         purrr::reduce(paste0)
 
       viz <-
@@ -466,8 +495,8 @@ get_data_ft_api_terms <-
         arrange(idArticle) %>%
         trelliscopejs::trelliscope(
           name = title,
-          nrow = 2,
-          ncol = 3,
+          nrow = 1,
+          ncol = 2,
           state = list(labels = c(
             "term", "titleArticle", "urlArticle"
           ))
@@ -488,28 +517,43 @@ get_data_ft_api_terms <-
 
   }
 
+
+# domains -----------------------------------------------------------------
+
+#' @param
+#' @param
+#' @param
+#' @param
+#' @param
+#' @param
+#' @param
+#' @param
+#' @param
+#' @param return_message if \code{TRUE} return a message
 #' Returns GDELT free text API results for multiple webdomains
 #'
-#' @param term
+#' @param terms vector of words to search
 #' @param visualize_results
-#' @param domains
-#' @param return_image_url
-#' @param last_minutes
-#' @param max_rows
-#' @param search_language
-#' @param source_language
-#' @param sort_by
-#' @param dedeup_results
-#' @param only_english
-#' @param return_message
-#' @param nest_data
+#' @param domain domains you wish to restrict the search to
+#' @param return_image_url if \code{TRUE} returns only articles with photos
+#' @param last_minutes restrict to last x minutes
+#' @param max_rows maximum rows
+#' @param search_language article language to search
+#' @param source_language source article search
+#' @param sort_by sort by
+#' @param dedeup_results if \code{TRUE} remove duplicate results
+#' @param only_english if \code{TRUE} returns only english results
+#' @param return_message if \code{TRUE} return a message
+#' @param nest_data if \code{TRUE} return a nested data frame
 #' @import tidyr stringr rvest tidyverse trelliscopejs purrr dplyr devtools
 #' @importFrom xml2 read_html
 #' @return
 #' @export
 #'
 #' @examples
-#' get_data_ft_api_domains(domains = c('realdeal.com', 'pehub.com', 'sbnation.com', 'wsj.com', 'seekingalpha.com', 'washingtonpost.com', 'nytimes.com')) %>% View
+#' \donotrun{
+#' get_data_ft_api_domains(domains = c('realdeal.com', 'pehub.com', 'sbnation.com', 'wsj.com', 'seekingalpha.com', 'washingtonpost.com', 'nytimes.com'))
+#' }
 
 get_data_ft_api_domains <-
   function(domains = c('washingtonpost.com', 'nytimes.com'),
@@ -583,7 +627,7 @@ get_data_ft_api_domains <-
       check_for_trelliscope_js()
 
       title <-
-        list("GDELT Domain Search as of ", Sys.time()) %>%
+        list("GDELT Domain Search for ", Sys.Date()) %>%
         purrr::reduce(paste0)
 
       viz <-
@@ -595,7 +639,7 @@ get_data_ft_api_domains <-
         arrange(idArticle) %>%
         trelliscopejs::trelliscope(
           name = title,
-          nrow = 2,
+          nrow = 1,
           ncol = 3,
           state = list(labels = c(
             "domainSearch", "titleArticle", "urlArticle"
@@ -616,6 +660,9 @@ get_data_ft_api_domains <-
     return(all_data)
 
   }
+
+# word clouds -------------------------------------------------------------
+
 
 get_data_wordcloud_ft_api <-
   function(term = '"Brooklyn Nets"',
@@ -645,7 +692,7 @@ get_data_wordcloud_ft_api <-
         term
     }
 
-    if (term %>% is.na() & !domain %>% is.na) {
+    if (term %>% is.na() & !domain %>% is.na()) {
       term_word <-
         domain
     }
@@ -817,7 +864,7 @@ get_data_wordcloud_ft_api <-
 
     if (return_message == T) {
       "You got " %>%
-        paste0(wordcloud_data %>% nrow,
+        paste0(wordcloud_data %>% nrow(),
                ' words for ',
                term_word,
                ' at ',
@@ -843,7 +890,7 @@ get_data_wordcloud_ft_api <-
 #' @param dedeup_results
 #' @param return_message
 #' @param nest_data
-#' @import tidyr stringr rvest tidyverse
+#' @import tidyr stringr rvest tidyverse dplyr purrr stringr wordcloud2
 #' @return
 #' @export
 #'
@@ -852,17 +899,18 @@ get_data_wordcloud_ft_api <-
 get_data_wordcloud_ft_api_domains <-
   function(domains = c('nytimes.com', 'washingtonpost.com'),
            term = NA,
+           visualize_word_cloud = TRUE,
            last_minutes = NA,
            search_language = 'English',
            tone_more_than = NA,
            tone_less_than = NA,
            source_language = 'English',
            sort_by = 'date',
-           dedeup_results = T,
-           nest_data = F,
-           return_message = T) {
+           dedeup_results = TRUE,
+           nest_data = FALSE,
+           return_message = TRUE) {
     get_data_wordcloud_ft_api_safe <-
-      failwith(NULL, get_data_wordcloud_ft_api)
+      possibly(get_data_wordcloud_ft_api, data_frame())
 
     var_matrix <-
       expand.grid(
@@ -879,7 +927,7 @@ get_data_wordcloud_ft_api_domains <-
       suppressWarnings()
 
     all_data <-
-      seq_len(var_matrix %>% nrow) %>%
+      seq_len(var_matrix %>% nrow()) %>%
       purrr::map_df(
         function(x)
           get_data_wordcloud_ft_api_safe(
@@ -898,6 +946,19 @@ get_data_wordcloud_ft_api_domains <-
       ) %>%
       suppressWarnings()
 
+    if (visualize_word_cloud) {
+      viz <-
+        all_data %>%
+        select(word, countArticles) %>%
+        group_by(word) %>%
+        summarise(countArticles = sum(countArticles, na.rm = T)) %>%
+        arrange(desc(countArticles)) %>%
+        ungroup() %>%
+        data.frame(stringsAsFactors = TRUE) %>%
+        wordcloud2::wordcloud2(fontFamily = 'Arial', shuffle = F, shape = 'pentagon')
+      return(viz)
+    }
+
     if (nest_data) {
       all_data <-
         all_data %>%
@@ -913,34 +974,34 @@ get_data_wordcloud_ft_api_domains <-
 #' Returns GDELT free text API word clouds for a given term, can be domain restricted
 #'
 #' @param terms any word, can be quoted or not
-#' @param domain domain name
-#' \code{c(NA,'domain_name')}
-#' @param return_image_url
+#' @param domain domain name \code{NA} - domains, else vector of daomins
+#' @param return_image_url if \code{TRUE} returns an image url
 #' @param last_minutes how many prior minutes
 #' @param max_rows number of rows
 #' @param tone_less_than tone more than specified number
 #' @param tone_more_than tone less than specified number
-#' @param search_language
-#' @param source_language
-#' @param sort_by How do you wish to sort the data
+#' @param search_language language to search
+#' @param source_language soruce language
+#' @param sort_by method to sort the data
 #' \code{c('date', 'relevence', 'tone.ascending', 'tone.descending')}
 #' @param dedeup_results return unique results
 #' \code{c(T, F)}
 #' @param only_english return only english results
 #' \code{c(T, F)}
-#' @param return_message
+#' @param return_message if \code{true} returns a message
 #' \code{c(T, F)}
 #' @param nest_data returns a nested data frame
 #' \code{c(T, F)}
 #' @importFrom tidyr nest
 #' @import tidyr stringr rvest tidyverse
-#' @return
+#' @return if \code{visualize_results} an interactive wordcloud else a \code{data_frame}
 #' @export
 #'
 #' @examples
 get_data_wordcloud_ft_api_terms <-
   function(terms = c('"Donald Trump"', '"Hilary Clinton"'),
            domain = NA,
+           visualize_word_cloud = TRUE,
            last_minutes = NA,
            search_language = 'English',
            tone_more_than = NA,
@@ -968,7 +1029,7 @@ get_data_wordcloud_ft_api_terms <-
       suppressWarnings()
 
     all_data <-
-      seq_len(var_matrix %>% nrow) %>%
+      seq_len(var_matrix %>% nrow()) %>%
       purrr::map_df(
         function(x)
           get_data_wordcloud_ft_api_safe(
@@ -985,6 +1046,19 @@ get_data_wordcloud_ft_api_terms <-
           )
       )
 
+    if (visualize_word_cloud) {
+      viz <-
+        all_data %>%
+        select(word, countArticles) %>%
+        group_by(word) %>%
+        summarise(countArticles = sum(countArticles, na.rm = T)) %>%
+        arrange(desc(countArticles)) %>%
+        ungroup() %>%
+        data.frame(stringsAsFactors = TRUE) %>%
+        wordcloud2::wordcloud2(fontFamily = 'Arial', shuffle = F, shape = 'pentagon')
+      return(viz)
+    }
+
     if (nest_data) {
       all_data <-
         all_data %>%
@@ -996,6 +1070,9 @@ get_data_wordcloud_ft_api_terms <-
     return(all_data)
 
   }
+
+# sentiment ---------------------------------------------------------------
+
 
 get_data_sentiment_ft_api <- function(term = 'Clinton',
                                       domain = NA,
@@ -1212,7 +1289,7 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
 
   if (return_message == T) {
     "You got " %>%
-      paste0(sentiment_data %>% nrow,
+      paste0(sentiment_data %>% nrow(),
              ' words for ',
              term_word,
              ' at ',
@@ -1238,13 +1315,16 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
 #' @param return_message
 #' @param nest_data
 #' @return
-#' @import tidyr stringr rvest tidyverse
+#' @import tidyr stringr rvest tidyverse ggplot2 ggthemes
+#' @importFrom grDevices colors
+#' @importFrom plotly ggplotly
 #' @export
 #'
 #' @examples
 
 get_data_sentiment_ft_api_domains <-
   function(domains = c('nytimes.com', 'washingtonpost.com'),
+           visualization = 'static',
            term = NA,
            last_minutes = NA,
            is_tone = T,
@@ -1257,7 +1337,7 @@ get_data_sentiment_ft_api_domains <-
            nest_data = F,
            return_message = T) {
     get_data_sentiment_ft_api_safe <-
-      failwith(NULL, get_data_sentiment_ft_api)
+      purrr::possibly(get_data_sentiment_ft_api, data_frame())
 
     var_matrix <-
       expand.grid(
@@ -1275,7 +1355,7 @@ get_data_sentiment_ft_api_domains <-
       suppressWarnings()
 
     all_data <-
-      seq_len(var_matrix %>% nrow) %>%
+      seq_len(var_matrix %>% nrow()) %>%
       purrr::map_df(
         function(x)
           get_data_sentiment_ft_api_safe(
@@ -1293,6 +1373,58 @@ get_data_sentiment_ft_api_domains <-
           ) %>%
           suppressMessages
       )
+    is_visalization <-
+      !purrr::is_null(visualization)
+    if (is_visalization) {
+      viz <-
+        all_data %>%
+        ggplot(aes(x = dateTimeSentiment, y = valueTone)) +
+        geom_line(aes(color = domainSearch)) +
+        scale_y_continuous(limits = c(-7, 7)) +
+        facet_wrap(~ domainSearch, scales = "free") +
+        hrbrthemes::theme_ipsum_rc(grid = "XY") +
+        scale_x_datetime(expand = c(0, 0)) +
+        theme(legend.position = "none") +
+        labs(
+          x = NULL,
+          y = "Tone",
+          title = list("GDELT Domain Sentiment Analysis as of ", Sys.Date()) %>% purrr::reduce(paste0),
+          caption = "Data from GDELT via gdeltr2"
+        )
+
+      if (domains %>% length() <= 8 ) {
+        viz <-
+          viz +
+          ggthemes::scale_color_colorblind(guide = guide_legend(title = ""))
+      } else {
+
+        manual_colors <-
+          RColorBrewer::brewer.pal(12,"Paired")
+        over_12 <-
+          domains %>% length() > 12
+        if (over_12){
+          more_colors <-
+            domains %>% length() - 12
+          add_colors <-
+            grDevices::colors() %>% sample(more_colors)
+          manual_colors <-
+            c(manual_colors, add_colors)
+        }
+        viz <-
+          viz +
+          scale_color_manual(values = manual_colors, guide = guide_legend(title = ""))
+      }
+
+      is_interactive <-
+        visualization %>% str_to_lower() == 'interactive'
+
+      if (is_interactive) {
+        viz <-
+          plotly::ggplotly(viz)
+      }
+
+      return(viz)
+    }
 
     if (nest_data) {
       all_data <-
@@ -1321,11 +1453,14 @@ get_data_sentiment_ft_api_domains <-
 #'
 #' @return
 #' @export
-#'
+#' @import tidyr stringr rvest tidyverse ggplot2 ggthemes
+#' @importFrom grDevices colors
+#' @importFrom plotly ggplotly
 #' @examples
 #' get_data_sentiment_ft_api_terms(terms = c("Zika", '"Golden State Warriors"')) %>% View
 get_data_sentiment_ft_api_terms <-
   function(terms = c("Zika", '"Golden State Warriors"'),
+           visualization = NULL,
            domain = NA,
            last_minutes = NA,
            is_tone = T,
@@ -1338,7 +1473,7 @@ get_data_sentiment_ft_api_terms <-
            nest_data = F,
            return_message = T) {
     get_data_sentiment_ft_api_safe <-
-      failwith(NULL, get_data_sentiment_ft_api)
+      purrr::possibly(get_data_sentiment_ft_api, data_frame())
 
     var_matrix <-
       expand.grid(
@@ -1357,7 +1492,7 @@ get_data_sentiment_ft_api_terms <-
 
 
     all_data <-
-      seq_len(var_matrix %>% nrow) %>%
+      seq_len(var_matrix %>% nrow()) %>%
       purrr::map_df(
         function(x)
           get_data_sentiment_ft_api_safe(
@@ -1377,6 +1512,60 @@ get_data_sentiment_ft_api_terms <-
       ) %>%
       suppressWarnings()
 
+    is_visalization <-
+      !purrr::is_null(visualization)
+    if (is_visalization) {
+      viz <-
+        all_data %>%
+        ggplot(aes(x = dateTimeSentiment, y = valueTone)) +
+        geom_line(aes(color = term)) +
+        scale_y_continuous(limits = c(-7, 7)) +
+        facet_wrap(~ term, scales = "free") +
+        hrbrthemes::theme_ipsum_rc(grid = "XY") +
+        scale_x_datetime(expand = c(0, 0)) +
+        theme(legend.position = "none") +
+        labs(
+          x = NULL,
+          y = "Tone",
+          title = list("GDELT Term Sentiment Analysis as of ", Sys.Date()) %>% purrr::reduce(paste0),
+          caption = "Data from GDELT via gdeltr2"
+        )
+
+      if (terms %>% length() <= 8 ) {
+        viz <-
+          viz +
+          ggthemes::scale_color_colorblind(guide = guide_legend(title = ""))
+      } else {
+
+        manual_colors <-
+          RColorBrewer::brewer.pal(12,"Paired")
+        over_12 <-
+          terms %>% length() > 12
+        if (over_12){
+          more_colors <-
+            terms %>% length() - 12
+          add_colors <-
+            grDevices::colors() %>% sample(more_colors)
+          manual_colors <-
+            c(manual_colors, add_colors)
+        }
+        viz <-
+          viz +
+          scale_color_manual(values = manual_colors, guide = guide_legend(title = ""))
+      }
+
+      is_interactive <-
+        visualization %>% str_to_lower() == 'interactive'
+
+      if (is_interactive) {
+        viz <-
+          plotly::ggplotly(viz)
+      }
+
+      return(viz)
+    }
+
+
     if (nest_data) {
       all_data <-
         all_data %>%
@@ -1390,9 +1579,12 @@ get_data_sentiment_ft_api_terms <-
   }
 
 
-#' get_codebook_stability_locations
+
+# instability -------------------------------------------------------------
+
+#' Code book for instability locations
 #'
-#' @return
+#' @return a \code{data_frame}
 #' @export
 #' @import dplyr tidyr
 #' @importFrom readr read_tsv
@@ -1400,66 +1592,53 @@ get_data_sentiment_ft_api_terms <-
 #' @examples
 get_codes_stability_locations <-
   function() {
-  country_df <-
-    'http://data.gdeltproject.org/blog/stability-dashboard-api/GEOLOOKUP-COUNTRY.TXT' %>%
-    read_tsv(col_names = F) %>%
-    set_names(c('idLocation', 'nameLocation')) %>%
-    separate(nameLocation, into = c('NL1', 'NL2'), sep = '\\, ') %>%
-    mutate(nameLocation = ifelse(NL2 %>% is.na, NL1, paste(NL2, NL1))) %>%
-    dplyr::select(-c(NL2, NL1)) %>%
-    suppressWarnings() %>%
-    suppressMessages() %>%
-    mutate(isCountry = T,
-           codeCountry = idLocation)
+    country_df <-
+      'http://data.gdeltproject.org/blog/stability-dashboard-api/GEOLOOKUP-COUNTRY.TXT' %>%
+      read_tsv(col_names = F) %>%
+      set_names(c('idLocation', 'nameLocation')) %>%
+      separate(nameLocation, into = c('NL1', 'NL2'), sep = '\\, ') %>%
+      mutate(nameLocation = ifelse(NL2 %>% is.na, NL1, paste(NL2, NL1))) %>%
+      dplyr::select(-c(NL2, NL1)) %>%
+      suppressWarnings() %>%
+      suppressMessages() %>%
+      mutate(isCountry = T,
+             codeCountry = idLocation)
 
-  place_df <-
-    'http://data.gdeltproject.org/blog/stability-dashboard-api/GEOLOOKUP-ADM1.TXT' %>%
-    read_tsv(col_names = F) %>%
-    set_names(c('idLocation', 'nameLocation')) %>%
-    mutate(
-      nameLocation = nameLocation %>% str_to_title(),
-      nameLocation =  nameLocation %>% str_replace_all("Bahamas, The General, Bahamas, The", "The Bahamas") %>% str_replace_all(
-        "Etorofu, Habomai, Kunashiri And Shikotan Islands General, Etorofu, Habomai, Kunashiri And Shikotan Islands",
-        "Kuril Islands"
-      ) %>% str_replace_all('Serbia And Montenegro General,', 'Serbia and Montenegro') %>% str_replace_all(" Of ", ' of '),
-      isCountry = F,
-      codeCountry = idLocation %>% substr(1, 2),
-      codeLocation = idLocation %>% substr(3, 4),
-      idADM1 = idLocation
-    ) %>%
-    separate(
-      nameLocation,
-      into = c('placeLocation', 'countryLocation'),
-      sep = '\\, ',
-      remove = F
-    ) %>%
-    suppressWarnings() %>%
-    suppressMessages()
+    place_df <-
+      'http://data.gdeltproject.org/blog/stability-dashboard-api/GEOLOOKUP-ADM1.TXT' %>%
+      read_tsv(col_names = F) %>%
+      set_names(c('idLocation', 'nameLocation')) %>%
+      mutate(
+        nameLocation = nameLocation %>% str_to_title(),
+        nameLocation =  nameLocation %>% str_replace_all("Bahamas, The General, Bahamas, The", "The Bahamas") %>% str_replace_all(
+          "Etorofu, Habomai, Kunashiri And Shikotan Islands General, Etorofu, Habomai, Kunashiri And Shikotan Islands",
+          "Kuril Islands"
+        ) %>% str_replace_all('Serbia And Montenegro General,', 'Serbia and Montenegro') %>% str_replace_all(" Of ", ' of '),
+        isCountry = F,
+        codeCountry = idLocation %>% substr(1, 2),
+        codeLocation = idLocation %>% substr(3, 4),
+        idADM1 = idLocation
+      ) %>%
+      separate(
+        nameLocation,
+        into = c('placeLocation', 'countryLocation'),
+        sep = '\\, ',
+        remove = F
+      ) %>%
+      suppressWarnings() %>%
+      suppressMessages()
 
-  location_df <-
-    place_df %>%
-    bind_rows(country_df) %>%
-    arrange(idLocation) %>%
-    mutate(countryLocation = if_else(countryLocation %>% is.na, nameLocation, countryLocation))
+    location_df <-
+      place_df %>%
+      bind_rows(country_df) %>%
+      arrange(idLocation) %>%
+      mutate(countryLocation = if_else(countryLocation %>% is.na, nameLocation, countryLocation))
 
-  return(location_df)
+    return(location_df)
 
-}
-
-remove_full_na_column <-
-  function(data, col_name = c('codeLocation')) {
-    col_selected <-
-      data %>%
-      dplyr::select(one_of(col_name)) %>%
-      extract2(1)
-
-    if (col_selected %>% is.na() %>% sum  / length(col_selected) == 1) {
-      data <-
-        data %>%
-        dplyr::select(-one_of(col_name))
-    }
-    return(data)
   }
+
+
 
 get_data_location_instability_api <-
   function(location_id = 'US',
@@ -1473,8 +1652,9 @@ get_data_location_instability_api <-
       location_codes <-
         get_codes_stability_locations()
 
-      'To save time please run the function get_codes_stability_locations() and save to a dataframe called location_codes prior to running this function' %>%
-        message
+      assign(x = 'location_codes',
+             eval(location_codes),
+             env = .GlobalEnv)
     }
 
     if (!location_id %in% location_codes$idLocation) {
@@ -1642,8 +1822,7 @@ get_data_location_instability_api <-
 
     data <-
       data %>%
-      remove_full_na_column(col_name = c("codeLocation")) %>%
-      remove_full_na_column(col_name = "dayMovingAverage")
+      remove_full_na_column()
 
     if (return_wide) {
       data <-
@@ -1674,27 +1853,45 @@ get_data_location_instability_api <-
 #' Returns instability data for given locations
 #'
 #' @param location_ids Specify the location IDs
-#' @param variable_names Specify variables they can include
-#' \code{c('instability', 'conflict', 'protest', 'tone', 'relative mentions')}
+#' @param random_locations Number of random location IDs to add
+#' @param visualization \itemize{
+#' \item \code{NULL}: no visualization
+#' \item \code{interactive}: returns an interactive visualization
+#' \item \code{static}: returns a ggplot2 visualization
+#' }
+#' @param variable_names Specify variables they can include: \itemize{
+#' \item \code{instability}
+#' \item \code{conflict}
+#' \item \code{protest}
+#' \item \code{tone}
+#' \item \code{artvolnorm}: Relative mentions
+#' }
 #' @param days_moving_average Specify day moving average, NA is unsmoothed
 #' @param time_periods Specified time period
-#'  \code{c('daily', '15min')}
-#' @param use_multi_locations If a country is selected do you want to select all the cities
-#' \code{c(T,F)}
-#' @param return_wide Return data in wide form
-#' @param nest_data Return data in nested form
-#' \code{c(T,F)}
-
-#' @param return_message Return a message
+#' \itemize{
+#' \item \code{daily}
+#' \item \code{15min}
+#' }
+#' @param use_multi_locations if \code{TRUE} returns all cities in a select country
+#' @param return_wide if \code{TRUE} returns a wide data frame
+#' @param nest_data if \code{TRUE} returns a nested data frame
+#' @param return_message if \code{TRUE} returns a location
 #'
-#' @return
+#' @return if \code{visualize} a ggplot visualization else a \code{data_frame}
 #' @export
-#' @import tidyr stringr rvest tidyverse
+#' @import tidyr stringr rvest tidyverse ggplot2 ggthemes hrbrthemes
 #' @importFrom magrittr extract2
+#' @importFrom grDevices colors
+#' @importFrom plotly ggplotly
 #' @examples
+#' \donotrun{
+#' get_data_locations_instability_api(location_ids = NULL, random_locations = 5, visualization = 'static)
+#' }
 get_data_locations_instability_api <-
   function(location_ids = c('US', 'IS', "TU"),
-           variable_names = c('instability', 'conflict', 'tone', 'protest'),
+           random_locations = NULL,
+           variable_names = c('instability', 'conflict', 'tone', 'protest', 'artvolnorm'),
+           visualization = 'static',
            days_moving_average = NA,
            time_periods = 'daily',
            use_multi_locations = F,
@@ -1702,7 +1899,22 @@ get_data_locations_instability_api <-
            nest_data = F,
            return_message = T) {
     get_data_location_instability_api_safe <-
-      failwith(NULL, get_data_location_instability_api)
+      purrr::possibly(get_data_location_instability_api, data_frame())
+
+    if (location_ids %>% purrr::is_null()) {
+      location_ids <-
+        c()
+    }
+
+    if (!random_locations %>% purrr::is_null()) {
+      random_locs <-
+        get_codes_stability_locations() %>%
+        mutate(ncharLoc = nchar(idLocation)) %>%
+        filter(ncharLoc == 2) %>%
+        .$idLocation %>% sample(random_locations)
+      location_ids <-
+        c(location_ids, random_locs)
+    }
 
     var_matrix <-
       expand.grid(
@@ -1716,7 +1928,7 @@ get_data_locations_instability_api <-
       as_data_frame
 
     all_data <-
-      seq_len(var_matrix %>% nrow) %>%
+      seq_len(var_matrix %>% nrow()) %>%
       purrr::map_df((function(x) {
         get_data_location_instability_api_safe(
           location_id = var_matrix$id_location[x],
@@ -1729,6 +1941,60 @@ get_data_locations_instability_api <-
         ) %>%
           suppressWarnings()
       }))
+    is_viz <-
+      !visualization %>% purrr::is_null()
+
+    if (is_viz) {
+      viz <-
+        all_data %>%
+        ggplot(aes(x = dateData, y = value)) +
+        geom_line(aes(color = nameLocation)) +
+        facet_wrap(~ item, scales = "free") +
+        hrbrthemes::theme_ipsum_rc(grid = "XY") +
+        scale_x_date(expand = c(0, 0)) +
+        labs(
+          x = NULL,
+          y = NULL,
+          title = "GDELT Stabilitiy Analysis",
+          subtitle = list(all_data$dateData %>% min(na.rm = TRUE), ' to ',
+                          all_data$dateData %>% max(na.rm = TRUE)) %>% purrr::reduce(paste0),
+          caption = "Data from GDELT via gdeltr2"
+        )
+
+      if (location_ids %>% length() <= 8 ) {
+      viz <-
+        viz +
+        ggthemes::scale_color_colorblind(guide = guide_legend(title = ""))
+      } else {
+
+        manual_colors <-
+          RColorBrewer::brewer.pal(12,"Paired")
+        over_12 <-
+          location_ids %>% length() > 12
+        if (over_12){
+          more_colors <-
+            location_ids %>% length() - 12
+          add_colors <-
+            grDevices::colors() %>% sample(more_colors)
+          manual_colors <-
+            c(manual_colors, add_colors)
+        }
+        viz <-
+          viz +
+          scale_color_manual(values = manual_colors, guide = guide_legend(title = ""))
+      }
+
+      is_interactive <-
+        visualization %>% str_to_lower() == 'interactive'
+
+      if (is_interactive) {
+        viz <-
+          plotly::ggplotly(viz)
+      }
+
+      return(viz)
+
+    }
 
     if (return_wide) {
       all_data <-
@@ -1762,6 +2028,10 @@ get_data_locations_instability_api <-
   }
 
 
+# Trending terms ----------------------------------------------------------
+
+
+
 #' Gets most recent terms
 #'
 #' @param sort_data
@@ -1776,7 +2046,7 @@ get_data_ft_trending_terms <-
   function(sort_data = T) {
     data <-
       'http://live.gdeltproject.org/autocomplete_last15.csv' %>%
-      read_csv %>%
+      read_csv() %>%
       set_names('nameTerm') %>%
       suppressMessages()
 

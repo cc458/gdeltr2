@@ -2,10 +2,13 @@
 % Please edit documentation in R/gdelt_free_text_api.R
 \name{get_codes_stability_locations}
 \alias{get_codes_stability_locations}
-\title{get_codebook_stability_locations}
+\title{Code book for instability locations}
 \usage{
 get_codes_stability_locations()
 }
+\value{
+a \code{data_frame}
+}
 \description{
-get_codebook_stability_locations
+Code book for instability locations
 }

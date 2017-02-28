@@ -1,4 +1,5 @@
 
+
 # utilities ---------------------------------------------------------------
 #' Filters a gdelt data frame to specified sources
 #'
@@ -10,8 +11,23 @@
 #'
 #' @examples
 filter_sources <-
-  function(data, sources = c('netsdaily', 'realdeal', 'curbed', 'law360', 'dailymail', 'wsj.com', 'law360',
-                             'pehub', 'techcrunch', 'washingtonpost', 'bloomberg', 'archdaily', 'espn.com', 'venturebeat')) {
+  function(data,
+           sources = c(
+             'netsdaily',
+             'realdeal',
+             'curbed',
+             'law360',
+             'dailymail',
+             'wsj.com',
+             'law360',
+             'pehub',
+             'techcrunch',
+             'washingtonpost',
+             'bloomberg',
+             'archdaily',
+             'espn.com',
+             'venturebeat'
+           )) {
     sources <-
       sources %>%
       stringr::str_to_lower() %>%
@@ -30,11 +46,15 @@ resolve_long_names <-
   function(data) {
     data <-
       data %>%
-      mutate(numberItem = ifelse(item %>% str_detect("idADM"),
-                                 item %>% str_replace_all("idADM1", '') %>% readr::parse_number(),
-                                 item %>% readr::parse_number()),
-             numberItem = ifelse(numberItem %>% is.na(), 0 , numberItem),
-             item = item %>% str_replace_all("^\\d+|\\d+$", '')) %>%
+      mutate(
+        numberItem = ifelse(
+          item %>% str_detect("idADM"),
+          item %>% str_replace_all("idADM1", '') %>% readr::parse_number(),
+          item %>% readr::parse_number()
+        ),
+        numberItem = ifelse(numberItem %>% is.na(), 0 , numberItem),
+        item = item %>% str_replace_all("^\\d+|\\d+$", '')
+      ) %>%
       distinct() %>%
       suppressWarnings()
 
@@ -45,8 +65,12 @@ resolve_long_names <-
 
     data <-
       data %>%
-      mutate_at(data %>% select(matches("^score|^count|^amount|^value|^face|^angle|^latitude|^longitude|^day|^month|^year|^idTypeLocation")) %>% names,
-                funs(. %>% readr::parse_number()))
+      mutate_at(data %>% select(
+        matches(
+          "^score|^count|^amount|^value|^face|^angle|^latitude|^longitude|^day|^month|^year|^idTypeLocation"
+        )
+      ) %>% names,
+      funs(. %>% readr::parse_number()))
 
     return(data)
   }
@@ -1995,8 +2019,10 @@ get_clean_count_data <-
         clean_data <-
           clean_data %>%
           gather(item, value, -c(idGKG, count, charLoc), na.rm = T) %>%
-          mutate(item = ifelse(count == 0, item, item %>% paste0(count)),
-                 value = value %>% str_trim) %>%
+          mutate(
+            item = ifelse(count == 0, item, item %>% paste0(count)),
+            value = value %>% str_trim
+          ) %>%
           distinct() %>%
           separate(
             idGKG,
@@ -2011,8 +2037,10 @@ get_clean_count_data <-
         clean_data <-
           clean_data %>%
           gather(item, value, -c(idGKG, count), na.rm = T) %>%
-          mutate(item = ifelse(count == 0, item, item %>% paste0(count)),
-                 value = value %>% str_trim) %>%
+          mutate(
+            item = ifelse(count == 0, item, item %>% paste0(count)),
+            value = value %>% str_trim
+          ) %>%
           distinct() %>%
           separate(
             idGKG,
@@ -2274,7 +2302,7 @@ parse_gkg_mentioned_numerics <- function(gdelt_data,
 #'
 #' @examples
 parse_gkg_mentioned_people <- function(gdelt_data,
-                                       people_column = 'persons',
+                                       people_column = 'personsCharLoc',
                                        filter_na = T,
                                        return_wide = T) {
   people_count_cols <-
@@ -2666,8 +2694,7 @@ parse_gkg_mentioned_names <- function(gdelt_data,
             field_data %>%
             dplyr::select(idArticleMentionedName,
                           charLoc,
-                          nameMentionedName
-                          )
+                          nameMentionedName)
 
         }
       }
@@ -3071,106 +3098,106 @@ parse_gkg_mentioned_social_embeds <-
 #' @examples
 parse_gkg_mentioned_article_tone <-
   function(gdelt_data,
-                                             filter_na = T,
-                                             return_wide = T) {
-  parse_article_tones <-
-    function(field = "-4.65116279069767,1.55038759689922,62015503875969,7.75193798449612,13.1782945736434,0,134",
-             return_wide = F) {
-      options(scipen = 99999, digits = 5)
-      if (field %>% is.na) {
-        if (return_wide) {
-          field_data <-
-            data_frame(amount.tone = NA)
-        } else {
-          field_data <-
-            data_frame(amount.tone = NA, idArticle.tone = 1)
-        }
-      }  else {
-        fields <-
-          field %>%
-          str_split('\\,') %>%
-          flatten_chr() %>%
-          .[!. %in% ''] %>%
-          as.numeric()
+           filter_na = T,
+           return_wide = T) {
+    parse_article_tones <-
+      function(field = "-4.65116279069767,1.55038759689922,62015503875969,7.75193798449612,13.1782945736434,0,134",
+               return_wide = F) {
+        options(scipen = 99999, digits = 5)
+        if (field %>% is.na) {
+          if (return_wide) {
+            field_data <-
+              data_frame(amount.tone = NA)
+          } else {
+            field_data <-
+              data_frame(amount.tone = NA, idArticle.tone = 1)
+          }
+        }  else {
+          fields <-
+            field %>%
+            str_split('\\,') %>%
+            flatten_chr() %>%
+            .[!. %in% ''] %>%
+            as.numeric()
 
-        fields_df <-
-          data_frame(amount.tone = fields) %>%
-          dplyr::mutate(idArticle.tone = 1:n())
-        if (return_wide) {
           fields_df <-
-            fields_df %>%
-            gather(item, value, -idArticle.tone) %>%
-            arrange(idArticle.tone) %>%
-            unite(item, item, idArticle.tone, sep = '.')
+            data_frame(amount.tone = fields) %>%
+            dplyr::mutate(idArticle.tone = 1:n())
+          if (return_wide) {
+            fields_df <-
+              fields_df %>%
+              gather(item, value, -idArticle.tone) %>%
+              arrange(idArticle.tone) %>%
+              unite(item, item, idArticle.tone, sep = '.')
 
-          order_fields <-
-            fields_df$item
+            order_fields <-
+              fields_df$item
 
-          field_data <-
-            fields_df %>%
-            spread(item, value) %>%
-            dplyr::select_(.dots = order_fields)
+            field_data <-
+              fields_df %>%
+              spread(item, value) %>%
+              dplyr::select_(.dots = order_fields)
 
-        } else {
-          field_data <-
-            fields_df
+          } else {
+            field_data <-
+              fields_df
 
-          field_data <-
-            field_data %>%
-            dplyr::select(idArticle.tone, amount.tone)
+            field_data <-
+              field_data %>%
+              dplyr::select(idArticle.tone, amount.tone)
+          }
         }
+
+        return(field_data)
       }
 
-      return(field_data)
+    if (!'tone' %in% names(gdelt_data)) {
+      stop("Sorry missing tone column")
+    }
+    counts_data <-
+      gdelt_data %>%
+      dplyr::select(idGKG, tone)
+
+    all_counts <-
+      1:length(counts_data$tone) %>%
+      purrr::map_df(function(x) {
+        parse_article_tones(field = counts_data$tone[x], return_wide = F) %>%
+          dplyr::mutate(idGKG = counts_data$idGKG[x])
+      }) %>%
+      dplyr::select(idGKG, everything()) %>%
+      dplyr::rename(scoreTone = amount.tone)
+
+    if (filter_na) {
+      all_counts <-
+        all_counts %>%
+        dplyr::filter(!scoreTone %>% is.na)
     }
 
-  if (!'tone' %in% names(gdelt_data)) {
-    stop("Sorry missing tone column")
-  }
-  counts_data <-
-    gdelt_data %>%
-    dplyr::select(idGKG, tone)
-
-  all_counts <-
-    1:length(counts_data$tone) %>%
-    purrr::map_df(function(x) {
-      parse_article_tones(field = counts_data$tone[x], return_wide = F) %>%
-        dplyr::mutate(idGKG = counts_data$idGKG[x])
-    }) %>%
-    dplyr::select(idGKG, everything()) %>%
-    dplyr::rename(scoreTone = amount.tone)
-
-  if (filter_na) {
     all_counts <-
       all_counts %>%
-      dplyr::filter(!scoreTone %>% is.na)
+      get_clean_count_data(count_col = 'idArticle.tone',
+                           extra_key = NA,
+                           return_wide = return_wide) %>%
+      arrange(idGKG) %>%
+      separate(
+        idGKG,
+        into = c('GKG', 'dateTime'),
+        sep = '\\-',
+        remove = F
+      ) %>%
+      mutate(dateTime = dateTime %>% as.numeric) %>%
+      arrange(dateTime) %>%
+      dplyr::select(-c(dateTime, GKG)) %>%
+      suppressWarnings()
+
+    if (!return_wide) {
+      all_counts <-
+        all_counts %>%
+        resolve_long_names()
+    }
+
+    return(all_counts)
   }
-
-  all_counts <-
-    all_counts %>%
-    get_clean_count_data(count_col = 'idArticle.tone',
-                         extra_key = NA,
-                         return_wide = return_wide) %>%
-    arrange(idGKG) %>%
-    separate(
-      idGKG,
-      into = c('GKG', 'dateTime'),
-      sep = '\\-',
-      remove = F
-    ) %>%
-    mutate(dateTime = dateTime %>% as.numeric) %>%
-    arrange(dateTime) %>%
-    dplyr::select(-c(dateTime, GKG)) %>%
-    suppressWarnings()
-
-  if (!return_wide) {
-    all_counts <-
-      all_counts %>%
-      resolve_long_names()
-  }
-
-  return(all_counts)
-}
 
 #' Returns mentioned CAMEO event count from a gkg data frame
 #'
@@ -3353,13 +3380,13 @@ parse_gkg_mentioned_event_counts <- function(gdelt_data,
   }
 
   all_counts <-
-      1:length(counts_data$count_col) %>%
-      purrr::map_df(function(x) {
-        parse_field_count(field = counts_data$count_col[x],
-                          return_wide = F) %>%
-          dplyr::mutate(idGKG = counts_data$idGKG[x])
-      }) %>%
-      dplyr::select(idGKG, everything()) %>%
+    1:length(counts_data$count_col) %>%
+    purrr::map_df(function(x) {
+      parse_field_count(field = counts_data$count_col[x],
+                        return_wide = F) %>%
+        dplyr::mutate(idGKG = counts_data$idGKG[x])
+    }) %>%
+    dplyr::select(idGKG, everything()) %>%
     select(which(colMeans(is.na(.)) < 1))
 
   all_counts <-
@@ -3399,225 +3426,225 @@ parse_gkg_mentioned_event_counts <- function(gdelt_data,
 #' @examples
 parse_gkg_mentioned_locations <-
   function(gdelt_data,
-                                          location_column = 'locations',
-                                          isCharLoc = F,
-                                          filter_na = T,
-                                          return_wide = T) {
-  location_cols <-
-    c('location',
-      'locations',
-      'locationsCharLoc',
-      'locationCharLoc',
-      'charLoc')
+           location_column = 'locations',
+           isCharLoc = F,
+           filter_na = T,
+           return_wide = T) {
+    location_cols <-
+      c('location',
+        'locations',
+        'locationsCharLoc',
+        'locationCharLoc',
+        'charLoc')
 
-  if (!location_column %in% location_cols) {
-    stop("Sorry location column can only be\n" %>%
-           paste0(paste0(location_cols, collapse = '\n')))
-  }
-
-  if (location_column %in% c('location', 'locations')) {
-    location_column <-
-      'locations'
-  }
-
-  if (location_column %in% c('locationsCharLoc', 'locationCharLoc', 'charLoc')) {
-    location_column <-
-      'locationsCharLoc'
-  }
-  parse_location_count <-
-    function(field = "4#Leichhardt, New South Wales, Australia#AS#AS02#4944#-33.8833#151.15#-1583352#203;4#Daintree, Queensland, Australia#AS#AS04#40202#-1625#145.317#-1568710#421;4#Daintree, Queensland, Australia#AS#AS04#40202#-1625#145.317#-1568710#2224",
-             return_wide = F) {
-      options(scipen = 99999, digits = 5)
-      if (field %>% is.na) {
-        if (return_wide) {
-          field_data <-
-            data_frame(location = NA)
-        } else {
-          field_data <-
-            data_frame(location = NA, idArticle.location = 1)
-        }
-      }  else {
-        fields <-
-          field %>%
-          str_split('\\;') %>%
-          flatten_chr() %>%
-          .[!. %in% '']
-
-        fields_df <-
-          data_frame(field_item = fields) %>%
-          dplyr::mutate(idArticle.location = 1:n())
-
-
-        if (isCharLoc) {
-          fields_df <-
-            fields_df %>%
-            separate(
-              col = field_item,
-              sep = '\\#',
-              into = c(
-                'idTypeLocation',
-                'location',
-                'idCountry',
-                'idADM1Code',
-                'idADM2Code',
-                'latitude',
-                'longitude',
-                'idFeature',
-                'charLoc'
-              )
-            ) %>%
-            suppressMessages() %>%
-            suppressWarnings()
-
-        } else {
-          fields_df <-
-            fields_df %>%
-            separate(
-              col = field_item,
-              sep = '\\#',
-              into = c(
-                'idTypeLocation',
-                'location',
-                'idCountry',
-                'idADM1Code',
-                'latitude',
-                'longitude',
-                'idFeature'
-              )
-            ) %>%
-            suppressMessages() %>%
-            suppressWarnings()
-        }
-
-        fields_df <-
-          fields_df %>%
-          dplyr::mutate_each_(funs(as.numeric),
-                              vars =
-                                fields_df %>% dplyr::select(matches("idTypeLocation|charLoc")) %>% names) %>%
-          dplyr::mutate_each_(funs(as.numeric(., digits = 5)),
-                              vars =
-                                fields_df %>% dplyr::select(matches("latitude|longitude")) %>% names) %>%
-          dplyr::left_join(data_frame(
-            idTypeLocation = 1:5,
-            typeLocation = c(
-              'country',
-              'usState',
-              'usCity',
-              'worldCity',
-              'worldState'
-            )
-          )) %>%
-          suppressMessages() %>%
-          dplyr::select(idTypeLocation, typeLocation, everything()) %>%
-          suppressWarnings()
-
-
-        fields_df$location[fields_df$location == ''] <-
-          NA
-
-        fields_df$idCountry[fields_df$idCountry == ''] <-
-          NA
-
-        fields_df$idADM1Code[fields_df$idADM1Code == ''] <-
-          NA
-
-        fields_df$idFeature[fields_df$idFeature == ''] <-
-          NA
-
-        if (return_wide) {
-          fields_df <-
-            fields_df %>%
-            gather(item, value, -idArticle.location) %>%
-            arrange(idArticle.location) %>%
-            unite(item, item, idArticle.location, sep = '.')
-
-          order_fields <-
-            fields_df$item
-
-          field_data <-
-            fields_df %>%
-            spread(item, value) %>%
-            dplyr::select_(.dots = order_fields)
-
-          field_data <-
-            field_data %>%
-            dplyr::mutate_each_(funs(as.numeric),
-                                vars =
-                                  field_data %>% dplyr::select(matches("idTypeLocation")) %>% names) %>%
-            dplyr::mutate_each_(funs(as.numeric(., digits = 5)),
-                                vars =
-                                  field_data %>% dplyr::select(matches("latitude|longitude")) %>% names)
-
-        } else {
-          field_data <-
-            fields_df
-
-          field_data <-
-            field_data %>%
-            dplyr::select(idArticle.location, everything())
-        }
-      }
-
-      return(field_data)
+    if (!location_column %in% location_cols) {
+      stop("Sorry location column can only be\n" %>%
+             paste0(paste0(location_cols, collapse = '\n')))
     }
 
-  if (!location_column %in% names(gdelt_data)) {
-    stop("Sorry missing location column")
-  }
+    if (location_column %in% c('location', 'locations')) {
+      location_column <-
+        'locations'
+    }
 
-  col_names <-
-    c('idGKG', location_column)
+    if (location_column %in% c('locationsCharLoc', 'locationCharLoc', 'charLoc')) {
+      location_column <-
+        'locationsCharLoc'
+    }
+    parse_location_count <-
+      function(field = "4#Leichhardt, New South Wales, Australia#AS#AS02#4944#-33.8833#151.15#-1583352#203;4#Daintree, Queensland, Australia#AS#AS04#40202#-1625#145.317#-1568710#421;4#Daintree, Queensland, Australia#AS#AS04#40202#-1625#145.317#-1568710#2224",
+               return_wide = F) {
+        options(scipen = 99999, digits = 5)
+        if (field %>% is.na) {
+          if (return_wide) {
+            field_data <-
+              data_frame(location = NA)
+          } else {
+            field_data <-
+              data_frame(location = NA, idArticle.location = 1)
+          }
+        }  else {
+          fields <-
+            field %>%
+            str_split('\\;') %>%
+            flatten_chr() %>%
+            .[!. %in% '']
 
-  counts_data <-
-    gdelt_data %>%
-    dplyr::select_(.dots = col_names)
+          fields_df <-
+            data_frame(field_item = fields) %>%
+            dplyr::mutate(idArticle.location = 1:n())
 
-  names(counts_data)[2] <-
-    'loc_col'
 
-  if (filter_na) {
+          if (isCharLoc) {
+            fields_df <-
+              fields_df %>%
+              separate(
+                col = field_item,
+                sep = '\\#',
+                into = c(
+                  'idTypeLocation',
+                  'location',
+                  'idCountry',
+                  'idADM1Code',
+                  'idADM2Code',
+                  'latitude',
+                  'longitude',
+                  'idFeature',
+                  'charLoc'
+                )
+              ) %>%
+              suppressMessages() %>%
+              suppressWarnings()
+
+          } else {
+            fields_df <-
+              fields_df %>%
+              separate(
+                col = field_item,
+                sep = '\\#',
+                into = c(
+                  'idTypeLocation',
+                  'location',
+                  'idCountry',
+                  'idADM1Code',
+                  'latitude',
+                  'longitude',
+                  'idFeature'
+                )
+              ) %>%
+              suppressMessages() %>%
+              suppressWarnings()
+          }
+
+          fields_df <-
+            fields_df %>%
+            dplyr::mutate_each_(funs(as.numeric),
+                                vars =
+                                  fields_df %>% dplyr::select(matches("idTypeLocation|charLoc")) %>% names) %>%
+            dplyr::mutate_each_(funs(as.numeric(., digits = 5)),
+                                vars =
+                                  fields_df %>% dplyr::select(matches("latitude|longitude")) %>% names) %>%
+            dplyr::left_join(data_frame(
+              idTypeLocation = 1:5,
+              typeLocation = c(
+                'country',
+                'usState',
+                'usCity',
+                'worldCity',
+                'worldState'
+              )
+            )) %>%
+            suppressMessages() %>%
+            dplyr::select(idTypeLocation, typeLocation, everything()) %>%
+            suppressWarnings()
+
+
+          fields_df$location[fields_df$location == ''] <-
+            NA
+
+          fields_df$idCountry[fields_df$idCountry == ''] <-
+            NA
+
+          fields_df$idADM1Code[fields_df$idADM1Code == ''] <-
+            NA
+
+          fields_df$idFeature[fields_df$idFeature == ''] <-
+            NA
+
+          if (return_wide) {
+            fields_df <-
+              fields_df %>%
+              gather(item, value, -idArticle.location) %>%
+              arrange(idArticle.location) %>%
+              unite(item, item, idArticle.location, sep = '.')
+
+            order_fields <-
+              fields_df$item
+
+            field_data <-
+              fields_df %>%
+              spread(item, value) %>%
+              dplyr::select_(.dots = order_fields)
+
+            field_data <-
+              field_data %>%
+              dplyr::mutate_each_(funs(as.numeric),
+                                  vars =
+                                    field_data %>% dplyr::select(matches("idTypeLocation")) %>% names) %>%
+              dplyr::mutate_each_(funs(as.numeric(., digits = 5)),
+                                  vars =
+                                    field_data %>% dplyr::select(matches("latitude|longitude")) %>% names)
+
+          } else {
+            field_data <-
+              fields_df
+
+            field_data <-
+              field_data %>%
+              dplyr::select(idArticle.location, everything())
+          }
+        }
+
+        return(field_data)
+      }
+
+    if (!location_column %in% names(gdelt_data)) {
+      stop("Sorry missing location column")
+    }
+
+    col_names <-
+      c('idGKG', location_column)
+
     counts_data <-
-      counts_data %>%
-      dplyr::filter(!loc_col %>% is.na())
-  }
+      gdelt_data %>%
+      dplyr::select_(.dots = col_names)
 
-  all_counts <-
-    1:length(counts_data$loc_col) %>%
-    purrr::map_df(function(x) {
-      parse_location_count(field = counts_data$loc_col[x],
-                           return_wide = F) %>%
-        dplyr::mutate(idGKG = counts_data$idGKG[x])
-    }) %>%
-    dplyr::select(idGKG, everything())
+    names(counts_data)[2] <-
+      'loc_col'
 
-  if (filter_na) {
+    if (filter_na) {
+      counts_data <-
+        counts_data %>%
+        dplyr::filter(!loc_col %>% is.na())
+    }
+
+    all_counts <-
+      1:length(counts_data$loc_col) %>%
+      purrr::map_df(function(x) {
+        parse_location_count(field = counts_data$loc_col[x],
+                             return_wide = F) %>%
+          dplyr::mutate(idGKG = counts_data$idGKG[x])
+      }) %>%
+      dplyr::select(idGKG, everything())
+
+    if (filter_na) {
+      all_counts <-
+        all_counts %>%
+        dplyr::filter(!location %>% is.na())
+    }
     all_counts <-
       all_counts %>%
-      dplyr::filter(!location %>% is.na())
+      get_clean_count_data(count_col = 'idArticle.location', return_wide = return_wide) %>%
+      separate(
+        idGKG,
+        into = c('GKG', 'dateTime'),
+        sep = '\\-',
+        remove = F
+      ) %>%
+      mutate(dateTime = dateTime %>% as.numeric) %>%
+      arrange(dateTime) %>%
+      dplyr::select(-c(dateTime, GKG)) %>%
+      suppressWarnings()
+
+    if (!return_wide) {
+      all_counts <-
+        all_counts %>%
+        resolve_long_names()
+    }
+
+
+    return(all_counts)
   }
-  all_counts <-
-    all_counts %>%
-    get_clean_count_data(count_col = 'idArticle.location', return_wide = return_wide) %>%
-    separate(
-      idGKG,
-      into = c('GKG', 'dateTime'),
-      sep = '\\-',
-      remove = F
-    ) %>%
-    mutate(dateTime = dateTime %>% as.numeric) %>%
-    arrange(dateTime) %>%
-    dplyr::select(-c(dateTime, GKG)) %>%
-    suppressWarnings()
-
-  if (!return_wide) {
-    all_counts <-
-      all_counts %>%
-      resolve_long_names()
-  }
-
-
-  return(all_counts)
-}
 
 #' Returns mentioned dates from gkg data frame
 #'
@@ -3773,136 +3800,135 @@ parse_gkg_mentioned_dates <- function(gdelt_data,
 #' @examples
 parse_gkg_mentioned_quotes <-
   function(gdelt_data,
-                                       filter_na = T,
-                                       return_wide = T) {
-  parse_quotes <-
-    function(field = "495|51||knowingly aided and abetted an international kidnap#865|50||nothing less than an international child abduction#2764|49|| staff member should be singled out for dismissal#3373|48||make any serious attempt to independently verify#4059|46||wants to go through every single little detail#4802|156||And xC2 ; xA0 ; you're keeping all of xC2 ; xA0 ; them xC2 ; xA0 ; - xC2 ; xA0 ; except one sacrificial lamb - xC2 ; xA0 ; to run the show?#4879|28||How do you think that looks?#6093|60||an extraordinary conspiracy to remove the children illegally#6150|50||nothing less than an international child abduction#6828|408||I xE2 ; x80 ; xA6 ; have found nothing that supports a finding that any Australian Government official somehow knowingly assisted the mother to do something that was wrong xE2 ; x80 ; xA6 ; I do not find xE2 ; x80 ; xA6 ; that any Australian Embassy officials who helped the mother did so knowing that the mother did not have the father consent to remove the girls permanently from Italy",
-             return_wide = F) {
-      options(scipen = 99999, digits = 5)
-      if (field %>% is.na) {
-        if (return_wide) {
-          field_data <-
-            data_frame(idArticle.quote = NA)
-        } else {
-          field_data <-
-            data_frame(quote = NA,
-                       idArticle.quote = NA)
-        }
-      }  else {
-        fields <-
-          field %>%
-          str_split('\\#') %>%
-          flatten_chr() %>%
-          .[!. %in% '']
+           filter_na = T,
+           return_wide = T) {
+    parse_quotes <-
+      function(field = "495|51||knowingly aided and abetted an international kidnap#865|50||nothing less than an international child abduction#2764|49|| staff member should be singled out for dismissal#3373|48||make any serious attempt to independently verify#4059|46||wants to go through every single little detail#4802|156||And xC2 ; xA0 ; you're keeping all of xC2 ; xA0 ; them xC2 ; xA0 ; - xC2 ; xA0 ; except one sacrificial lamb - xC2 ; xA0 ; to run the show?#4879|28||How do you think that looks?#6093|60||an extraordinary conspiracy to remove the children illegally#6150|50||nothing less than an international child abduction#6828|408||I xE2 ; x80 ; xA6 ; have found nothing that supports a finding that any Australian Government official somehow knowingly assisted the mother to do something that was wrong xE2 ; x80 ; xA6 ; I do not find xE2 ; x80 ; xA6 ; that any Australian Embassy officials who helped the mother did so knowing that the mother did not have the father consent to remove the girls permanently from Italy",
+               return_wide = F) {
+        options(scipen = 99999, digits = 5)
+        if (field %>% is.na) {
+          if (return_wide) {
+            field_data <-
+              data_frame(idArticle.quote = NA)
+          } else {
+            field_data <-
+              data_frame(quote = NA,
+                         idArticle.quote = NA)
+          }
+        }  else {
+          fields <-
+            field %>%
+            str_split('\\#') %>%
+            flatten_chr() %>%
+            .[!. %in% '']
 
-        fields_df <-
-          data_frame(quote_items = fields) %>%
-          dplyr::mutate(idArticle.quote = 1:n()) %>%
-          separate(
-            col = quote_items,
-            sep = '\\|',
-            into = c('charLoc', 'lengthQuote', 'verbIntro', 'textQuote')
-          ) %>%
-          suppressMessages() %>%
-          suppressWarnings()
+          fields_df <-
+            data_frame(quote_items = fields) %>%
+            dplyr::mutate(idArticle.quote = 1:n()) %>%
+            separate(
+              col = quote_items,
+              sep = '\\|',
+              into = c('charLoc', 'lengthQuote', 'verbIntro', 'textQuote')
+            ) %>%
+            suppressMessages() %>%
+            suppressWarnings()
 
-        fields_df <-
-          fields_df %>%
-          dplyr::mutate(textQuote = textQuote %>% str_trim) %>%
-          dplyr::mutate_each_(funs(as.numeric),
-                              vars =
-                                c('charLoc', 'lengthQuote')) %>%
-          dplyr::select(idArticle.quote, everything())
-
-        fields_df$verbIntro[fields_df$verbIntro == ''] <-
-          NA
-
-        if (return_wide) {
           fields_df <-
             fields_df %>%
-            gather(item, value, -idArticle.quote) %>%
-            arrange(idArticle.quote) %>%
-            unite(item, item, idArticle.quote, sep = '.')
-
-          order_fields <-
-            fields_df$item
-
-          field_data <-
-            fields_df %>%
-            spread(item, value) %>%
-            dplyr::select_(.dots = order_fields)
-
-          field_data <-
-            field_data %>%
+            dplyr::mutate(textQuote = textQuote %>% str_trim) %>%
             dplyr::mutate_each_(funs(as.numeric),
                                 vars =
-                                  field_data %>% dplyr::select(matches("charLoc|lengthQuote")) %>% names)
-
-        } else {
-          field_data <-
-            fields_df
-
-          field_data <-
-            field_data %>%
+                                  c('charLoc', 'lengthQuote')) %>%
             dplyr::select(idArticle.quote, everything())
+
+          fields_df$verbIntro[fields_df$verbIntro == ''] <-
+            NA
+
+          if (return_wide) {
+            fields_df <-
+              fields_df %>%
+              gather(item, value, -idArticle.quote) %>%
+              arrange(idArticle.quote) %>%
+              unite(item, item, idArticle.quote, sep = '.')
+
+            order_fields <-
+              fields_df$item
+
+            field_data <-
+              fields_df %>%
+              spread(item, value) %>%
+              dplyr::select_(.dots = order_fields)
+
+            field_data <-
+              field_data %>%
+              dplyr::mutate_each_(funs(as.numeric),
+                                  vars =
+                                    field_data %>% dplyr::select(matches("charLoc|lengthQuote")) %>% names)
+
+          } else {
+            field_data <-
+              fields_df
+
+            field_data <-
+              field_data %>%
+              dplyr::select(idArticle.quote, everything())
+          }
         }
+
+        return(field_data)
       }
 
-      return(field_data)
+    if (!'quotations' %in% names(gdelt_data)) {
+      stop("Sorry missing quotations column")
     }
 
-  if (!'quotations' %in% names(gdelt_data)) {
-    stop("Sorry missing quotations column")
-  }
-
-  counts_data <-
-    gdelt_data %>%
-    dplyr::select(idGKG, quotations)
-
-  if (filter_na) {
     counts_data <-
-      counts_data %>%
-      dplyr::filter(!quotations %>% is.na())
-  }
+      gdelt_data %>%
+      dplyr::select(idGKG, quotations)
 
-  all_counts <-
-    1:length(counts_data$quotations) %>%
-    purrr::map_df(function(x) {
-      parse_quotes(field = counts_data$quotations[x], return_wide = F) %>%
-        dplyr::mutate(idGKG = counts_data$idGKG[x])
-    }) %>%
-    dplyr::select(idGKG, everything())
+    if (filter_na) {
+      counts_data <-
+        counts_data %>%
+        dplyr::filter(!quotations %>% is.na())
+    }
 
-  if (all_counts$verbIntro %>% is.na() %>% as.numeric() %>% sum == nrow(all_counts)) {
     all_counts <-
-      all_counts %>%
-      dplyr::select(-verbIntro)
-  }
+      1:length(counts_data$quotations) %>%
+      purrr::map_df(function(x) {
+        parse_quotes(field = counts_data$quotations[x], return_wide = F) %>%
+          dplyr::mutate(idGKG = counts_data$idGKG[x])
+      }) %>%
+      dplyr::select(idGKG, everything())
 
-  all_counts <-
-    all_counts %>%
-    get_clean_count_data(count_col = 'idArticle.quote', return_wide = T) %>%
-    separate(
-      idGKG,
-      into = c('GKG', 'dateTime'),
-      sep = '\\-',
-      remove = F
-    ) %>%
-    mutate(dateTime = dateTime %>% as.numeric) %>%
-    arrange(dateTime) %>%
-    dplyr::select(-c(dateTime, GKG)) %>%
-    suppressWarnings()
-
-  if (!return_wide) {
+    if (all_counts$verbIntro %>% is.na() %>% as.numeric() %>% sum == nrow(all_counts)) {
+      all_counts <-
+        all_counts %>%
+        dplyr::select(-verbIntro)
+    }
 
     all_counts <-
       all_counts %>%
-      gather(item, value, -idGKG, na.rm = TRUE) %>%
-      resolve_long_names()
-  }
+      get_clean_count_data(count_col = 'idArticle.quote', return_wide = T) %>%
+      separate(
+        idGKG,
+        into = c('GKG', 'dateTime'),
+        sep = '\\-',
+        remove = F
+      ) %>%
+      mutate(dateTime = dateTime %>% as.numeric) %>%
+      arrange(dateTime) %>%
+      dplyr::select(-c(dateTime, GKG)) %>%
+      suppressWarnings()
 
-  return(all_counts)
-}
+    if (!return_wide) {
+      all_counts <-
+        all_counts %>%
+        gather(item, value, -idGKG, na.rm = TRUE) %>%
+        resolve_long_names()
+    }
+
+    return(all_counts)
+  }
 
 #' Returns GCAM codes from a gkg data frame
 #'
@@ -4237,7 +4263,9 @@ get_data_gkg_day_detailed <-
         gdelt_detailed_logs <-
           get_urls_gkg_15_minute_log()
 
-        assign(x = 'gdelt_detailed_logs', eval(gdelt_detailed_logs), env = .GlobalEnv)
+        assign(x = 'gdelt_detailed_logs',
+               eval(gdelt_detailed_logs),
+               env = .GlobalEnv)
 
       }
 
@@ -4249,7 +4277,7 @@ get_data_gkg_day_detailed <-
     }
 
     get_gdelt_url_data_safe <-
-      failwith(NULL, get_gdelt_url_data)
+      purrr::possibly(get_gdelt_url_data, data_frame())
 
     all_data <-
       urls %>%
@@ -4314,7 +4342,7 @@ get_data_gkg_days_detailed <- function(dates = c("2016-07-19"),
                                        empty_trash = T,
                                        return_message = T) {
   get_data_gkg_day_detailed_safe <-
-    failwith(NULL, get_data_gkg_day_detailed)
+    purrr::possibly(get_data_gkg_day_detailed, data_frame())
 
   var_matrix <-
     expand.grid(date = dates,
@@ -4403,7 +4431,6 @@ get_data_gkg_day_summary <- function(date_data = "2016-06-01",
     stop("Sorry data can't go into the future")
   }
   if (!'summary_data_urls' %>% exists()) {
-
     summary_data_urls <-
       get_urls_gkg_daily_summaries(return_message = return_message)
 
@@ -4426,7 +4453,7 @@ get_data_gkg_day_summary <- function(date_data = "2016-06-01",
     .$urlData
 
   get_gdelt_url_data_safe <-
-    failwith(NULL, get_gdelt_url_data)
+    purrr::possibly(get_gdelt_url_data, data_frame())
 
   all_data <-
     urls %>%
@@ -4495,7 +4522,7 @@ get_data_gkg_days_summary <- function(dates = c("2016-06-01"),
                                       nest_data = F,
                                       return_message = T) {
   get_data_gkg_day_summary_safe <-
-    failwith(NULL, get_data_gkg_day_summary)
+    purrr::possibly(get_data_gkg_day_summary, data_frame())
 
   var_matrix <-
     expand.grid(
@@ -4575,7 +4602,7 @@ get_data_gdelt_period_event <- function(period = 1983,
     .$urlData
 
   get_gdelt_url_data_safe <-
-    failwith(NULL, get_gdelt_url_data)
+    purrr::possibly(get_gdelt_url_data, data_frame())
 
   all_data <-
     urls %>%
@@ -4621,7 +4648,7 @@ get_data_gdelt_periods_event <- function(periods = c(1983, 1989),
                                          empty_trash = T,
                                          return_message = T) {
   get_data_gdelt_period_event_safe <-
-    failwith(NULL, get_data_gdelt_period_event)
+    purrr::possibly(get_data_gdelt_period_event, data_frame())
 
   all_data <-
     1:length(periods) %>%
@@ -4824,7 +4851,6 @@ get_data_vgkg_day <-
     }
 
     if (!'cv_urls' %>% exists()) {
-
       cv_urls <-
         get_urls_vgkg()
 
@@ -4849,7 +4875,7 @@ get_data_vgkg_day <-
         .$urlCloudVisionTags
     }
     get_data_vgkg_url_safe <-
-      failwith(NULL, get_data_vgkg_url)
+      purrr::possibly(get_data_vgkg_url, data_frame())
 
     all_data <-
       urls %>%
@@ -4907,7 +4933,7 @@ get_data_vgkg_dates <-
     }
 
     get_data_vgkg_day_safe <-
-      failwith(NULL, get_data_vgkg_day)
+      purrr::possibly(get_data_vgkg_day, data_frame())
 
     all_data <-
       dates %>%
@@ -5253,7 +5279,7 @@ parse_vgkg_labels <- function(gdelt_data,
                               filter_na = T,
                               return_wide = T) {
   parse_xml_labels_safe <-
-    failwith(NULL, parse_xml_labels)
+    purrr::possibly(parse_xml_labels, data_frame())
 
   allxmlLabels <-
     gdelt_data$idVGKG %>%
@@ -5348,7 +5374,7 @@ parse_vgkg_landmarks <- function(gdelt_data,
                                  filter_na = T,
                                  return_wide = T) {
   parse_xml_landmarks_safe <-
-    failwith(NULL, parse_xml_landmarks)
+    purrr::possibly(parse_xml_landmarks, data_frame())
 
   all_data <-
     gdelt_data$idVGKG %>%
@@ -5434,7 +5460,7 @@ parse_vgkg_logos <- function(gdelt_data,
                              filter_na = T,
                              return_wide = T) {
   parse_xml_logos_safe <-
-    failwith(NULL, parse_xml_logos)
+    purrr::possibly(parse_xml_logos,data_frame())
 
   all_data <-
     gdelt_data$idVGKG %>%
@@ -5533,7 +5559,7 @@ parse_vgkg_safe_search <- function(gdelt_data,
                                    filter_na = T,
                                    return_wide = T) {
   parse_xml_safe_search_safe <-
-    failwith(NULL, parse_xml_safe_search)
+    purrr::possibly(parse_xml_safe_search, data_frame())
 
   all_data <-
     gdelt_data$idVGKG %>%
@@ -5637,7 +5663,7 @@ parse_vgkg_faces <- function(gdelt_data,
                              filter_na = T,
                              return_wide = T) {
   parse_xml_faces_search_safe <-
-    failwith(NULL, parse_xml_faces)
+    purrr::possibly(parse_xml_faces, data_frame())
 
   all_data <-
     gdelt_data$idVGKG %>%
@@ -5719,7 +5745,7 @@ parse_vgkg_ocr <- function(gdelt_data,
                            filter_na = T,
                            return_wide = T) {
   parse_xml_ocr_safe <-
-    failwith(NULL, parse_xml_ocr)
+    purrr::possibly(parse_xml_ocr, data_frame())
 
   all_data <-
     gdelt_data$idVGKG %>%
@@ -5798,7 +5824,7 @@ parse_vgkg_languages <- function(gdelt_data,
                                  filter_na = T,
                                  return_wide = T) {
   parse_language_types_safe <-
-    failwith(NULL, parse_language_types)
+    purrr::possibly(parse_language_types, data_frame())
 
   all_data <-
     gdelt_data$idVGKG %>%
@@ -5999,7 +6025,7 @@ get_data_gkg_tv <-
   function(url = 'http://data.gdeltproject.org/gdeltv2_iatelevision/20160609.gkg.csv.gz',
            return_message = T) {
     ok_url <-
-      url %>% httr::url_ok %>% suppressWarnings()
+      url %>% httr::url_ok() %>% suppressWarnings()
     if (ok_url == FALSE) {
       stop("Invalid url")
     }
@@ -6103,12 +6129,12 @@ get_data_gkg_tv_day <- function(date_data = "2016-06-01",
   }
 
   get_data_gkg_tv_safe <-
-    failwith(NULL, get_data_gkg_tv)
+    purrr::possibly(get_data_gkg_tv, data_frame())
 
   all_data <-
     urls %>%
     purrr::map_df(function(x) {
-      get_data_gkg_tv(url = x,
+      get_data_gkg_tv_safe(url = x,
                       return_message = return_message)
     }) %>%
     distinct() %>%
@@ -6142,7 +6168,7 @@ get_data_gkg_tv_days <-
            only_most_recent = F,
            return_message = T) {
     get_data_gkg_tv_day_safe <-
-      failwith(NULL, get_data_gkg_tv_day)
+      purrr::possibly(get_data_gkg_tv_day, data_frame())
 
     all_data <-
       dates %>%
@@ -6208,4 +6234,979 @@ date_columns_to_numeric <-
 
     return(data)
 
+  }
+
+
+# trelliscope -------------------------------------------------------------
+check_for_trelliscope_js <-
+  function() {
+    missing <-
+      installed.packages() %>% dplyr::as_data_frame() %>%
+      dplyr::filter(Package == 'trelliscopejs') %>%
+      nrow() == 0
+    if (missing) {
+      devtools::install_github("hafen/trelliscopejs")
+    }
+  }
+
+filter_domain_data <-
+  function(data,
+           domains = c(
+             'wsj.com',
+             'law360',
+             'nytimes.com',
+             'dailymail',
+             'recode',
+             'architizer',
+             'globest',
+             'realert',
+             'seekingalpha.com',
+             'bloomberg.com',
+             'curbed.com',
+             'commercialobserver.com',
+             'globest.com',
+             'realdeal.com',
+             'techcrunch.com',
+             'nytimes.com',
+             'architizer',
+             'pehub',
+             'rew-online',
+             'nypost'
+           ),
+           random_domains = 20,
+           only_pictures = TRUE) {
+    search_domains <-
+      c()
+    if (!random_domains %>% purrr::is_null()) {
+      randoms <-
+        data$domainSource %>% unique() %>% sample(random_domains)
+      search_domains <-
+        c(search_domains, randoms) %>% unique()
+    }
+
+    if (!domains %>% purrr::is_null()) {
+      search_domains <-
+        c(search_domains, domains)
+    }
+
+    search_domains <-
+      search_domains %>%
+      unique() %>%
+      paste(collapse = '|')
+
+    data <-
+      data %>%
+      filter(domainSource %>% str_detect(search_domains))
+
+    if (only_pictures) {
+      data <-
+        data %>%
+        filter(!urlImage %>% is.na())
+    }
+
+    return(data)
+  }
+
+#' Visualize Cloudvision trelliscope
+#'
+#' @param data
+#' @param vgkg_parse \itemize{
+#' \item 'faces',
+#' \item 'labels',
+#' \item 'landmarks',
+#' \item 'languages',
+#' \item 'logos',
+#' \item 'ocr'
+#' }
+#' @param domains
+#' @param random_domains
+#' @param only_pictures
+#'
+#' @return
+#' @export
+#' @import dplyr purrr tidyr trelliscopejs stringr
+#' @examples
+visualize_vgkg_trelliscope <-
+  function(data,
+           vgkg_parse = 'landmarks',
+           domains = c(
+             'wsj.com',
+             'seekingalpha.com',
+             'bloomberg.com',
+             'curbed.com',
+             'commercialobserver.com',
+             'globest.com',
+             'realdeal.com',
+             'techcrunch.com',
+             'nytimes.com',
+             'architizer',
+             'pehub',
+             'rew-online.com',
+             'nypost.com'
+           ),
+           random_domains = 0,
+           only_pictures = TRUE) {
+    check_for_trelliscope_js()
+    has_domains <-
+      !domains %>% purrr::is_null() |
+      !random_domains %>% purrr::is_null()
+    if (has_domains) {
+      data <-
+        data %>%
+        filter_domain_data(domains = domains, random_domains = random_domains)
+    }
+    if (!vgkg_parse %>% purrr::is_null()) {
+      vgkg_options <-
+        c('faces',
+          'labels',
+          'landmarks',
+          'languages',
+          'logos',
+          'ocr')
+      vgkg_parse <-
+        vgkg_parse %>% str_to_lower()
+      if (!vgkg_parse %in% vgkg_options) {
+        stop(list(
+          "Parse options can only be:\n",
+          paste(vgkg_options, collapse = '\n')
+        ) %>% purrr::reduce(paste0))
+      }
+
+      is_faces <-
+        vgkg_parse == 'faces'
+
+      if (is_faces) {
+        data <-
+          data %>%
+          parse_vgkg_faces(filter_na = TRUE, return_wide = FALSE) %>%
+          left_join(data %>% select(idVGKG:urlImage, dateDocument)) %>%
+          suppressMessages() %>%
+          suppressWarnings()
+
+        main_name <-
+          c('scoreDetectionConfidence',
+            'scoreEmotionAngerLikelihood')
+      }
+
+      is_labels <-
+        vgkg_parse == 'labels'
+
+      if (is_labels) {
+        data <-
+          data %>%
+          parse_vgkg_labels(filter_na = TRUE, return_wide = FALSE) %>%
+          left_join(data %>% select(idVGKG:urlImage, dateDocument)) %>%
+          suppressMessages() %>%
+          suppressWarnings()
+
+        main_name <-
+          c('nameLabel', 'scoreConfidenceLabel')
+      }
+
+      is_landmark <-
+        vgkg_parse == 'landmarks'
+
+      if (is_landmark) {
+        data <-
+          data %>%
+          parse_vgkg_landmarks(filter_na = TRUE, return_wide = FALSE) %>%
+          left_join(data %>% select(idVGKG:urlImage, dateDocument)) %>%
+          suppressMessages() %>%
+          suppressWarnings()
+
+        main_name <-
+          c('nameLandmark', 'scoreConfidenceLandmark')
+      }
+
+      is_language <-
+        vgkg_parse == 'languages'
+
+      if (is_language) {
+        data <-
+          data %>%
+          parse_vgkg_languages(filter_na = TRUE, return_wide = FALSE) %>%
+          left_join(data %>% select(idVGKG:urlImage, dateDocument)) %>%
+          suppressMessages() %>%
+          suppressWarnings()
+        main_name <-
+          c('idLanguage')
+      }
+
+      is_ocr <-
+        vgkg_parse == 'ocr'
+
+      if (is_ocr) {
+        data <-
+          data %>%
+          parse_vgkg_ocr(filter_na = TRUE, return_wide = FALSE) %>%
+          left_join(data %>% select(idVGKG:urlImage, dateDocument)) %>%
+          suppressMessages() %>%
+          suppressWarnings()
+        main_name <-
+          c('textOCR')
+      }
+
+      is_logos <-
+        vgkg_parse == 'logos'
+
+      if (is_logos) {
+        data <-
+          data %>%
+          parse_vgkg_logos(filter_na = TRUE, return_wide = FALSE) %>%
+          left_join(data %>% select(idVGKG:urlImage, dateDocument)) %>%
+          suppressMessages() %>%
+          suppressWarnings()
+        main_name <-
+          c('nameLogo')
+      }
+
+    } else {
+      main_name <-
+        ''
+    }
+
+    if (!vgkg_parse %>% purrr::is_null()) {
+      parse_title <-
+        vgkg_parse %>% str_to_title()
+    } else {
+      parse_title <- ''
+    }
+
+    dates <-
+      data$dateTimeDocument %>% as.Date("%Y-%m-%d") %>% unique() %>%
+      suppressWarnings()
+
+    dates <-
+      dates[!dates %>% is.na()] %>% .[[1]]
+
+
+    title <-
+      list('GDELT VGKG Explorer for ',  parse_title, ' ', dates) %>%
+      purrr::reduce(paste0)
+
+    viz <-
+      data %>%
+      mutate(
+        panel = trelliscopejs::img_panel(urlImage),
+        urlArticle = trelliscopejs::cog_href(documentSource)
+      ) %>%
+      select(idVGKG, everything()) %>%
+      arrange(idVGKG) %>%
+      trelliscopejs::trelliscope(
+        name = title,
+        nrow = 1,
+        ncol = 2,
+        state = list(labels = c(
+          "domainSource", "idVGKG", main_name, 'urlArticle'
+        ))
+      )
+    return(viz)
+  }
+
+#' Trelliscope gkg data
+#'
+#' @param data
+#' @param domains
+#' @param random_domains
+#' @param only_pictures
+#' @param gkg_parse \itemize{
+#' \item 'tone',
+#' \item 'dates',
+#' \item 'events',
+#' \item 'gcam',
+#' \item 'locations',
+#' \item 'names',
+#' \item 'numerics',
+#' \item 'organizations',
+#' \item 'people',
+#' \item 'quotes',
+#' \item 'social',
+#' \item 'themes',
+#' \item 'xml
+#' }
+#'
+#' @return
+#' @export
+#' @import dplyr purrr tidyr trelliscopejs stringr
+#' @examples
+visualize_gkg_trelliscope <-
+  function(data,
+           domains = c(
+             'wsj.com',
+             'law360',
+             'nytimes.com',
+             'dailymail',
+             'recode',
+             'architizer',
+             'globest',
+             'realert',
+             'seekingalpha.com',
+             'bloomberg.com',
+             'curbed.com',
+             'commercialobserver.com',
+             'globest.com',
+             'realdeal.com',
+             'techcrunch.com',
+             'nytimes.com',
+             'architizer',
+             'pehub',
+             'rew-online',
+             'nypost'
+           ),
+           random_domains = 0,
+           only_pictures = TRUE,
+           gkg_parse = 'names') {
+    check_for_trelliscope_js()
+    has_domains <-
+      !domains %>% purrr::is_null() |
+      !random_domains %>% purrr::is_null()
+    if (has_domains) {
+      data <-
+        data %>%
+        filter_domain_data(domains = domains, random_domains = random_domains)
+    }
+
+    if (!gkg_parse %>% purrr::is_null()) {
+      gkg_options <-
+        c(
+          'tone',
+          'dates',
+          'events',
+          'gcam',
+          'locations',
+          'names',
+          'numerics',
+          'organizations',
+          'people',
+          'quotes',
+          'social',
+          'themes',
+          'xml'
+        )
+      gkg_parse <-
+        gkg_parse %>% str_to_lower()
+      if (!gkg_parse %in% gkg_options) {
+        stop(list(
+          "Parse options can only be:\n",
+          paste(gkg_options, collapse = '\n')
+        ) %>% purrr::reduce(paste0))
+      }
+
+      is_tone <-
+        gkg_parse == 'tone'
+
+      if (is_tone) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_article_tone(filter_na = TRUE, return_wide = FALSE) %>%
+          left_join(data %>% select(idGKG:domainSource, urlImage)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('scoreTone')
+      }
+
+      is_xml <-
+        gkg_parse == 'xml'
+
+      if (is_xml) {
+        plot_data <-
+          data %>%
+          filter(!xmlExtras %>% is.na()) %>%
+          parse_xml_extras(return_wide = FALSE) %>%
+          left_join(data %>% select(idGKG:domainSource, urlImage)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('item', 'value')
+      }
+
+      is_date <-
+        gkg_parse == 'date'
+
+      if (is_date) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_dates(filter_na = TRUE, return_wide = FALSE) %>%
+          left_join(data %>% select(idGKG:domainSource, urlImage)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('dateResolution')
+      }
+
+      is_events <-
+        gkg_parse == 'events'
+
+      if (is_events) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_event_counts(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(get_codes_gkg_themes()) %>%
+          left_join(data %>% select(idGKG:domainSource, urlImage)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('codeGKGTheme',
+            'countEvent',
+            'entityEvent',
+            'idADM1Code')
+      }
+
+      is_gcam <-
+        gkg_parse == 'gcam'
+
+      if (is_gcam) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_gcams(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(get_codes_gcam()) %>%
+          left_join(data %>% select(idGKG:domainSource, urlImage)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('idGCAM', 'dimensionHumanName')
+      }
+
+      is_locations <-
+        gkg_parse == 'locations'
+
+      if (is_locations) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_locations(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(get_codes_stability_locations()) %>%
+          left_join(data %>% select(idGKG:domainSource, urlImage)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('idADM1Code', 'location')
+      }
+
+      is_names <-
+        gkg_parse == 'names'
+
+      if (is_names) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_names(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(data %>% select(idGKG:domainSource, urlImage)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('nameMentionedName')
+      }
+
+      is_numerics <-
+        gkg_parse == 'numerics'
+
+      if (is_numerics) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_numerics(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(data %>% select(idGKG:domainSource, urlImage)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('amountTerm', 'amountValue')
+      }
+
+      is_organizations <-
+        gkg_parse == 'organizations'
+
+      if (is_organizations) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_organizations(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(data %>% select(idGKG:domainSource, urlImage)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('nameOrganization')
+      }
+
+      is_people <-
+        gkg_parse == 'people'
+
+      if (is_people) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_people(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(data %>% select(idGKG:domainSource, urlImage)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('namePerson')
+      }
+
+      is_quotes <-
+        gkg_parse == 'quotes'
+
+      if (is_quotes) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_quotes(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(data %>% select(idGKG:domainSource, urlImage)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('lengthQuote', 'textQuote')
+      }
+
+      is_social <-
+        gkg_parse == 'social'
+
+      if (is_social) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_social_embeds() %>%
+          left_join(data %>% select(idGKG:domainSource, urlImage)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('domainSocialMediaImageEmbed')
+      }
+
+      is_themes <-
+        gkg_parse == 'themes'
+
+      if (is_themes) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_themes(return_wide = F) %>%
+          left_join(get_codes_gkg_themes() %>% dplyr::rename(codeTheme = codeGKGTheme)) %>%
+          left_join(data %>% select(idGKG:domainSource, urlImage)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('codeTheme')
+      }
+
+    } else {
+      main_name <-
+        ''
+    }
+
+    if (!gkg_parse %>% purrr::is_null()) {
+      parse_title <-
+        gkg_parse %>% str_to_title()
+    } else {
+      parse_title <- ''
+    }
+    dates <-
+      data$dateTimeDocument %>% as.Date("%Y-%m-%d") %>% unique()
+
+    dates <-
+      dates[!dates %>% is.na()] %>% .[[1]]
+
+    title <-
+      list('GDELT GKG Explorer for ',  parse_title, ' ', dates) %>%
+      purrr::reduce(paste0) %>% str_trim()
+
+    viz <-
+      plot_data %>%
+      mutate(
+        panel = trelliscopejs::img_panel(urlImage),
+        urlArticle = trelliscopejs::cog_href(documentSource),
+        idItem = 1:n()
+      ) %>%
+      select(idItem, idGKG, everything()) %>%
+      arrange(idItem) %>%
+      trelliscopejs::trelliscope(
+        name = title,
+        nrow = 1,
+        ncol = 2,
+        state = list(labels = c(
+          "domainSource", "idGKG", main_name, 'urlArticle'
+        ))
+      )
+
+    return(viz)
+  }
+
+
+#' Trelliscope gkg data
+#'
+#' @param data
+#' @param domains
+#' @param random_domains
+#' @param only_pictures
+#' @param gkg_parse \itemize{
+#' \item 'tone',
+#' \item 'dates',
+#' \item 'events',
+#' \item 'gcam',
+#' \item 'locations',
+#' \item 'names',
+#' \item 'numerics',
+#' \item 'organizations',
+#' \item 'people',
+#' \item 'quotes',
+#' \item 'social',
+#' \item 'themes',
+#' \item 'xml
+#' }
+#'
+#' @return
+#' @export
+#' @import dplyr purrr tidyr trelliscopejs stringr
+#' @examples
+visualize_gkg_tv_trelliscope <-
+  function(data,
+           stations = c(
+             "CNN",
+             "Bloomberg",
+             "FBC",
+             "BBCNews",
+             "WTTG"
+           ),
+           random_stations = 5,
+           only_pictures = TRUE,
+           gkg_parse = 'people') {
+    check_for_trelliscope_js()
+
+    station_search <-
+      c()
+    has_random_stations <-
+      !random_stations %>% purrr::is_null()
+    if (has_random_stations) {
+      random_tv <-
+        data$nameSource %>%
+        unique() %>%
+        sample(random_stations)
+
+      station_search <-
+        c(station_search, random_tv)
+    }
+
+    if (!stations %>% purrr::is_null()) {
+      station_search <-
+        c(station_search, stations) %>%
+        stringr::str_to_upper()
+    }
+
+    station_search <-
+      station_search %>% stringr::str_to_upper() %>%
+      unique() %>% paste0(collapse = '|')
+
+    data <-
+      data %>%
+      filter(nameSource %>% str_detect(station_search))
+
+    if (!gkg_parse %>% purrr::is_null()) {
+      gkg_options <-
+        c(
+          'tone',
+          'dates',
+          'events',
+          'gcam',
+          'locations',
+          'names',
+          'numerics',
+          'organizations',
+          'people',
+          'quotes',
+          'social',
+          'themes',
+          'xml'
+        )
+      gkg_parse <-
+        gkg_parse %>% str_to_lower()
+      if (!gkg_parse %in% gkg_options) {
+        stop(list(
+          "Parse options can only be:\n",
+          paste(gkg_options, collapse = '\n')
+        ) %>% purrr::reduce(paste0))
+      }
+
+      is_tone <-
+        gkg_parse == 'tone'
+
+      if (is_tone) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_article_tone(filter_na = TRUE, return_wide = FALSE) %>%
+          left_join(data %>% select(idGKG:nameTVShow)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('scoreTone')
+      }
+
+      is_xml <-
+        gkg_parse == 'xml'
+
+      if (is_xml) {
+        plot_data <-
+          data %>%
+          filter(!xmlExtras %>% is.na()) %>%
+          parse_xml_extras(return_wide = FALSE) %>%
+          left_join(data %>% select(idGKG:nameTVShow)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('item', 'value')
+      }
+
+      is_date <-
+        gkg_parse == 'date'
+
+      if (is_date) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_dates(filter_na = TRUE, return_wide = FALSE) %>%
+          left_join(data %>% select(idGKG:nameTVShow)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('dateResolution')
+      }
+
+      is_events <-
+        gkg_parse == 'events'
+
+      if (is_events) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_event_counts(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(get_codes_gkg_themes()) %>%
+          left_join(data %>% select(idGKG:nameTVShow)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('codeGKGTheme',
+            'countEvent',
+            'entityEvent',
+            'idADM1Code')
+      }
+
+      is_gcam <-
+        gkg_parse == 'gcam'
+
+      if (is_gcam) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_gcams(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(get_codes_gcam()) %>%
+          left_join(data %>% select(idGKG:nameTVShow)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('idGCAM', 'dimensionHumanName')
+      }
+
+      is_locations <-
+        gkg_parse == 'locations'
+
+      if (is_locations) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_locations(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(get_codes_stability_locations()) %>%
+          left_join(data %>% select(idGKG:nameTVShow)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('idADM1Code', 'location')
+      }
+
+      is_names <-
+        gkg_parse == 'names'
+
+      if (is_names) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_names(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(data %>% select(idGKG:nameTVShow)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('nameMentionedName')
+      }
+
+      is_numerics <-
+        gkg_parse == 'numerics'
+
+      if (is_numerics) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_numerics(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(data %>% select(idGKG:nameTVShow)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('amountTerm', 'amountValue')
+      }
+
+      is_organizations <-
+        gkg_parse == 'organizations'
+
+      if (is_organizations) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_organizations(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(data %>% select(idGKG:nameTVShow)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('nameOrganization')
+      }
+
+      is_people <-
+        gkg_parse == 'people'
+
+      if (is_people) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_people(people_column = 'personsCharLoc', return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(data %>% select(idGKG:nameTVShow)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('namePerson')
+      }
+
+      is_quotes <-
+        gkg_parse == 'quotes'
+
+      if (is_quotes) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_quotes(return_wide = FALSE, filter_na = TRUE) %>%
+          left_join(data %>% select(idGKG:nameTVShow)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('lengthQuote', 'textQuote')
+      }
+
+      is_social <-
+        gkg_parse == 'social'
+
+      if (is_social) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_social_embeds() %>%
+          left_join(data %>% select(idGKG:nameTVShow)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('domainSocialMediaImageEmbed')
+      }
+
+      is_themes <-
+        gkg_parse == 'themes'
+
+      if (is_themes) {
+        plot_data <-
+          data %>%
+          parse_gkg_mentioned_themes(return_wide = F) %>%
+          left_join(get_codes_gkg_themes() %>% dplyr::rename(codeTheme = codeGKGTheme)) %>%
+          left_join(data %>% select(idGKG:nameTVShow)) %>%
+          suppressMessages() %>%
+          suppressWarnings() %>%
+          select(-c(isDocumentURL, idSourceCollectionIdentifier))
+
+        main_name <-
+          c('codeTheme')
+      }
+
+    } else {
+      main_name <-
+        ''
+    }
+
+    if (!gkg_parse %>% purrr::is_null()) {
+      parse_title <-
+        gkg_parse %>% str_to_title()
+    } else {
+      parse_title <- ''
+    }
+    dates <-
+      data$dateTimeDocument %>% as.Date("%Y-%m-%d") %>% unique()
+
+    dates <-
+      dates[!dates %>% is.na()] %>% .[[1]]
+
+    title <-
+      list('GDELT GKG TV Explorer for ',  parse_title, ' ', dates) %>%
+      purrr::reduce(paste0) %>% str_trim()
+
+    viz <-
+      plot_data %>%
+      mutate(urlImage = "http://www.novelupdates.com/img/noimagefound.jpg") %>%
+      mutate(
+        panel = trelliscopejs::img_panel(urlImage),
+        urlArchiveVideo = trelliscopejs::cog_href(urlArchiveVideo),
+        idItem = 1:n()
+      ) %>%
+      select(idItem, idGKG, everything()) %>%
+      arrange(idItem) %>%
+      trelliscopejs::trelliscope(
+        name = title,
+        nrow = 1,
+        ncol = 2,
+        state = list(
+          labels = c(
+            'dateTimeDocument',
+            'urlArchiveVideo',
+            "idTVNetwork",
+            "nameTVShow",
+            main_name,
+            'idTVNetwork'
+          )
+        )
+      )
+
+    return(viz)
   }

@@ -5,7 +5,8 @@
 \title{Returns instability data for given locations}
 \usage{
 get_data_locations_instability_api(location_ids = c("US", "IS", "TU"),
-  variable_names = c("instability", "conflict", "tone", "protest"),
+  random_locations = NULL, variable_names = c("instability", "conflict",
+  "tone", "protest", "artvolnorm"), visualization = "static",
   days_moving_average = NA, time_periods = "daily",
   use_multi_locations = F, return_wide = T, nest_data = F,
   return_message = T)
@@ -13,23 +14,40 @@ get_data_locations_instability_api(location_ids = c("US", "IS", "TU"),
 \arguments{
 \item{location_ids}{Specify the location IDs}
 
-\item{variable_names}{Specify variables they can include
-\code{c('instability', 'conflict', 'protest', 'tone', 'relative mentions')}}
+\item{random_locations}{Number of random location IDs to add}
+
+\item{variable_names}{Specify variables they can include: \itemize{
+\item \code{instability}
+\item \code{conflict}
+\item \code{protest}
+\item \code{tone}
+\item \code{artvolnorm}: Relative mentions
+}}
+
+\item{visualization}{\itemize{
+\item \code{NULL}: no visualization
+\item \code{interactive}: returns an interactive visualization
+\item \code{static}: returns a ggplot2 visualization
+}}
 
 \item{days_moving_average}{Specify day moving average, NA is unsmoothed}
 
 \item{time_periods}{Specified time period
-\code{c('daily', '15min')}}
+\itemize{
+\item \code{daily}
+\item \code{15min}
+}}
 
-\item{use_multi_locations}{If a country is selected do you want to select all the cities
-\code{c(T,F)}}
+\item{use_multi_locations}{if \code{TRUE} returns all cities in a select country}
 
-\item{return_wide}{Return data in wide form}
+\item{return_wide}{if \code{TRUE} returns a wide data frame}
 
-\item{nest_data}{Return data in nested form
-\code{c(T,F)}}
+\item{nest_data}{if \code{TRUE} returns a nested data frame}
 
-\item{return_message}{Return a message}
+\item{return_message}{if \code{TRUE} returns a location}
+}
+\value{
+if \code{visualize} a ggplot visualization else a \code{data_frame}
 }
 \description{
 Returns instability data for given locations

@@ -5,24 +5,27 @@
 \title{Returns GDELT free text API word clouds for a given term, can be domain restricted}
 \usage{
 get_data_wordcloud_ft_api_terms(terms = c("\\"Donald Trump\\"",
-  "\\"Hilary Clinton\\""), domain = NA, last_minutes = NA,
-  search_language = "English", tone_more_than = NA, tone_less_than = NA,
-  source_language = "English", sort_by = "date", dedeup_results = T,
-  nest_data = F, return_message = T)
+  "\\"Hilary Clinton\\""), domain = NA, visualize_word_cloud = TRUE,
+  last_minutes = NA, search_language = "English", tone_more_than = NA,
+  tone_less_than = NA, source_language = "English", sort_by = "date",
+  dedeup_results = T, nest_data = F, return_message = T)
 }
 \arguments{
 \item{terms}{any word, can be quoted or not}
 
-\item{domain}{domain name
-\code{c(NA,'domain_name')}}
+\item{domain}{domain name \code{NA} - domains, else vector of daomins}
 
 \item{last_minutes}{how many prior minutes}
+
+\item{search_language}{language to search}
 
 \item{tone_more_than}{tone less than specified number}
 
 \item{tone_less_than}{tone more than specified number}
 
-\item{sort_by}{How do you wish to sort the data
+\item{source_language}{soruce language}
+
+\item{sort_by}{method to sort the data
 \code{c('date', 'relevence', 'tone.ascending', 'tone.descending')}}
 
 \item{dedeup_results}{return unique results
@@ -31,12 +34,18 @@ get_data_wordcloud_ft_api_terms(terms = c("\\"Donald Trump\\"",
 \item{nest_data}{returns a nested data frame
 \code{c(T, F)}}
 
-\item{return_message}{\code{c(T, F)}}
+\item{return_message}{if \code{true} returns a message
+\code{c(T, F)}}
+
+\item{return_image_url}{if \code{TRUE} returns an image url}
 
 \item{max_rows}{number of rows}
 
 \item{only_english}{return only english results
 \code{c(T, F)}}
+}
+\value{
+if \code{visualize_results} an interactive wordcloud else a \code{data_frame}
 }
 \description{
 Returns GDELT free text API word clouds for a given term, can be domain restricted

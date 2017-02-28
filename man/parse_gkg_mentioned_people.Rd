@@ -4,7 +4,7 @@
 \alias{parse_gkg_mentioned_people}
 \title{Returns long or wide mentioned people from a GKG data frame}
 \usage{
-parse_gkg_mentioned_people(gdelt_data, people_column = "persons",
+parse_gkg_mentioned_people(gdelt_data, people_column = "personsCharLoc",
   filter_na = T, return_wide = T)
 }
 \arguments{

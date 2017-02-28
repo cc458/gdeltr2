@@ -5,3 +5,4 @@
 packrat/
 .Rprofile
 .httr-oauth
+test/

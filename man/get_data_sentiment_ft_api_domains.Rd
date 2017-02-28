@@ -5,10 +5,11 @@
 \title{Returns GDELT free text API word clouds for a given domain, can be term restricted}
 \usage{
 get_data_sentiment_ft_api_domains(domains = c("nytimes.com",
-  "washingtonpost.com"), term = NA, last_minutes = NA, is_tone = T,
-  tone_less_than = NA, tone_more_than = NA, search_language = NA,
-  source_language = NA, sort_by = "date", dedeup_results = T,
-  nest_data = F, return_message = T)
+  "washingtonpost.com"), visualization = "static", term = NA,
+  last_minutes = NA, is_tone = T, tone_less_than = NA,
+  tone_more_than = NA, search_language = NA, source_language = NA,
+  sort_by = "date", dedeup_results = T, nest_data = F,
+  return_message = T)
 }
 \arguments{
 \item{term}{options \code{c(NA, "term_name")}}
