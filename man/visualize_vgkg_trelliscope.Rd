@@ -8,16 +8,25 @@ visualize_vgkg_trelliscope(data, vgkg_parse = "landmarks",
   domains = c("wsj.com", "seekingalpha.com", "bloomberg.com", "curbed.com",
   "commercialobserver.com", "globest.com", "realdeal.com", "techcrunch.com",
   "nytimes.com", "architizer", "pehub", "rew-online.com", "nypost.com"),
-  random_domains = 0, only_pictures = TRUE, extra_columns = NULL)
+  trelliscope_parameters = list(title = NULL, path = NULL, rows = NULL,
+  columns = NULL), random_domains = 0, only_pictures = TRUE,
+  extra_columns = NULL)
 }
 \arguments{
 \item{vgkg_parse}{\itemize{
-\item 'faces',
-\item 'labels',
-\item 'landmarks',
-\item 'languages',
-\item 'logos',
-\item 'ocr'
+\item faces,
+\item labels,
+\item landmarks,
+\item languages,
+\item logos,
+\item ocr
+}}
+
+\item{trelliscope_parameters}{\itemize{
+\item title: Trelliscope title
+\item rows: Trelliscope rows
+\item columns: Trelliscope columns
+\item path: file path to save trelliscope, if NULL no where
 }}
 
 \item{only_pictures}{}

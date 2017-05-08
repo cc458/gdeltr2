@@ -4352,7 +4352,7 @@ get_data_gkg_days_detailed <- function(dates = c("2016-07-19"),
     as_data_frame()
 
   all_data <-
-    seq_len(var_matrix %>% nrow) %>%
+    seq_len(var_matrix %>% nrow()) %>%
     purrr::map_df(
       function(x)
         get_data_gkg_day_detailed_safe(
@@ -6308,13 +6308,19 @@ filter_domain_data <-
 #'
 #' @param data
 #' @param extra_columns
+#' @param trelliscope_parameters \itemize{
+#' \item title: Trelliscope title
+#' \item rows: Trelliscope rows
+#' \item columns: Trelliscope columns
+#' \item path: file path to save trelliscope, if NULL no where
+#' }
 #' @param vgkg_parse \itemize{
-#' \item 'faces',
-#' \item 'labels',
-#' \item 'landmarks',
-#' \item 'languages',
-#' \item 'logos',
-#' \item 'ocr'
+#' \item faces,
+#' \item labels,
+#' \item landmarks,
+#' \item languages,
+#' \item logos,
+#' \item ocr
 #' }
 #' @param domains
 #' @param random_domains
@@ -6342,10 +6348,22 @@ visualize_vgkg_trelliscope <-
              'rew-online.com',
              'nypost.com'
            ),
+           trelliscope_parameters = list(
+             title = NULL,
+             path = NULL,
+             rows = NULL,
+             columns = NULL
+           ),
            random_domains = 0,
            only_pictures = TRUE,
            extra_columns = NULL) {
     check_for_trelliscope_js()
+
+    if (!extra_columns %>% purrr::is_null()) {
+      df_extra <-
+        data %>%
+        dplyr::select(idVGKG, one_of(extra_columns))
+    }
     has_domains <-
       !domains %>% purrr::is_null() |
       !random_domains %>% purrr::is_null()
@@ -6377,7 +6395,7 @@ visualize_vgkg_trelliscope <-
       if (is_faces) {
         data <-
           data %>%
-          parse_vgkg_faces(filter_na = TRUE, return_wide = FALSE) %>%
+          parse_vgkg_faces(filter_na = TRUE, return_wide = TRUE) %>%
           left_join(data %>% select(idVGKG:urlImage, dateDocument)) %>%
           suppressMessages() %>%
           suppressWarnings()
@@ -6485,36 +6503,81 @@ visualize_vgkg_trelliscope <-
 
 
     if (!extra_columns %>% purrr::is_null()) {
-      plot_data <-
-        plot_data %>%
-        left_join(
-          data %>% dplyr::select(one_of(c('idVGKG', extra_columns)))
-        ) %>%
+      data <-
+        data %>%
+        left_join(df_extra) %>%
         suppressMessages()
     }
 
-    plot_data <-
-      plot_data %>%
+    data <-
+      data %>%
       mutate_if(is.logical,
                 funs(ifelse(. %>% is.na(), FALSE, .)))
 
+    if (!trelliscope_parameters$title %>% purrr::is_null()) {
+      title <-
+        trelliscope_parameters$title
+    }
 
-    viz <-
-      data %>%
-      mutate(
-        panel = trelliscopejs::img_panel(urlImage),
-        urlArticle = trelliscopejs::cog_href(documentSource)
-      ) %>%
-      select(idVGKG, everything()) %>%
-      arrange(idVGKG) %>%
-      trelliscopejs::trelliscope(
-        name = title,
-        nrow = 1,
-        ncol = 2,
-        state = list(labels = c(
-          "domainSource", "idVGKG", main_name, 'urlArticle'
-        ))
-      )
+    if (trelliscope_parameters$rows %>% purrr::is_null()) {
+      rows <- 1
+    } else {
+      rows <-
+        trelliscope_parameters$rows
+    }
+
+    if (trelliscope_parameters$columns %>% purrr::is_null()) {
+      columns <- 2
+    } else {
+      columns <-
+        trelliscope_parameters$columns
+    }
+    no_path <-
+      trelliscope_parameters$path %>% purrr::is_null()
+
+    if (no_path) {
+      viz <-
+        data %>%
+        dplyr::select(which(colMeans(is.na(.)) < .5)) %>%
+        mutate(
+          panel = trelliscopejs::img_panel(urlImage),
+          urlArticle = trelliscopejs::cog_href(documentSource),
+          idItem = 1:n()
+        ) %>%
+        select(idItem, idVGKG, everything()) %>%
+        arrange(idItem) %>%
+        trelliscopejs::trelliscope(
+          name = title,
+          nrow = rows,
+          ncol = columns,
+          state = list(labels = c(
+            "domainSource", "idVGKG", main_name[[1]], 'urlArticle'
+          ))
+        )
+    } else {
+      file_path <-
+        trelliscope_parameters$path
+      viz <-
+        data %>%
+        dplyr::select(which(colMeans(is.na(.)) < .5)) %>%
+        mutate(
+          panel = trelliscopejs::img_panel(urlImage),
+          urlArticle = trelliscopejs::cog_href(documentSource),
+          idItem = 1:n()
+        ) %>%
+        select(idItem, idVGKG, everything()) %>%
+        arrange(idItem) %>%
+        trelliscopejs::trelliscope(
+          name = title,
+          nrow = rows,
+          ncol = columns,
+          path = file_path,
+          state = list(labels = c(
+            "domainSource", "idVGKG", main_name, 'urlArticle'
+          ))
+        )
+    }
+
     return(viz)
   }
 
@@ -6522,6 +6585,12 @@ visualize_vgkg_trelliscope <-
 #'
 #' @param data
 #' @param domains
+#' @param trelliscope_parameters \itemize{
+#' \item title: Trelliscope title
+#' \item rows: Trelliscope rows
+#' \item columns: Trelliscope columns
+#' \item path: file path to save trelliscope, if NULL no where
+#' }
 #' @param extra_columns
 #' @param random_domains
 #' @param only_pictures
@@ -6572,6 +6641,12 @@ visualize_gkg_trelliscope <-
            random_domains = 0,
            only_pictures = TRUE,
            extra_columns = NULL,
+           trelliscope_parameters = list(
+             title = NULL,
+             path = NULL,
+             rows = NULL,
+             columns = NULL
+           ),
            gkg_parse = 'names') {
     check_for_trelliscope_js()
     has_domains <-
@@ -6860,6 +6935,28 @@ visualize_gkg_trelliscope <-
       mutate_if(is.logical,
                 funs(ifelse(. %>% is.na(), FALSE, .)))
 
+    if (!trelliscope_parameters$title %>% purrr::is_null()) {
+      title <-
+        trelliscope_parameters$title
+    }
+
+    if (trelliscope_parameters$rows %>% purrr::is_null()) {
+      rows <- 1
+    } else {
+      rows <-
+        trelliscope_parameters$rows
+    }
+
+    if (trelliscope_parameters$columns %>% purrr::is_null()) {
+      columns <- 2
+    } else {
+      columns <-
+        trelliscope_parameters$columns
+    }
+    no_path <-
+      trelliscope_parameters$path %>% purrr::is_null()
+
+    if (no_path) {
     viz <-
       plot_data %>%
       mutate(
@@ -6871,13 +6968,34 @@ visualize_gkg_trelliscope <-
       arrange(idItem) %>%
       trelliscopejs::trelliscope(
         name = title,
-        nrow = 1,
-        ncol = 2,
+        nrow = rows,
+        ncol = columns,
         state = list(labels = c(
           "domainSource", "idGKG", main_name, 'urlArticle'
         ))
       )
-
+    } else {
+      file_path <-
+        trelliscope_parameters$path
+      viz <-
+        plot_data %>%
+        mutate(
+          panel = trelliscopejs::img_panel(urlImage),
+          urlArticle = trelliscopejs::cog_href(documentSource),
+          idItem = 1:n()
+        ) %>%
+        select(idItem, idGKG, everything()) %>%
+        arrange(idItem) %>%
+        trelliscopejs::trelliscope(
+          name = title,
+          nrow = rows,
+          ncol = columns,
+          path = file_path,
+          state = list(labels = c(
+            "domainSource", "idGKG", main_name, 'urlArticle'
+          ))
+        )
+    }
     return(viz)
   }
 
