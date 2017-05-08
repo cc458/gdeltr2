@@ -9,7 +9,7 @@ visualize_gkg_trelliscope(data, domains = c("wsj.com", "law360",
   "seekingalpha.com", "bloomberg.com", "curbed.com", "commercialobserver.com",
   "globest.com", "realdeal.com", "techcrunch.com", "nytimes.com", "architizer",
   "pehub", "rew-online", "nypost"), random_domains = 0,
-  only_pictures = TRUE, gkg_parse = "names")
+  only_pictures = TRUE, extra_columns = NULL, gkg_parse = "names")
 }
 \arguments{
 \item{gkg_parse}{\itemize{

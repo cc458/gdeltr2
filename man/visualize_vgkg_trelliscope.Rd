@@ -8,7 +8,7 @@ visualize_vgkg_trelliscope(data, vgkg_parse = "landmarks",
   domains = c("wsj.com", "seekingalpha.com", "bloomberg.com", "curbed.com",
   "commercialobserver.com", "globest.com", "realdeal.com", "techcrunch.com",
   "nytimes.com", "architizer", "pehub", "rew-online.com", "nypost.com"),
-  random_domains = 0, only_pictures = TRUE)
+  random_domains = 0, only_pictures = TRUE, extra_columns = NULL)
 }
 \arguments{
 \item{vgkg_parse}{\itemize{

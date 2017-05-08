@@ -356,7 +356,7 @@ location_test <-
 location_test %>%
   dplyr::filter(codeLocation %>% is.na()) %>%
   group_by(nameLocation) %>%
-  summarise_at(.cols = c('instability', 'tone', 'protest', 'conflict'),
+  summarise_at(.vars = c('instability', 'tone', 'protest', 'conflict'),
                funs(mean)) %>%
   arrange(desc(instability))
 ```
