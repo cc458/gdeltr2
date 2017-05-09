@@ -1099,9 +1099,9 @@ get_gdelt_url_data <-
         gdelt_data <-
           gdelt_data %>%
           mutate(
-            dateTimeEvent = dateEvent %>% ymd_hms %>% lubridate::with_tz(Sys.timezone()),
+            dateTimeEvent = dateEvent %>% ymd_hms(quiet = ) %>% lubridate::with_tz(Sys.timezone()),
             dateEvent = dateTimeEvent %>% as.Date(),
-            dateTimeMention = dateMention %>% ymd_hms %>% lubridate::with_tz(Sys.timezone()),
+            dateTimeMention = dateMention %>% ymd_hms() %>% lubridate::with_tz(Sys.timezone()),
             dateMention = dateTimeMention %>% as.Date()
           ) %>%
           dplyr::select(idGlobalEvent,
@@ -1110,10 +1110,10 @@ get_gdelt_url_data <-
                         everything()) %>%
           dplyr::left_join(data_frame(
             idMentionType = 1:6,
-            mention_type = c('web', 'citation', 'core', 'dtic', 'jstor', 'nontext')
+            typeMention = c('web', 'citation', 'core', 'dtic', 'jstor', 'nontext')
           )) %>%
           dplyr::select(idGlobalEvent:idMentionType,
-                        mention_type,
+                        typeMention,
                         everything()) %>%
           suppressMessages()
 
@@ -1292,7 +1292,6 @@ get_gdelt_url_data <-
       }
 
       if (gdelt_cols == 58) {
-        load_needed_packages(c('urltools'))
         gdelt_data <-
           con %>%
           readr::read_tsv(col_names = F) %>%
@@ -1365,9 +1364,7 @@ get_gdelt_url_data <-
           gdelt_data %>%
           dplyr::rename(dateTimeDocument = dateAdded) %>%
           dplyr::mutate(
-            dateEvent = dateEvent %>% lubridate::ymd,
-            dateTimeDocument %>% lubridate::ymd_hms() %>% lubridate::with_tz(Sys.timezone()),
-            dateDocument = dateTimeDocument %>% as.Date(),
+            dateEvent = dateEvent %>% lubridate::ymd(),
             nameSource = urlSource %>% urltools::domain() %>% str_replace_all("www.", '')
           ) %>%
           suppressWarnings()
@@ -1566,9 +1563,8 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          mutate_each_(funs(as.logical(.)),
-                       gdelt_data %>% dplyr::select(matches("is")) %>% names)
-
+          mutate_at(.vars = gdelt_data %>% dplyr::select(matches("is")) %>% names(),
+                    .funs = as.logical)
       }
 
       if (gdelt_cols == 15) {
@@ -1962,6 +1958,22 @@ get_gdelt_url_data <-
       gdelt_data <-
         gdelt_data %>%
         mutate(idADM2CodeAction = idADM2CodeAction %>% as.character())
+
+    }
+
+    if ('codeEvent' %in% names(gdelt_data)) {
+      gdelt_data <-
+        gdelt_data %>%
+        mutate_at(.vars = gdelt_data %>% dplyr::select(matches('codeEvent')) %>% names(),
+                  .funs = as.character)
+
+    }
+
+    if ('idFeatureActor' %in% names(gdelt_data)) {
+      gdelt_data <-
+        gdelt_data %>%
+        mutate_at(.vars = gdelt_data %>% dplyr::select(matches('idFeatureActor')) %>% names(),
+                  .funs = as.character)
 
     }
 
@@ -2637,7 +2649,7 @@ parse_gkg_mentioned_names <- function(gdelt_data,
     function(field = "Interior Minister Chaudhry Nisar Ali Khan,47;Mullah Mansour,87;Afghan Taliban,180;Mullah Mansour,382;Mullah Mansor,753;Mullah Mansour,815;Mullah Mansour,1025",
              return_wide = return_wide) {
       options(scipen = 99999)
-      if (field %>% is.na) {
+      if (field %>% is.na()) {
         if (return_wide) {
           field_data <-
             data_frame(nameMentionedName1 = NA,
@@ -2672,13 +2684,14 @@ parse_gkg_mentioned_names <- function(gdelt_data,
             fields_df %>%
             gather(item, value, -c(idArticleMentionedName, charLoc)) %>%
             arrange(idArticleMentionedName) %>%
-            unite(item, item, idArticleMentionedName, sep = '.')
+            unite(item, item, idArticleMentionedName, sep = '')
 
           order_fields <-
             fields_df$item
 
           field_data <-
             fields_df %>%
+            dplyr::select(-matches("charLoc")) %>%
             spread(item, value) %>%
             dplyr::select_(.dots = order_fields)
 
@@ -2723,24 +2736,31 @@ parse_gkg_mentioned_names <- function(gdelt_data,
     if ('nameMentionedName' %in% names(all_counts)) {
       all_counts <-
         all_counts %>%
-        dplyr::filter(!nameMentionedName %>% is.na)
+        dplyr::filter(!nameMentionedName %>% is.na())
     }
   }
 
   all_counts <-
     all_counts %>%
     get_clean_count_data(count_col = 'idArticleMentionedName',
-                         return_wide = return_wide) %>%
+                         return_wide = F) %>%
     separate(
       idGKG,
       into = c('GKG', 'dateTime'),
       sep = '\\-',
       remove = F
     ) %>%
-    mutate(dateTime = dateTime %>% as.numeric) %>%
+    mutate(dateTime = dateTime %>% as.numeric()) %>%
+    select(-matches("charLoc")) %>%
     arrange(dateTime) %>%
     dplyr::select(-c(dateTime, GKG)) %>%
     suppressWarnings()
+
+  if (return_wide) {
+    all_counts <-
+      all_counts %>%
+      spread(item, value)
+  }
 
   if (!return_wide) {
     all_counts <-
@@ -4283,7 +4303,8 @@ get_data_gkg_day_detailed <-
     all_data <-
       urls %>%
       purrr::map_df(function(x) {
-        get_gdelt_url_data_safe(
+        data <-
+          get_gdelt_url_data_safe(
           url = x,
           remove_files = remove_files,
           file_directory = file_directory,
@@ -4291,14 +4312,24 @@ get_data_gkg_day_detailed <-
           return_message = return_message,
           empty_trash = empty_trash
         )
+        data %>%
+          mutate_at(.vars = data %>% dplyr::select(matches('idFeatureActor|idFeatureAction')) %>% names(),
+                    .funs = as.character)
       }) %>%
       distinct() %>%
-      suppressMessages() %>%
       suppressWarnings()
 
+    if ('domainSource' %in% names(all_data)) {
     all_data <-
       all_data %>%
       mutate(domainSource = documentSource %>% urltools::domain())
+    }
+
+    if ('urlSource' %in% names(all_data)) {
+      all_data <-
+        all_data %>%
+        mutate(domainSource = urlSource %>% urltools::domain())
+    }
 
     if (return_message) {
       "You retrieved " %>%
@@ -4580,7 +4611,8 @@ get_data_gdelt_period_event <- function(period = 1983,
                                         return_message = T) {
   period <-
     period %>%
-    as.character()
+    as.character() %>%
+    stringr::str_replace_all("\\-", '')
 
   if (!'gdelt_event_urls' %>% exists()) {
     gdelt_event_urls <-
@@ -4636,7 +4668,7 @@ get_data_gdelt_period_event <- function(period = 1983,
 #' @param remove_files
 #' @param empty_trash
 #' @param return_message
-#' @importFrom purrr compact
+#' @import dplyr stringr purrr tidyr readr lubridate
 #' @return
 #' @export
 #'
@@ -4650,7 +4682,9 @@ get_data_gdelt_periods_event <- function(periods = c(1983, 1989),
                                          return_message = T) {
   get_data_gdelt_period_event_safe <-
     purrr::possibly(get_data_gdelt_period_event, data_frame())
-
+  periods <-
+    periods %>%
+    str_replace_all('\\-', '')
   all_data <-
     1:length(periods) %>%
     purrr::map_df(
