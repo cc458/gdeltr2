@@ -1099,7 +1099,7 @@ get_gdelt_url_data <-
         gdelt_data <-
           gdelt_data %>%
           mutate(
-            dateTimeEvent = dateEvent %>% ymd_hms(quiet = ) %>% lubridate::with_tz(Sys.timezone()),
+            dateTimeEvent = dateEvent %>% ymd_hms() %>% lubridate::with_tz(Sys.timezone()),
             dateEvent = dateTimeEvent %>% as.Date(),
             dateTimeMention = dateMention %>% ymd_hms() %>% lubridate::with_tz(Sys.timezone()),
             dateMention = dateTimeMention %>% as.Date()
@@ -7496,7 +7496,8 @@ c('image_tag', 'imagewebtag')
 
 parse_query <-
   function(query_parameters) {
-    df_query_params <- data_frame(nameFunction = c('term', 'domain', 'image_face_tone', 'image_num_faces',
+    df_query_params <-
+      data_frame(nameFunction = c('term', 'domain', 'image_face_tone', 'image_num_faces',
                                                    'image_ocr', 'image_tag',  'image_web_count',
                                                    'image_web_tag',  'location_name',
                                                    'location_adm1', 'location_country',
@@ -7504,7 +7505,7 @@ parse_query <-
                                                    'tone', 'tone_absolute_value'
     ) ,
     nameSlug = c('', 'Domain', 'ImageFaceTone' ,'ImageNumFaces', 'ImageOCRMeta', 'ImageTag', 'ImageWebCount', 'ImageWebTag',
-                 'Location', 'LocationADM1', 'LocationCC', "Near", 'SourceCountry', 'SourceLang', 'Theme', "Tone", 'ToneAbs'),
+                 'Location', 'LocationADM1', 'LocationCC', "Near", 'SourceCountry', 'SourceLang', 'Theme', "Tone", 'ToneAbs') %>% stringr::str_to_lower(),
     typeSep = c('', ':',  '', '', ':', ':', '', ':', ':', ':', ":", ":", ':', ':', ":", '', ''))
 
     df_call <-
@@ -7527,16 +7528,18 @@ parse_query <-
             str_c('%22', value, '%22')
         }
 
-        if (has_or) {
-          value <-
-            str_c("(", value %>% str_c(collapse = "%20OR%20"), ")")
-        }
-
         param <-
           df_query_params %>%
           filter(nameFunction == function_param) %>%
           unite(param, nameSlug, typeSep, sep = '') %>%
           .$param
+
+        if (has_or) {
+          value <-
+            str_c(value %>% str_c(collapse = "%20OR%20"), ")")
+          param <-
+            str_c('(', param, sep = '')
+        }
 
         data_frame(nameCall = str_c(param, value, collapse = ''))
 
@@ -7732,7 +7735,8 @@ generate_geo_query <-
         '{maxpoint_slug}',
         "{geore_slug}",
         "{sort_slug}"
-      )
+      ) %>%
+      str_to_lower()
 
     if (browse_url) {
       url_api %>% httr::BROWSE()
