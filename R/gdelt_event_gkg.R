@@ -7424,8 +7424,8 @@ read_codebook <-
 #' @export
 #' @import readr dplyr stringr purrr tibble tidyverse
 #' @examples
-#' get_gdelt_geo_codebook(code_book = 'imagetags')
-get_gdelt_geo_codebook <-
+#' get_codes_geo_api(code_book = 'imagetags')
+get_codes_geo_api <-
   function(code_book = 'adm') {
     df_codebooks <-
       data_frame(
@@ -7522,7 +7522,7 @@ parse_query <-
         has_or <-
           value %>% length() > 1
         is_quoted <-
-          function_param %in% c('image_tag' ,'image_web_tag')
+          function_param %in% c('image_tag' ,'image_web_tag', 'image_ocr')
         if (is_quoted) {
           value <-
             str_c('%22', value, '%22')
@@ -7535,20 +7535,24 @@ parse_query <-
           .$param
 
         if (has_or) {
+          value
+
+          values <- glue::glue("{param}{value}")
+          values <- values %>% str_c(collapse = "%20OR%20")
+
+
           value <-
             str_c(value %>% str_c(collapse = "%20OR%20"), ")")
           param <-
             str_c('(', param, sep = '')
+          df_call <-
+            data_frame(nameCall = glue::glue("({values})"))
+          return(df_call)
         }
 
         data_frame(nameCall = str_c(param, value, collapse = ''))
 
       })
-
-    if (df_call %>% nrow() > 1) {
-
-    }
-
     df_call$nameCall
   }
 
@@ -7596,6 +7600,7 @@ parse_query <-
 #' \item ImageHTML: image html
 #' \item GeoJSON: geoJSON
 #' \item ImageGeoJSON: geoJSON with images
+#' \item Imagehtmlshow: shows overlayed pictures on map
 #' }
 #' @param timespan time span 15 to 1440 minutes
 #' @param max_points maximum number of points
@@ -7636,8 +7641,8 @@ generate_geo_query <-
     tone = NULL,
     tone_absolute_value = NULL
   ),
-  mode = 'adm1',
-  format = 'ImageHTML',
+  mode = 'imagesourcecountry',
+  format = 'ImagePointData',
   timespan = NULL,
   max_points = NULL,
   geore = NULL,
@@ -7647,7 +7652,12 @@ generate_geo_query <-
       "http://api.gdeltproject.org/api/v2/geo/geo?query="
 
     query_slug <-
-      parse_query(query_parameters)
+      parse_query(query_parameters = query_parameters)
+
+    if (query_slug %>% length() > 1) {
+      qs <- query_slug %>% str_c(collapse  = "%20OR%20")
+      query_slug <- glue::glue("({qs})")
+    }
 
     mode_options <-
       c(
@@ -7686,7 +7696,7 @@ generate_geo_query <-
     }
 
     format_options <-
-      c('html', 'ImageHTML', 'GeoJSON', 'ImageGeoJSON') %>% str_to_lower()
+      c('imagehtmlshow','html', 'ImageHTML', 'GeoJSON', 'ImageGeoJSON') %>% str_to_lower()
     format_slug <-
       generate_slug(
         parameter = 'format',

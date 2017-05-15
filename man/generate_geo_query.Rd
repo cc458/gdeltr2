@@ -9,9 +9,9 @@ generate_geo_query(query_parameters = list(term = NULL, domain = NULL,
   NULL, image_tag = NULL, image_web_tag = NULL, image_web_count = NULL,
   location_name = NULL, location_adm1 = NULL, location_country = NULL, near =
   NULL, source_country = NULL, source_language = NULL, tone = NULL,
-  tone_absolute_value = NULL), mode = "adm1", format = "ImageHTML",
-  timespan = NULL, max_points = NULL, geore = NULL, sort = NULL,
-  browse_url = TRUE)
+  tone_absolute_value = NULL), mode = "imagesourcecountry",
+  format = "ImagePointData", timespan = NULL, max_points = NULL,
+  geore = NULL, sort = NULL, browse_url = TRUE)
 }
 \arguments{
 \item{query_parameters}{list of query parameters \itemize{
@@ -54,6 +54,7 @@ generate_geo_query(query_parameters = list(term = NULL, domain = NULL,
 \item ImageHTML: image html
 \item GeoJSON: geoJSON
 \item ImageGeoJSON: geoJSON with images
+\item Imagehtmlshow: shows overlayed pictures on map
 }}
 
 \item{timespan}{time span 15 to 1440 minutes}
