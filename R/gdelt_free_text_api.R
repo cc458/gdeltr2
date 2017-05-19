@@ -524,7 +524,8 @@ get_data_ft_api_terms <-
       has_path <-
         df_parameters %>% has_name('path')
 
-      all_data %>%
+      all_data <-
+        all_data %>%
         mutate(idArticle = 1:n(),
                panel = trelliscopejs::img_panel(urlThumbnail),
                urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
@@ -729,7 +730,8 @@ get_data_ft_api_domains <-
       has_path <-
         df_parameters %>% has_name('path')
 
-      all_data %>%
+      all_data <-
+        all_data %>%
         mutate(idArticle = 1:n(),
                panel = trelliscopejs::img_panel(urlThumbnail),
                urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
