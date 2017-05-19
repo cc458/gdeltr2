@@ -502,7 +502,7 @@ get_data_ft_api_terms <-
 
       if (!df_parameters %>% has_name('id_columns')) {
         id_columns <-
-          c('dateTimeArticle',"term", "titleArticle", "urlArticle")
+          c('dateTimeArticle', 'domainArticle',"term", "titleArticle", "urlArticle")
       } else {
         id_columns <- df_parameters$id_columns
       }
@@ -524,17 +524,19 @@ get_data_ft_api_terms <-
       has_path <-
         df_parameters %>% has_name('path')
 
-
+      all_data %>%
+        mutate(idArticle = 1:n(),
+               panel = trelliscopejs::img_panel(urlThumbnail),
+               urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
+        select(idArticle, everything()) %>%
+        arrange(idArticle) %>%
+        mutate_at(c('dateTimeArticle', 'dateArticle'),
+                  funs(. %>% as.character()))
       if (has_path) {
         path_loc <-
           df_parameters$path
         viz <-
           all_data %>%
-          mutate(idArticle = 1:n(),
-                 panel = trelliscopejs::img_panel(urlThumbnail),
-                 urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
-          select(idArticle, everything()) %>%
-          arrange(idArticle) %>%
           trelliscopejs::trelliscope(
             name = title,
             nrow = rows,
@@ -548,11 +550,6 @@ get_data_ft_api_terms <-
       }
       viz <-
         all_data %>%
-        mutate(idArticle = 1:n(),
-               panel = trelliscopejs::img_panel(urlThumbnail),
-               urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
-        select(idArticle, everything()) %>%
-        arrange(idArticle) %>%
         trelliscopejs::trelliscope(
           name = title,
           nrow = rows,
@@ -732,16 +729,20 @@ get_data_ft_api_domains <-
       has_path <-
         df_parameters %>% has_name('path')
 
-
-      if (has_path) {
-        path_loc <-
-          df_parameters$path
-      viz <- all_data %>%
+      all_data %>%
         mutate(idArticle = 1:n(),
                panel = trelliscopejs::img_panel(urlThumbnail),
                urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
         select(idArticle, everything()) %>%
         arrange(idArticle) %>%
+        mutate_at(c('dateArticle', 'dateTimeArticle'),
+                  funs(. %>% as.character()))
+
+      if (has_path) {
+        path_loc <-
+          df_parameters$path
+      viz <-
+        all_data %>%
         trelliscopejs::trelliscope(
           name = title,
           nrow = rows,
@@ -755,11 +756,6 @@ get_data_ft_api_domains <-
       }
         viz <-
           all_data %>%
-          mutate(idArticle = 1:n(),
-                 panel = trelliscopejs::img_panel(urlThumbnail),
-                 urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
-          select(idArticle, everything()) %>%
-          arrange(idArticle) %>%
           trelliscopejs::trelliscope(
             name = title,
             nrow = rows,
