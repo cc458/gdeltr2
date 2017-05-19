@@ -58,8 +58,8 @@ parse_source <-
       tidyr::separate(language,
                       into = c('language', 'country'),
                       sep = '\\, ') %>%
-      mutate_each_(funs(str_trim),
-                   vars = c('source', 'language', 'country')) %>%
+      mutate_at(.vars = c('source', 'language', 'country'),
+                funs(. %>% str_trim())) %>%
       suppressWarnings()
 
     return(source_df)
@@ -399,7 +399,14 @@ get_data_ft_api_term <-
 #' Returns GDELT free text API results for multiple terms
 #'
 #' @param terms vector of words to search
+#' @parram
 #' @param visualize_results if \code{TRUE} returns an interactive trelliscope
+#' @param trelliscope_parameters list of parameters to pass along to trelliscope \itemize{
+#' \item path: if not \code{NULL} the path to save the trelliscope
+#' \item rows: rows for trelliscope
+#' \item columns: columns for trelliscope
+#' \item id_columns: initial columns
+#' }
 #' @param domain domains you wish to restrict the search to
 #' @param return_image_url if \code{TRUE} returns only articles with photos
 #' @param last_minutes restrict to last x minutes
@@ -429,6 +436,11 @@ get_data_ft_api_term <-
 get_data_ft_api_terms <-
   function(terms = c('"Kevin Durant"','"Stephen Curry"'),
            visualize_results = TRUE,
+           trelliscope_parameters = list(path = NULL,
+                                         rows = 1,
+                                         columns = 2,
+                                         id_columns = NULL
+           ),
            domain = NA,
            dedeup_results = TRUE,
            restrict_to_usa = F,
@@ -486,6 +498,54 @@ get_data_ft_api_terms <-
         list("GDELT Term Search for ", Sys.Date()) %>%
         purrr::reduce(paste0)
 
+      df_parameters <- trelliscope_parameters %>% flatten_df()
+
+      if (!df_parameters %>% has_name('id_columns')) {
+        id_columns <-
+          c('dateTimeArticle',"term", "titleArticle", "urlArticle")
+      } else {
+        id_columns <- df_parameters$id_columns
+      }
+
+      if (!df_parameters %>% has_name('rows')) {
+        rows <-
+          1
+      } else {
+        rows <- df_parameters$rows
+      }
+
+      if (!df_parameters %>% has_name('columns')) {
+        columns <-
+          2
+      } else {
+        columns <- df_parameters$columns
+      }
+
+      has_path <-
+        df_parameters %>% has_name('path')
+
+
+      if (has_path) {
+        path_loc <-
+          df_parameters$path
+        viz <-
+          all_data %>%
+          mutate(idArticle = 1:n(),
+                 panel = trelliscopejs::img_panel(urlThumbnail),
+                 urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
+          select(idArticle, everything()) %>%
+          arrange(idArticle) %>%
+          trelliscopejs::trelliscope(
+            name = title,
+            nrow = rows,
+            ncol = columns,
+            path = path_loc,
+            state = list(labels = c(
+              id_columns
+            ))
+          )
+        return(viz)
+      }
       viz <-
         all_data %>%
         mutate(idArticle = 1:n(),
@@ -495,10 +555,10 @@ get_data_ft_api_terms <-
         arrange(idArticle) %>%
         trelliscopejs::trelliscope(
           name = title,
-          nrow = 1,
-          ncol = 2,
+          nrow = rows,
+          ncol = columns,
           state = list(labels = c(
-            "term", "titleArticle", "urlArticle"
+            id_columns
           ))
         )
       return(viz)
@@ -534,6 +594,12 @@ get_data_ft_api_terms <-
 #'
 #' @param terms vector of words to search
 #' @param visualize_results
+#' @param trelliscope_parameters list of parameters to pass along to trelliscope \itemize{
+#' \item path: if not \code{NULL} the path to save the trelliscope
+#' \item rows: rows for trelliscope
+#' \item columns: columns for trelliscope
+#' \item id_columns: initial columns
+#' }
 #' @param domain domains you wish to restrict the search to
 #' @param return_image_url if \code{TRUE} returns only articles with photos
 #' @param last_minutes restrict to last x minutes
@@ -558,6 +624,11 @@ get_data_ft_api_terms <-
 get_data_ft_api_domains <-
   function(domains = c('washingtonpost.com', 'nytimes.com'),
            visualize_results = TRUE,
+           trelliscope_parameters = list(path = NULL,
+                                         rows = 1,
+                                         columns = 2,
+                                         id_columns = NULL
+                                         ),
            use_exact_domains = F,
            term = NA,
            return_image_url = T,
@@ -587,7 +658,7 @@ get_data_ft_api_domains <-
         source_language = source_language,
         stringsAsFactors = F
       ) %>%
-      as_data_frame %>%
+      as_data_frame() %>%
       suppressWarnings()
 
     all_data <-
@@ -609,7 +680,12 @@ get_data_ft_api_domains <-
           ) %>%
           suppressWarnings()
       ) %>%
-      arrange(desc(dateTimeArticle))
+      arrange(desc(dateTimeArticle)) %>%
+      suppressWarnings()
+
+    all_data <- all_data %>%
+      mutate_if(is.character,
+                str_trim)
 
     if (term %>% is.na()) {
       all_data <-
@@ -627,11 +703,40 @@ get_data_ft_api_domains <-
       check_for_trelliscope_js()
 
       title <-
-        list("GDELT Domain Search for ", Sys.Date()) %>%
+        list("GDELT Domain Search at ", Sys.Date()) %>%
         purrr::reduce(paste0)
 
-      viz <-
-        all_data %>%
+      df_parameters <- trelliscope_parameters %>% flatten_df()
+
+      if (!df_parameters %>% has_name('id_columns')) {
+        id_columns <-
+          c('dateTimeArticle', "domainSearch", "titleArticle", "urlArticle")
+      } else {
+        id_columns <- df_parameters$id_columns
+      }
+
+      if (!df_parameters %>% has_name('rows')) {
+        rows <-
+          1
+      } else {
+        rows <- df_parameters$rows
+      }
+
+      if (!df_parameters %>% has_name('columns')) {
+        columns <-
+          2
+      } else {
+        columns <- df_parameters$columns
+      }
+
+      has_path <-
+        df_parameters %>% has_name('path')
+
+
+      if (has_path) {
+        path_loc <-
+          df_parameters$path
+      viz <- all_data %>%
         mutate(idArticle = 1:n(),
                panel = trelliscopejs::img_panel(urlThumbnail),
                urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
@@ -639,12 +744,32 @@ get_data_ft_api_domains <-
         arrange(idArticle) %>%
         trelliscopejs::trelliscope(
           name = title,
-          nrow = 1,
-          ncol = 3,
+          nrow = rows,
+          ncol = columns,
+          path = path_loc,
           state = list(labels = c(
-            "domainSearch", "titleArticle", "urlArticle"
+            id_columns
           ))
         )
+      return(viz)
+      }
+        viz <-
+          all_data %>%
+          mutate(idArticle = 1:n(),
+                 panel = trelliscopejs::img_panel(urlThumbnail),
+                 urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
+          select(idArticle, everything()) %>%
+          arrange(idArticle) %>%
+          trelliscopejs::trelliscope(
+            name = title,
+            nrow = rows,
+            ncol = columns,
+            state = list(labels = c(
+              id_columns
+            ))
+          )
+
+
       return(viz)
 
     }

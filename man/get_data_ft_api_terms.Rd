@@ -5,7 +5,8 @@
 \title{Returns GDELT free text API results for multiple terms}
 \usage{
 get_data_ft_api_terms(terms = c("\\"Kevin Durant\\"", "\\"Stephen Curry\\""),
-  visualize_results = TRUE, domain = NA, dedeup_results = TRUE,
+  visualize_results = TRUE, trelliscope_parameters = list(path = NULL, rows
+  = 1, columns = 2, id_columns = NULL), domain = NA, dedeup_results = TRUE,
   restrict_to_usa = F, only_english = F, return_image_url = TRUE,
   last_minutes = NA, max_rows = 1e+06, search_language = "English",
   source_language = "English", sort_by = "date", nest_data = FALSE,
@@ -15,6 +16,13 @@ get_data_ft_api_terms(terms = c("\\"Kevin Durant\\"", "\\"Stephen Curry\\""),
 \item{terms}{vector of words to search}
 
 \item{visualize_results}{if \code{TRUE} returns an interactive trelliscope}
+
+\item{trelliscope_parameters}{list of parameters to pass along to trelliscope \itemize{
+\item path: if not \code{NULL} the path to save the trelliscope
+\item rows: rows for trelliscope
+\item columns: columns for trelliscope
+\item id_columns: initial columns
+}}
 
 \item{domain}{domains you wish to restrict the search to}
 
