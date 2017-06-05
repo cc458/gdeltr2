@@ -1,4 +1,5 @@
 
+
 # utilities ---------------------------------------------------------------
 
 remove_full_na_column <-
@@ -24,16 +25,6 @@ check_for_trelliscope_js <-
     }
   }
 
-check_for_hrb <-
-  function() {
-    missing <-
-      installed.packages() %>% dplyr::as_data_frame() %>%
-      dplyr::filter(Package == 'hrbrthemes') %>%
-      nrow() == 0
-    if (missing) {
-      devtools::install_github("hrbmstr/hrbrthemes")
-    }
-  }
 
 # parse -------------------------------------------------------------------
 
@@ -58,11 +49,17 @@ parse_source <-
       tidyr::separate(language,
                       into = c('language', 'country'),
                       sep = '\\, ') %>%
-      mutate_at(.vars = c('source', 'language', 'country'),
-                funs(. %>% str_trim())) %>%
-      suppressWarnings()
+      suppressWarnings() %>%
+      suppressMessages()
 
-    return(source_df)
+    source_df <-
+      source_df %>%
+      mutate_if(is.character,
+                str_trim) %>%
+      suppressWarnings() %>%
+      suppressMessages()
+
+    source_df
   }
 
 
@@ -99,7 +96,7 @@ get_data_ft_api_term <-
         term
     }
 
-    if (term %>% is.na() & !domain %>% is.na) {
+    if (term %>% is.na() & !domain %>% is.na()) {
       term_word <-
         domain
     }
@@ -195,7 +192,7 @@ get_data_ft_api_term <-
       '&sortby:' %>%
       paste0(slug_sort)
 
-    if (!max_rows %>% is.na) {
+    if (!max_rows %>% is.na()) {
       max_row_slug <-
         '&maxrows=' %>%
         paste0(max_rows)
@@ -271,10 +268,10 @@ get_data_ft_api_term <-
 
     if (return_image_url) {
       url.source <-
-      page %>%
-      rvest::html_nodes(xpath = '//a') %>%
-      rvest::html_attr('href') %>%
-      .[c(T, F)]
+        page %>%
+        rvest::html_nodes(xpath = '//a') %>%
+        rvest::html_attr('href') %>%
+        .[c(T, F)]
     } else {
       url.source <-
         page %>%
@@ -286,20 +283,20 @@ get_data_ft_api_term <-
       url.source %>%
       str_split('\\javascript:window.open') %>%
       flatten_chr %>%
-      str_replace_all('\\);','')
+      str_replace_all('\\);', '')
 
     url.source <-
       url.source[!url.source == '']
 
     if (!return_image_url) {
       url.source <-
-      1:length(url.source) %>%
-      map_chr(function(x) {
-        char_url <-
-          url.source[x] %>% nchar()
+        1:length(url.source) %>%
+        map_chr(function(x) {
+          char_url <-
+            url.source[x] %>% nchar()
 
-        url.source[x] %>% substr(start = 3, stop = char_url - 1)
-      })
+          url.source[x] %>% substr(start = 3, stop = char_url - 1)
+        })
     }
 
     sources <-
@@ -312,7 +309,8 @@ get_data_ft_api_term <-
       url.source <-
         url.source[1:length(sources)]
     }
-
+    parse_source_safe <-
+      purrr::possibly(parse_source, data_frame())
     url_df <-
       data_frame(
         term,
@@ -321,9 +319,25 @@ get_data_ft_api_term <-
         dateTimeData = Sys.time(),
         urlSearch = url
       ) %>%
-      bind_cols(sources %>%
-                  parse_source()) %>%
-      suppressWarnings()
+      mutate(idRow = 1:n())
+
+    df_sources <-
+      sources %>%
+      parse_source_safe() %>%
+      mutate(idRow = 1:n())
+
+    if (df_sources %>% nrow() > 0) {
+      url_df <-
+        url_df %>%
+        left_join(df_sources) %>%
+        suppressMessages() %>%
+        suppressWarnings()
+    }
+
+    url_df <-
+      url_df %>%
+      dplyr::select(-idRow)
+
 
     if (return_image_url) {
       urlThumbnail <-
@@ -340,23 +354,26 @@ get_data_ft_api_term <-
 
     }
 
-    if (!domain %>% is.na) {
-      url_df %<>%
+    if (!domain %>% is.na()) {
+      url_df <-
+        url_df %>%
         mutate(domainSearch = domain) %>%
         dplyr::select(term, domainSearch, everything())
     }
 
-    if (!tone_more_than %>% is.na) {
-      url_df %<>%
+    if (!tone_more_than %>% is.na()) {
+      url_df <-
+        url_df %>%
         mutate(tone_more_than)
     }
 
-    if (!tone_less_than %>% is.na) {
-      url_df %<>%
+    if (!tone_less_than %>% is.na()) {
+      url_df <-
+        url_df  %>%
         mutate(tone_less_than)
     }
 
-    if (only_english == T) {
+    if (only_english) {
       url_df <-
         url_df %>%
         dplyr::filter(language == 'English')
@@ -380,13 +397,13 @@ get_data_ft_api_term <-
         dplyr::select(-term)
     }
 
-    if (restrict_to_usa == T) {
+    if (restrict_to_usa) {
       url_df <-
         url_df %>%
         dplyr::filter(countryArticle == 'United States')
     }
 
-    if (return_message == T) {
+    if (return_message) {
       "You got " %>%
         paste0(url_df %>% nrow(), ' urls for ', term_word, ' at ', Sys.time()) %>%
         message()
@@ -421,7 +438,6 @@ get_data_ft_api_term <-
 #' @import tidyr stringr rvest tidyverse dplyr trelliscopejs devtools
 #' @importFrom lubridate with_tz
 #' @importFrom lubridate mdy_hm
-#' @importFrom magrittr %<>%
 #' @importFrom jsonlite fromJSON
 #' @importFrom httr GET
 #' @importFrom purrr flatten_df
@@ -434,12 +450,13 @@ get_data_ft_api_term <-
 #' get_data_ft_api_terms(terms = c('"Kevin Durant"','"Stephen Curry"', "Donald Trump", '"Blackstone Real Estate"', "'Cap Rate'"), only_english = T)
 #' }
 get_data_ft_api_terms <-
-  function(terms = c('"Kevin Durant"','"Stephen Curry"'),
+  function(terms = c('"Kevin Durant"', '"Stephen Curry"'),
            visualize_results = TRUE,
-           trelliscope_parameters = list(path = NULL,
-                                         rows = 1,
-                                         columns = 2,
-                                         id_columns = NULL
+           trelliscope_parameters = list(
+             path = NULL,
+             rows = 1,
+             columns = 2,
+             id_columns = NULL
            ),
            domain = NA,
            dedeup_results = TRUE,
@@ -453,7 +470,6 @@ get_data_ft_api_terms <-
            sort_by = 'date',
            nest_data = FALSE,
            return_message = TRUE) {
-
     var_matrix <-
       expand.grid(
         term = terms,
@@ -473,23 +489,21 @@ get_data_ft_api_terms <-
       purrr::possibly(get_data_ft_api_term, data_frame())
     all_data <-
       1:nrow(var_matrix) %>%
-      purrr::map_df(
-        function(x) {
-          get_data_ft_api_term_safe(
-            term = var_matrix$term[x],
-            domain = var_matrix$domain[x],
-            return_image_url = var_matrix$return_image_url[x],
-            last_minutes = var_matrix$last_minutes[x],
-            max_rows = var_matrix$max_rows[x],
-            search_language = var_matrix$search_language[x],
-            source_language = var_matrix$source_language[x],
-            sort_by = sort_by,
-            restrict_to_usa = var_matrix$restrict_to_usa[x],
-            only_english = var_matrix$only_english[x],
-            dedeup_results = dedeup_results
-          )
-        }
-      ) %>%
+      purrr::map_df(function(x) {
+        get_data_ft_api_term_safe(
+          term = var_matrix$term[x],
+          domain = var_matrix$domain[x],
+          return_image_url = var_matrix$return_image_url[x],
+          last_minutes = var_matrix$last_minutes[x],
+          max_rows = var_matrix$max_rows[x],
+          search_language = var_matrix$search_language[x],
+          source_language = var_matrix$source_language[x],
+          sort_by = sort_by,
+          restrict_to_usa = var_matrix$restrict_to_usa[x],
+          only_english = var_matrix$only_english[x],
+          dedeup_results = dedeup_results
+        )
+      }) %>%
       arrange(desc(dateTimeArticle))
 
     if (visualize_results) {
@@ -502,7 +516,11 @@ get_data_ft_api_terms <-
 
       if (!df_parameters %>% has_name('id_columns')) {
         id_columns <-
-          c('dateTimeArticle', 'domainArticle',"term", "titleArticle", "urlArticle")
+          c('dateTimeArticle',
+            'domainArticle',
+            "term",
+            "titleArticle",
+            "urlArticle")
       } else {
         id_columns <- df_parameters$id_columns
       }
@@ -526,9 +544,11 @@ get_data_ft_api_terms <-
 
       all_data <-
         all_data %>%
-        mutate(idArticle = 1:n(),
-               panel = trelliscopejs::img_panel(urlThumbnail),
-               urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
+        mutate(
+          idArticle = 1:n(),
+          panel = trelliscopejs::img_panel(urlThumbnail),
+          urlArticle = trelliscopejs::cog_href(urlArticle)
+        ) %>%
         select(idArticle, everything()) %>%
         arrange(idArticle) %>%
         mutate_at(c('dateTimeArticle', 'dateArticle'),
@@ -543,9 +563,7 @@ get_data_ft_api_terms <-
             nrow = rows,
             ncol = columns,
             path = path_loc,
-            state = list(labels = c(
-              id_columns
-            ))
+            state = list(labels = c(id_columns))
           )
         return(viz)
       }
@@ -555,9 +573,7 @@ get_data_ft_api_terms <-
           name = title,
           nrow = rows,
           ncol = columns,
-          state = list(labels = c(
-            id_columns
-          ))
+          state = list(labels = c(id_columns))
         )
       return(viz)
 
@@ -622,11 +638,12 @@ get_data_ft_api_terms <-
 get_data_ft_api_domains <-
   function(domains = c('washingtonpost.com', 'nytimes.com'),
            visualize_results = TRUE,
-           trelliscope_parameters = list(path = NULL,
-                                         rows = 1,
-                                         columns = 2,
-                                         id_columns = NULL
-                                         ),
+           trelliscope_parameters = list(
+             path = NULL,
+             rows = 1,
+             columns = 2,
+             id_columns = NULL
+           ),
            use_exact_domains = F,
            term = NA,
            return_image_url = T,
@@ -708,7 +725,10 @@ get_data_ft_api_domains <-
 
       if (!df_parameters %>% has_name('id_columns')) {
         id_columns <-
-          c('dateTimeArticle', "domainSearch", "titleArticle", "urlArticle")
+          c('dateTimeArticle',
+            "domainSearch",
+            "titleArticle",
+            "urlArticle")
       } else {
         id_columns <- df_parameters$id_columns
       }
@@ -732,9 +752,11 @@ get_data_ft_api_domains <-
 
       all_data <-
         all_data %>%
-        mutate(idArticle = 1:n(),
-               panel = trelliscopejs::img_panel(urlThumbnail),
-               urlArticle = trelliscopejs::cog_href(urlArticle)) %>%
+        mutate(
+          idArticle = 1:n(),
+          panel = trelliscopejs::img_panel(urlThumbnail),
+          urlArticle = trelliscopejs::cog_href(urlArticle)
+        ) %>%
         select(idArticle, everything()) %>%
         arrange(idArticle) %>%
         mutate_at(c('dateArticle', 'dateTimeArticle'),
@@ -743,29 +765,25 @@ get_data_ft_api_domains <-
       if (has_path) {
         path_loc <-
           df_parameters$path
-      viz <-
-        all_data %>%
-        trelliscopejs::trelliscope(
-          name = title,
-          nrow = rows,
-          ncol = columns,
-          path = path_loc,
-          state = list(labels = c(
-            id_columns
-          ))
-        )
-      return(viz)
-      }
         viz <-
           all_data %>%
           trelliscopejs::trelliscope(
             name = title,
             nrow = rows,
             ncol = columns,
-            state = list(labels = c(
-              id_columns
-            ))
+            path = path_loc,
+            state = list(labels = c(id_columns))
           )
+        return(viz)
+      }
+      viz <-
+        all_data %>%
+        trelliscopejs::trelliscope(
+          name = title,
+          nrow = rows,
+          ncol = columns,
+          state = list(labels = c(id_columns))
+        )
 
 
       return(viz)
@@ -801,7 +819,7 @@ get_data_wordcloud_ft_api <-
     url_base <-
       'http://api.gdeltproject.org/api/v1/search_ftxtsearch/search_ftxtsearch?query='
 
-    if (term %>% is.na) {
+    if (term %>% is.na()) {
       term_slug <-
         ''
       term_word <-
@@ -911,7 +929,7 @@ get_data_wordcloud_ft_api <-
       '&sortby:' %>%
       paste0(slug_sort)
 
-    if (dedeup_results == T) {
+    if (dedeup_results) {
       dup_slug <-
         '&dropdup=true'
     } else {
@@ -963,8 +981,9 @@ get_data_wordcloud_ft_api <-
       dplyr::rename(urlSearch = url,
                     sizeWord = size)
 
-    if (!domain %>% is.na) {
-      wordcloud_data %<>%
+    if (!domain %>% is.na()) {
+      wordcloud_data <-
+        wordcloud_data  %>%
         mutate(domainSearch = domain) %>%
         dplyr::select(term, domainSearch, everything())
     }
@@ -975,17 +994,19 @@ get_data_wordcloud_ft_api <-
         dplyr::select(-term)
     }
 
-    if (!tone_more_than %>% is.na) {
-      wordcloud_data %<>%
+    if (!tone_more_than %>% is.na()) {
+      wordcloud_data <-
+        wordcloud_data %>%
         mutate(tone_more_than)
     }
 
-    if (!tone_less_than %>% is.na) {
-      wordcloud_data %<>%
+    if (!tone_less_than %>% is.na()) {
+      wordcloud_data <-
+        wordcloud_data  %>%
         mutate(tone_less_than)
     }
 
-    if (return_message == T) {
+    if (return_message) {
       "You got " %>%
         paste0(wordcloud_data %>% nrow(),
                ' words for ',
@@ -1078,7 +1099,9 @@ get_data_wordcloud_ft_api_domains <-
         arrange(desc(countArticles)) %>%
         ungroup() %>%
         data.frame(stringsAsFactors = TRUE) %>%
-        wordcloud2::wordcloud2(fontFamily = 'Arial', shuffle = F, shape = 'pentagon')
+        wordcloud2::wordcloud2(fontFamily = 'Arial',
+                               shuffle = F,
+                               shape = 'pentagon')
       return(viz)
     }
 
@@ -1178,7 +1201,9 @@ get_data_wordcloud_ft_api_terms <-
         arrange(desc(countArticles)) %>%
         ungroup() %>%
         data.frame(stringsAsFactors = TRUE) %>%
-        wordcloud2::wordcloud2(fontFamily = 'Arial', shuffle = F, shape = 'pentagon')
+        wordcloud2::wordcloud2(fontFamily = 'Arial',
+                               shuffle = F,
+                               shape = 'pentagon')
       return(viz)
     }
 
@@ -1211,7 +1236,7 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
   url_base <-
     'http://api.gdeltproject.org/api/v1/search_ftxtsearch/search_ftxtsearch?query='
 
-  if (term %>% is.na) {
+  if (term %>% is.na()) {
     term_slug <-
       ''
     term_word <-
@@ -1226,7 +1251,7 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
       term
   }
 
-  if (term %>% is.na() & !domain %>% is.na) {
+  if (term %>% is.na() & !domain %>% is.na()) {
     term_word <-
       domain
   }
@@ -1324,14 +1349,14 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
 
 
 
-  if (dedeup_results == T) {
+  if (dedeup_results) {
     dup_slug <-
       '&dropdup=true'
   } else {
     dup_slug <-
       ''
   }
-  if (is_tone == T) {
+  if (is_tone) {
     value_name <-
       'valueTone'
     output_slug <-
@@ -1377,7 +1402,8 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
   names(sentiment_data)[4] <-
     value_name
 
-  sentiment_data %<>%
+  sentiment_data <-
+    sentiment_data  %>%
     mutate(
       dateTimeSentiment = dateTime_human.url %>% lubridate::mdy_hms(tz = 'UTC') %>%  lubridate::with_tz(Sys.timezone()),
       dateSentiment = dateTime_human.url %>% lubridate::mdy_hms(tz = 'UTC') %>% as.Date()
@@ -1386,8 +1412,9 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
     dplyr::select(term, dateTimeSentiment, dateSentiment, everything()) %>%
     dplyr::rename(urlSearch = url, dateTimeData = dateTimeData)
 
-  if (!domain %>% is.na) {
-    sentiment_data %<>%
+  if (!domain %>% is.na()) {
+    sentiment_data <-
+      sentiment_data  %>%
       mutate(domainSearch = domain) %>%
       dplyr::select(term, domainSearch, everything())
   }
@@ -1410,7 +1437,7 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
       dplyr::select(-term)
   }
 
-  if (return_message == T) {
+  if (return_message) {
     "You got " %>%
       paste0(sentiment_data %>% nrow(),
              ' words for ',
@@ -1438,7 +1465,7 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
 #' @param return_message
 #' @param nest_data
 #' @return
-#' @import tidyr stringr rvest tidyverse ggplot2 ggthemes
+#' @import tidyr stringr rvest tidyverse ggplot2 ggthemes hrbrthemes
 #' @importFrom grDevices colors
 #' @importFrom plotly ggplotly
 #' @export
@@ -1504,7 +1531,7 @@ get_data_sentiment_ft_api_domains <-
         ggplot(aes(x = dateTimeSentiment, y = valueTone)) +
         geom_line(aes(color = domainSearch)) +
         scale_y_continuous(limits = c(-7, 7)) +
-        facet_wrap(~ domainSearch, scales = "free") +
+        facet_wrap( ~ domainSearch, scales = "free") +
         hrbrthemes::theme_ipsum_rc(grid = "XY") +
         scale_x_datetime(expand = c(0, 0)) +
         theme(legend.position = "none") +
@@ -1515,17 +1542,16 @@ get_data_sentiment_ft_api_domains <-
           caption = "Data from GDELT via gdeltr2"
         )
 
-      if (domains %>% length() <= 8 ) {
+      if (domains %>% length() <= 8) {
         viz <-
           viz +
           ggthemes::scale_color_colorblind(guide = guide_legend(title = ""))
       } else {
-
         manual_colors <-
-          RColorBrewer::brewer.pal(12,"Paired")
+          RColorBrewer::brewer.pal(12, "Paired")
         over_12 <-
           domains %>% length() > 12
-        if (over_12){
+        if (over_12) {
           more_colors <-
             domains %>% length() - 12
           add_colors <-
@@ -1576,7 +1602,7 @@ get_data_sentiment_ft_api_domains <-
 #'
 #' @return
 #' @export
-#' @import tidyr stringr rvest tidyverse ggplot2 ggthemes
+#' @import tidyr stringr rvest tidyverse ggplot2 ggthemes hrbrthemes
 #' @importFrom grDevices colors
 #' @importFrom plotly ggplotly
 #' @examples
@@ -1643,7 +1669,7 @@ get_data_sentiment_ft_api_terms <-
         ggplot(aes(x = dateTimeSentiment, y = valueTone)) +
         geom_line(aes(color = term)) +
         scale_y_continuous(limits = c(-7, 7)) +
-        facet_wrap(~ term, scales = "free") +
+        facet_wrap( ~ term, scales = "free") +
         hrbrthemes::theme_ipsum_rc(grid = "XY") +
         scale_x_datetime(expand = c(0, 0)) +
         theme(legend.position = "none") +
@@ -1654,17 +1680,16 @@ get_data_sentiment_ft_api_terms <-
           caption = "Data from GDELT via gdeltr2"
         )
 
-      if (terms %>% length() <= 8 ) {
+      if (terms %>% length() <= 8) {
         viz <-
           viz +
           ggthemes::scale_color_colorblind(guide = guide_legend(title = ""))
       } else {
-
         manual_colors <-
-          RColorBrewer::brewer.pal(12,"Paired")
+          RColorBrewer::brewer.pal(12, "Paired")
         over_12 <-
           terms %>% length() > 12
-        if (over_12){
+        if (over_12) {
           more_colors <-
             terms %>% length() - 12
           add_colors <-
@@ -1801,7 +1826,11 @@ get_data_location_instability_api <-
              paste0(paste0(var_df$nameVar, collapse = '\n')))
     }
 
-    if (!time_period %>% str_to_lower() %in% c('daily', '15min', '15minutes', '15 minutes', '15 minute periods')) {
+    if (!time_period %>% str_to_lower() %in% c('daily',
+                                               '15min',
+                                               '15minutes',
+                                               '15 minutes',
+                                               '15 minute periods')) {
       stop("Time period can only be daily or 15 minute periods")
     }
 
@@ -1826,7 +1855,7 @@ get_data_location_instability_api <-
     output_slug <-
       "&OUTPUT=csv"
 
-    if (use_multi_locations == T &
+    if (use_multi_locations  &
         (!location_id %>% nchar == 2)) {
       use_multi_locations <-
         F
@@ -1834,7 +1863,7 @@ get_data_location_instability_api <-
         message
     }
 
-    if (use_multi_locations == T) {
+    if (use_multi_locations) {
       mode_slug <-
         "&MODE=multi"
     } else {
@@ -1842,7 +1871,7 @@ get_data_location_instability_api <-
         ''
     }
 
-    if (day_moving_average %>% is.na) {
+    if (day_moving_average %>% is.na()) {
       ma_slug <-
         ''
     } else {
@@ -1927,7 +1956,7 @@ get_data_location_instability_api <-
       ) %>%
       suppressMessages()
 
-    if (use_multi_locations == T) {
+    if (use_multi_locations) {
       data <-
         data %>%
         dplyr::filter(!codeLocation == "00")
@@ -2072,29 +2101,31 @@ get_data_locations_instability_api <-
         all_data %>%
         ggplot(aes(x = dateData, y = value)) +
         geom_line(aes(color = nameLocation)) +
-        facet_wrap(~ item, scales = "free") +
+        facet_wrap( ~ item, scales = "free") +
         hrbrthemes::theme_ipsum_rc(grid = "XY") +
         scale_x_date(expand = c(0, 0)) +
         labs(
           x = NULL,
           y = NULL,
           title = "GDELT Stabilitiy Analysis",
-          subtitle = list(all_data$dateData %>% min(na.rm = TRUE), ' to ',
-                          all_data$dateData %>% max(na.rm = TRUE)) %>% purrr::reduce(paste0),
+          subtitle = list(
+            all_data$dateData %>% min(na.rm = TRUE),
+            ' to ',
+            all_data$dateData %>% max(na.rm = TRUE)
+          ) %>% purrr::reduce(paste0),
           caption = "Data from GDELT via gdeltr2"
         )
 
-      if (location_ids %>% length() <= 8 ) {
-      viz <-
-        viz +
-        ggthemes::scale_color_colorblind(guide = guide_legend(title = ""))
+      if (location_ids %>% length() <= 8) {
+        viz <-
+          viz +
+          ggthemes::scale_color_colorblind(guide = guide_legend(title = ""))
       } else {
-
         manual_colors <-
-          RColorBrewer::brewer.pal(12,"Paired")
+          RColorBrewer::brewer.pal(12, "Paired")
         over_12 <-
           location_ids %>% length() > 12
-        if (over_12){
+        if (over_12) {
           more_colors <-
             location_ids %>% length() - 12
           add_colors <-
@@ -2175,8 +2206,10 @@ get_data_ft_trending_terms <-
 
     data <-
       data %>%
-      mutate(isGDELTTag = nameTerm %>%  grepl("[[:upper:]]+$|\\_", .),
-             datetimeData = Sys.time())
+      mutate(
+        isGDELTTag = nameTerm %>%  grepl("[[:upper:]]+$|\\_", .),
+        datetimeData = Sys.time()
+      )
 
     if (sort_data) {
       data <-
