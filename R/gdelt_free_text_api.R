@@ -513,7 +513,7 @@ get_data_ft_v1_api_terms <-
 
       df_parameters <- trelliscope_parameters %>% flatten_df()
 
-      if (!df_parameters %>% has_name('id_columns')) {
+      if (!df_parameters %>% tibble::has_name('id_columns')) {
         id_columns <-
           c('dateTimeArticle',
             'domainArticle',
@@ -524,14 +524,14 @@ get_data_ft_v1_api_terms <-
         id_columns <- df_parameters$id_columns
       }
 
-      if (!df_parameters %>% has_name('rows')) {
+      if (!df_parameters %>% tibble::has_name('rows')) {
         rows <-
           1
       } else {
         rows <- df_parameters$rows
       }
 
-      if (!df_parameters %>% has_name('columns')) {
+      if (!df_parameters %>% tibble::has_name('columns')) {
         columns <-
           2
       } else {
@@ -539,7 +539,7 @@ get_data_ft_v1_api_terms <-
       }
 
       has_path <-
-        df_parameters %>% has_name('path')
+        df_parameters %>% tibble::has_name('path')
 
       all_data <-
         all_data %>%
@@ -722,7 +722,7 @@ get_data_ft_v1_api_domains <-
 
       df_parameters <- trelliscope_parameters %>% flatten_df()
 
-      if (!df_parameters %>% has_name('id_columns')) {
+      if (!df_parameters %>% tibble::has_name('id_columns')) {
         id_columns <-
           c('dateTimeArticle',
             "domainSearch",
@@ -732,7 +732,7 @@ get_data_ft_v1_api_domains <-
         id_columns <- df_parameters$id_columns
       }
 
-      if (!df_parameters %>% has_name('rows')) {
+      if (!df_parameters %>% tibble::has_name('rows')) {
         rows <-
           1
       } else {
@@ -3154,7 +3154,7 @@ plot_ft_v2_highchart <-
       unite(itemSearch, 'search', 'term', sep = ": ") %>%
       dplyr::select(itemSearch, everything())
 
-    if (data %>% has_name("urlArticle")) {
+    if (data %>% tibble::has_name("urlArticle")) {
       data <-
         data %>%
         mutate(domainArticle = urlArticle %>% urltools::domain())
@@ -5042,14 +5042,14 @@ get_data_gdelt_ft_v2_api <-
         id_columns <- df_parameters$id_columns
       }
 
-      if (!df_parameters %>% has_name('rows')) {
+      if (!df_parameters %>% tibble::has_name('rows')) {
         rows <-
           1
       } else {
         rows <- df_parameters$rows
       }
 
-      if (!df_parameters %>% has_name('columns')) {
+      if (!df_parameters %>% tibble::has_name('columns')) {
         columns <-
           2
       } else {
@@ -5057,7 +5057,7 @@ get_data_gdelt_ft_v2_api <-
       }
 
       has_path <-
-        df_parameters %>% has_name('path'
+        df_parameters %>% tibble::has_name('path'
         )
 
       all_data <-
