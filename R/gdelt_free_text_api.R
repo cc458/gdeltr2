@@ -3944,7 +3944,7 @@ plot_ft_v2_highchart <-
       unite(itemSearch, 'search', 'term', sep = ": ") %>%
       dplyr::select(itemSearch, everything())
 
-    if (data %>% has_name("urlArticle")) {
+    if (data %>% tibble::has_name("urlArticle")) {
       data <-
         data %>%
         mutate(domainArticle = urlArticle %>% urltools::domain())
@@ -4896,7 +4896,7 @@ Querying GDELT Free Text API 2.0 for:\n{search_params}
 #'
 #' @return a \code{data_frame} or a form of visualization
 #' @export
-#' @import glue dplyr purrr anytime stringr tidyr purrr lubridate jsonlite
+#' @import glue dplyr purrr anytime stringr tidyr purrr lubridate jsonlite tibble
 #' @examples
 get_data_gdelt_ft_v2_api <-
   function(terms = NA,
@@ -5025,7 +5025,7 @@ get_data_gdelt_ft_v2_api <-
 
       df_parameters <- trelliscope_parameters %>% flatten_df()
 
-      if (!df_parameters %>% has_name('id_columns')) {
+      if (!df_parameters %>% tibble::has_name('id_columns')) {
         id_columns <-
           c(
             'datetimeArticle',
