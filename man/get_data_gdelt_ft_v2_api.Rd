@@ -7,13 +7,14 @@
 get_data_gdelt_ft_v2_api(terms = NA, domains = NA, images_face_tone = NA,
   images_num_faces = NA, images_ocr = NA, images_tag = NA,
   images_web_tag = NA, images_web_count = NA, source_country = NA,
-  source_language = "English", gkg_theme = NA, tone = NA,
-  tone_absolute_value = NA, use_or = FALSE, mode = "ArtList",
-  search_language = "eng", timespan = "24 hours", dates = NULL,
+  source_language = "English", gkg_themes = NA, tone = NA,
+  tone_absolute_value = NA, use_or = FALSE, modes = "ArtList",
+  search_language = "eng", timespans = c("24 hours"), dates = NULL,
   maximum_records = 250, translate = NULL, timeline_smooth = 5,
   sort_by = "DateDesc", visualize_results = TRUE,
   trelliscope_parameters = list(path = NULL, rows = 1, columns = 2, id_columns
-  = NULL), nest_data = FALSE, return_message = TRUE)
+  = NULL, group_columns = NULL), nest_data = FALSE, return_message = TRUE,
+  ...)
 }
 \arguments{
 \item{terms}{a vector of terms}
@@ -40,7 +41,7 @@ use \code{get_gdelt_codebook_ft_api(code_book = "imageweb"))}}
 \item{source_language}{vector of source language - default is English
 #' see \code{get_gdelt_codebook_ft_api(code_book = "languages")} for options}
 
-\item{gkg_theme}{global knowledge graph theme
+\item{gkg_themes}{global knowledge graph theme
 #' use \code{get_gdelt_codebook_ft_api(code_book = "gkg"))} for options}
 
 \item{tone}{numeric tone - default (NA)}
@@ -50,7 +51,7 @@ use \code{get_gdelt_codebook_ft_api(code_book = "imageweb"))}}
 \item{use_or}{if \code{TRUE} chains multiple items using and or statement
 else chained by and}
 
-\item{mode}{API search mode \itemize{
+\item{modes}{API search mode \itemize{
 \item  ArtList - data frame of articles for specified terms/domains/webtags/imagewebtags and OCR'd text (default)
 \item ImageCollage - data frame of images from for specified terms/domains/webtags/imagewebtags and OCR'd text
 \item ImageCollageInfo - data frame of images from the article for specified terms/domains/webtags/imagewebtags and OCR'd text, includes information on age of the photo and number of uses
@@ -71,7 +72,7 @@ else chained by and}
 \item{search_language}{vector of search language - default is english
 see \code{get_gdelt_codebook_ft_api(code_book = "languages")} for options}
 
-\item{timespan}{character vector of the time frame - no more than 12 weeks -
+\item{timespans}{character vector of the time frame - no more than 12 weeks -
 default is 24 hours
 acceptable periods include: \itemize{
 \item hours (default)
@@ -103,7 +104,7 @@ acceptable periods include: \itemize{
 
 \item{nest_data}{if \code{TRUE} returns a nested \code{data_frame()}}
 
-\item{return_message}{\code{TRUE} returns a message}
+\item{...}{}
 }
 \value{
 a \code{data_frame} or a form of visualization
