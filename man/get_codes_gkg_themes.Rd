@@ -4,7 +4,7 @@
 \alias{get_codes_gkg_themes}
 \title{Retrieves GKG theme code book}
 \usage{
-get_codes_gkg_themes(split_word_bank_codes = F)
+get_codes_gkg_themes()
 }
 \description{
 Retrieves GKG theme code book

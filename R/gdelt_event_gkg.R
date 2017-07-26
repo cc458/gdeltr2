@@ -462,7 +462,7 @@ get_codes_cameo_type <- function() {
 #'
 #' @return
 #' @export
-#'
+#' @import dplyr readr stringr purrr tidyr
 #' @examples
 #' get_codes_cameo_events()
 
@@ -516,7 +516,7 @@ get_codes_cameo_known_groups <- function() {
 #'
 #' @return
 #' @export
-#'
+#' @import dplyr readr stringr purrr tidyr
 #' @examples
 #' get_codes_cameo_ethnic()
 get_codes_cameo_ethnic <- function() {
@@ -538,10 +538,10 @@ get_codes_cameo_ethnic <- function() {
 #'
 #' @return
 #' @export
-#'
+#' @import dplyr readr stringr purrr tidyr
 #' @examples
 #' get_codes_gkg_themes()
-get_codes_gkg_themes <- function(split_word_bank_codes = F) {
+get_codes_gkg_themes <- function() {
   url <-
     'http://data.gdeltproject.org/documentation/GKG-MASTER-THEMELIST.TXT'
 
@@ -575,7 +575,7 @@ get_codes_gkg_themes <- function(split_word_bank_codes = F) {
 
   wb_codes <-
     code_df %>%
-    dplyr::filter(isWBCode == T)
+    dplyr::filter(isWBCode)
 
   wb_codes <-
     wb_codes %>%
@@ -601,13 +601,18 @@ get_codes_gkg_themes <- function(split_word_bank_codes = F) {
 
   non_wb <-
     code_df %>%
-    dplyr::filter(isWBCode == F)
+    dplyr::filter(!isWBCode)
 
   code_df <-
     non_wb %>%
     bind_rows(wb_codes)
 
-  return(code_df)
+  code_df <-
+    code_df %>%
+    mutate(codeGKGTheme = codeGKGTheme %>% str_replace_all('WB.', '\\WB_')) %>%
+    dplyr::select(isWBCode, codeGKGTheme, idWBCode, nameWBCode, everything())
+
+  code_df
 
 }
 
