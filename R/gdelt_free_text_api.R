@@ -5750,7 +5750,7 @@ get_data_ft_v2_api <-
       dates <- NA
     }
 
-    if (!dates %>% is.na()) {
+    if (!dates %>% is.na() %>% suppressWarnings()) {
       timespans <- NA
     }
 
