@@ -2907,6 +2907,11 @@ munge_for_trelliscope <-
                                 columns = NULL,
                                 exclude = NULL)) {
 
+    data <-
+      data %>%
+      mutate_if(is.logical,
+                as.character)
+
     if (!remove_columns %>% purrr::is_null()) {
       data <-
         data %>%
@@ -4389,6 +4394,154 @@ plot_trelliscopes <-
   }
 
 
+codebook_trelliscope <-
+  function(data,
+           code_book = "gkg",
+           path = NULL) {
+    data <-
+      data %>%
+      munge_for_trelliscope(remove_columns = NULL, group_columns = NULL) %>%
+      mutate_if(is.logical, as.character) %>%
+      mutate(urlImage = "http://gdeltproject.org/imgs/gdelt-events-nasa-night-lights.jpg")
+
+    if (code_book %>% str_to_lower() == "gkg") {
+      parameter <- 'theme'
+      data <-
+        data %>%
+        mutate(
+          urlNews1D = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=artlist&timespan=24h&maxrecords=250&sort=datedesc'
+          ),
+          urlNews1M = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=artlist&timespan=1m&maxrecords=250&sort=datedesc'
+          ),
+          urlNews3M = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=artlist&timespan=12w&maxrecords=250&sort=datedesc'
+          ),
+          urlWordCloudEnglish3M = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=wordcloudenglish&timespan=12w&maxrecords=250&sort=datedesc'
+          ),
+          urlWordCloudTheme3M = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=wordcloudtheme&timespan=12w&maxrecords=250&sort=datedesc'
+          ),
+          urlTimelineVol = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=timelinevolinfo&timespan=12w&maxrecords=250&sort=datedesc'
+          ),
+          urlSentiment = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=ToneChart&timespan=12w&maxrecords=250&sort=datedesc'
+          )
+        )
+    }
+
+    if (code_book %>% str_to_lower() == "imageweb") {
+      parameter <- 'imagewebtag'
+      data <-
+        data %>%
+        mutate(
+          urlNews1D = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=artlist&timespan=24h&maxrecords=250&sort=datedesc'
+          ),
+          urlNews1M = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=artlist&timespan=1m&maxrecords=250&sort=datedesc'
+          ),
+          urlNews3M = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=artlist&timespan=12w&maxrecords=250&sort=datedesc'
+          ),
+          urlWordCloudEnglish3M = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=wordcloudenglish&timespan=12w&maxrecords=250&sort=datedesc'
+          ),
+          urlWordCloudTheme3M = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=wordcloudtheme&timespan=12w&maxrecords=250&sort=datedesc'
+          ),
+          urlTimelineVol = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=timelinevolinfo&timespan=12w&maxrecords=250&sort=datedesc'
+          ),
+          urlSentiment = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=ToneChart&timespan=12w&maxrecords=250&sort=datedesc'
+          )
+        )
+    }
+
+    if (code_book %>% str_to_lower() == "imagetags") {
+      parameter <- 'imagetag'
+      data <-
+        data %>%
+        mutate(
+          urlNews1D = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=artlist&timespan=24h&maxrecords=250&sort=datedesc'
+          ),
+          urlNews1M = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=artlist&timespan=1m&maxrecords=250&sort=datedesc'
+          ),
+          urlNews3M = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=artlist&timespan=12w&maxrecords=250&sort=datedesc'
+          ),
+          urlWordCloudEnglish3M = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=wordcloudenglish&timespan=12w&maxrecords=250&sort=datedesc'
+          ),
+          urlWordCloudTheme3M = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=wordcloudtheme&timespan=12w&maxrecords=250&sort=datedesc'
+          ),
+          urlTimelineVol = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=timelinevolinfo&timespan=12w&maxrecords=250&sort=datedesc'
+          ),
+          urlSentiment = glue::glue(
+            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=ToneChart&timespan=12w&maxrecords=250&sort=datedesc'
+          )
+        )
+    }
+
+
+    data <-
+      data %>%
+      mutate(idPanel = 1:n(),
+             panel = trelliscopejs::img_panel(urlImage)) %>%
+      mutate_at(
+        data %>% dplyr::select(matches("^url")) %>% dplyr::select(-urlImage) %>% names(),
+        funs(
+          trelliscopejs::cog_href(., default_label = TRUE, default_active = TRUE)
+        )
+      )
+
+    id_columns <-
+      data %>% dplyr::select(matches("^id|^url")) %>% dplyr::select(-c(urlImage, idPanel, matches("idWBCode"))) %>% names()
+
+    if (id_columns %>% length() == 1) {
+      id_columns <- c('nameCodebook', id_columns)
+    }
+
+    title <-
+      glue::glue("GDELT V2 API {parameter %>% str_to_upper()} CODES")
+
+    if (!path %>% purrr::is_null()) {
+      viz <-
+        data %>%
+        trelliscopejs::trelliscope(
+          name = title,
+          nrow = 1,
+          ncol = 3,
+          path = path,
+          state = list(
+            labels = c(id_columns),
+            sort = list(sort_spec("idPanel"))
+          )
+        )
+    } else {
+      viz <-
+        data %>%
+        trelliscopejs::trelliscope(
+          name = title,
+          nrow = 1,
+          ncol = 3,
+          state = list(
+            labels = c(id_columns),
+            sort = list(sort_spec("idPanel"))
+          )
+        )
+    }
+    viz
+  }
+
 # highchart ---------------------------------------------------------------
 
 
@@ -4904,6 +5057,68 @@ parse_datetimes <-
                datetime_end = dates[[2]])
   }
 
+munge_gkg_themes <- function(data) {
+  data <-
+    data %>%
+    mutate(
+      code2 = idGKGTheme %>% str_to_lower(),
+      isWBCode = ifelse(code2 %>% str_detect("wb_"), T, F),
+      isEconomicEvent = ifelse(code2 %>% str_detect("econ_"), T, F),
+      isSocialEvent = ifelse(code2 %>% str_detect("soc"), T, F),
+      isTaxEvent = ifelse(code2 %>% str_detect("tax_"), T, F),
+      isSocialEvent = ifelse(code2 %>% str_detect("soc_"), T, F),
+      isMilitaryEvent = ifelse(code2 %>% str_detect("military|mil_"), T, F),
+      isGovernmentEvent = ifelse(code2 %>% str_detect("gov_|government"), T, F),
+      isMedicalEvent = ifelse(code2 %>% str_detect("med_|medical"), T, F),
+      isAgressionAct = ifelse(code2 %>% str_detect("act_"), T, F),
+      isMediaEvent = ifelse(code2 %>% str_detect("media_|_media"), T, F),
+      isEmergencyEvent = ifelse(code2 %>% str_detect("emerg_"), T, F),
+      isMovement = ifelse(code2 %>% str_detect("movement_"), T, F),
+      isCriminalEvent = ifelse(code2 %>% str_detect("crime|crm_"), T, F)
+    ) %>%
+    dplyr::select(-code2)
+
+  wb_codes <-
+    data %>%
+    dplyr::filter(isWBCode)
+
+  wb_codes <-
+    wb_codes %>%
+    mutate(idGKGTheme = idGKGTheme %>% sub('\\_', '\\.', .)) %>%
+    separate(
+      idGKGTheme,
+      into = c('idDictionary', 'nameWBCode'),
+      remove = F,
+      sep = '\\.'
+    ) %>%
+    mutate(nameWBCode = nameWBCode %>% sub('\\_', '\\.', .)) %>%
+    separate(
+      nameWBCode,
+      into = c('idWBCode', 'nameWBCode'),
+      remove = T,
+      sep = '\\.'
+    ) %>%
+    mutate(
+      idWBCode = idWBCode %>% as.numeric,
+      nameWBCode = nameWBCode %>% str_replace_all('\\_', ' ') %>% str_to_lower
+    ) %>%
+    dplyr::select(-idDictionary)
+
+  non_wb <-
+    data %>%
+    dplyr::filter(!isWBCode)
+
+  data <-
+    non_wb %>%
+    bind_rows(wb_codes)
+
+  data <-
+    data %>%
+    mutate(idGKGTheme = idGKGTheme %>% str_replace_all('WB.', '\\WB_')) %>%
+    dplyr::select(isWBCode, idGKGTheme, idWBCode, nameWBCode, everything())
+
+  data
+}
 
 # http://blog.gdeltproject.org/gdelt-doc-2-0-api-debuts/
 
@@ -4917,6 +5132,9 @@ parse_datetimes <-
 #' \item countries: Countries with country code
 #'
 #' }
+#' @param visualize_trelliscope if \code{TRUE} returns an
+#' interactive trelliscope
+#' @param path file path where you want to save the trelliscope if \code{TRUE}
 #'
 #' @return
 #' @export
@@ -4927,7 +5145,9 @@ parse_datetimes <-
 #' get_gdelt_codebook_ft_api(code_book = "imageweb")
 #' get_gdelt_codebook_ft_api(code_book = "languages")
 get_gdelt_codebook_ft_api <-
-  function(code_book = 'gkg') {
+  function(code_book = 'gkg',
+           visualize_trelliscope = FALSE,
+           path = NULL) {
     df_codebooks <-
       data_frame(
         nameCodeBook = c(
@@ -4968,7 +5188,24 @@ get_gdelt_codebook_ft_api <-
       mutate(nameCodebook = code_book %>% str_to_upper()) %>%
       select(nameCodebook, everything()) %>%
       suppressMessages()
-    data
+
+    if (code_book %>% str_to_lower() == "gkg") {
+      data <- data %>% munge_gkg_themes()
+    }
+
+    if (!visualize_trelliscope) {
+      return(data)
+    }
+
+    if (visualize_trelliscope) {
+      viz <-
+        codebook_trelliscope(data = data,
+                             code_book = code_book %>% str_to_lower(),
+                             path = path)
+      return(viz)
+    } else {
+      return(data)
+    }
   }
 
 

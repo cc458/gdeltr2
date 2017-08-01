@@ -4,7 +4,8 @@
 \alias{get_gdelt_codebook_ft_api}
 \title{GDELT Free Text API 2.0 Codebooks}
 \usage{
-get_gdelt_codebook_ft_api(code_book = "gkg")
+get_gdelt_codebook_ft_api(code_book = "gkg", visualize_trelliscope = FALSE,
+  path = NULL)
 }
 \arguments{
 \item{code_book}{code book selection \itemize{
@@ -15,6 +16,11 @@ get_gdelt_codebook_ft_api(code_book = "gkg")
 \item countries: Countries with country code
 
 }}
+
+\item{visualize_trelliscope}{if \code{TRUE} returns an
+interactive trelliscope}
+
+\item{path}{file path where you want to save the trelliscope if \code{TRUE}}
 }
 \description{
 GDELT Free Text API 2.0 Codebooks
