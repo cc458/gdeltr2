@@ -4151,7 +4151,7 @@ plot_trelliscope <-
            columns = 2,
            ...) {
     is_image <-
-      trelliscope_type %>% str_to_lower() %>% str_detect('image')
+      trelliscope_type %>% str_to_lower() == 'image'
 
     if (is_image) {
       if (!'image_column' %>% exists()) {
