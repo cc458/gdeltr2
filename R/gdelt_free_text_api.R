@@ -3812,6 +3812,7 @@ plot_wordcloud <-
 build_folder <- function(path = "Desktop/abresler.github.io/trelliscopes/wc_test") {
   oldwd <- getwd()
   setwd("~")
+  new_wd <- getwd()
   folder_exists <-
     dir.exists(paths = path)
 
@@ -3822,15 +3823,21 @@ build_folder <- function(path = "Desktop/abresler.github.io/trelliscopes/wc_test
 
   levels <- path %>% stringr::str_count("/")
 
-  level_parts <- path %>% stringr::str_split('/') %>% purrr::flatten_chr()
+  level_parts <-
+    path %>% stringr::str_split('/') %>% purrr::flatten_chr()
 
-  parent_dir <- level_parts[1:(levels)] %>% str_c(collapse = '/')
+  level_parts <- level_parts[!level_parts == '']
 
-  folder_name <- level_parts[level_parts %>% length()]
+  parent_dir <-
+    level_parts[1:(levels)] %>% str_c(collapse = '/')
 
-  setwd(parent_dir)
-  dir.create(folder_name)
+  folder_name <-
+    level_parts[level_parts %>% length()]
+  if (!dir.exists(paths = parent_dir)){
+    dir.create(parent_dir)
+  }
   setwd(oldwd)
+
   return(invisible())
 }
 
@@ -4019,12 +4026,6 @@ plot_panel_trelliscope <-
              columns = c(
                'datetimeArticle',
                'domainArticle',
-               "domainSearch",
-               'imagetagSearch',
-               'imagewebtagSearch',
-               'imageocrSearch',
-               "gkgthemeSearch",
-               'imagewebtagSearch',
                "titleArticle",
                "urlArticle"
              ),
@@ -4170,13 +4171,6 @@ plot_trelliscope <-
         columns = c(
           'datetimeArticle',
           'domainArticle',
-          "domainSearch",
-          "termSearch",
-          'imagetagSearch',
-          "gkgthemeSearch",
-          'imagewebtagSearch',
-          'imageocrSearch',
-          'imagewebtagSearch',
           "titleArticle",
           "urlArticle"
         ),
@@ -4973,7 +4967,7 @@ plot_hc_trelliscope <-
     has_path <-
       df_trelliscope_params %>% tibble::has_name("path")
 
-    if (data %>% ncol() <= 4) {
+    if (data %>% ncol() <= 3) {
       state_value <- NULL
     }  else {
       state_value <- list(labels = c(column_ids))
@@ -6000,3 +5994,351 @@ get_data_ft_v2_api <-
       plot_trelliscopes(trelliscope_parameters = trelliscope_parameters)
   }
 
+
+
+
+# bundle ------------------------------------------------------------------
+
+#' Generate Trelliscope Bundle
+#'
+#' Generates a bundle of trelliscopes for publishing to the web
+#'
+#' @param include_image_panel if \code{TRUE} includes ArtList
+#' @param include_timeline_info  if \code{TRUE} includes TimelineInfo
+#' @param include_timeline_tone if \code{TRUE} includes Timeline tone
+#' @param include_sentiment_bin if \code{TRUE} includes sentiment bin
+#' @param wordcloud_modes Wordcloud items \itemize{
+#' \item NA - none
+#' \item WordCloudEnglish - word cloud of English words for specified terms/domains/webtags/imagewebtags and OCR'd text
+#' \item WordCloudNative - word cloud of native text for specified specified terms/domains/webtags/imagewebtags and OCR'd text
+#' \item WordCloudTheme - word cloud of Global Knowledge Graph themes specified terms/domains/webtags/imagewebtags and OCR'd text
+#' \item WordCloudImageTags - word cloud of resolved imagetags for specified terms/domains/webtags/imagewebtags and OCR'd text
+#' \item WordCloudImageWebTags - word cloud of resolved image web tags for specified terms/domains/webtags/imagewebtags and OCR'd text
+
+#' }
+#' @param terms a vector of terms
+#' @param domains a vector of webdomains
+#' @param images_face_tone vector of facial tone scores
+#' @param images_num_faces vector of face count
+#' @param images_ocr vector of words to search for OCR'd text
+#' @param images_tag vector of image tags from the image tag code book.
+#' use \code{get_gdelt_codebook_ft_api(code_book = "imagetag"))} for options
+#' @param images_web_tag vector of image tags from the image web tag code book.
+#' use \code{get_gdelt_codebook_ft_api(code_book = "imageweb"))}
+#' @param images_web_count numeric vector of number of times photo appeared
+#' @param source_countries character source countries
+#' #' see \code{get_gdelt_codebook_ft_api(code_book = "countries")} for options
+#' @param source_languages vector of source language - default is English
+#' #' see \code{get_gdelt_codebook_ft_api(code_book = "languages")} for options
+
+#' @param gkg_themes global knowledge graph theme
+#' #' use \code{get_gdelt_codebook_ft_api(code_book = "gkg"))} for options
+#' @param tone numeric tone - default (NA)
+#' @param tone_absolute_value numeric tone absolute value (default NA)
+#' @param search_language vector of search language - default is english
+#' see \code{get_gdelt_codebook_ft_api(code_book = "languages")} for options
+#' @param timespans character vector of the time frame - no more than 12 weeks -
+#' default is 24 hours
+#' acceptable periods include: \itemize{
+#' \item hours (default)
+#' \item minutes
+#' \item weeks
+#' \item months
+#' }
+
+#' @param dates vector of dates in YMD HMS format, seperated by \code{ - }
+#' you can use the \code{generate_dates()} function to generate a vector of
+#' default \code{NULL}
+#' @param maximum_records Number between 1 and 250
+#' @param translate
+#' @param timeline_smooth if \code{mode} is a timeline
+#' @param sort_by sorting method \itemize{
+#' \item DateDesc - descending by date (default)
+#' \item DateAsc - ascending by date
+#' \item ToneDesc - descinding tone
+#' }
+#' @param wordcloud_timespans timespans for wordcloud
+#' @param base_path base path to save the trelliscopes
+#' @param rows rows of
+#' @param columns
+#' @param id_columns
+#' @param group_columns
+#' @param return_message
+#'
+#' @return
+#' @export
+#' @import tidyr dplyr rlang highcharter trelliscopejs anytime lubridate purrr purrrlyr tibble glue stringr jsonlite
+#' @examples
+generate_trelliscope_bundle <-
+  function(include_image_panel = TRUE,
+           include_timeline_info = TRUE,
+           include_timeline_tone = FALSE,
+           include_sentiment_bin = TRUE,
+           wordcloud_modes = c("WordCloudTheme",
+                               "WordCloudImageTags",
+                               "WordCloudEnglish",
+                               "WordCloudImageWebTags"),
+           terms = NA,
+           domains = NA,
+           gkg_themes = NA,
+           images_ocr = NA,
+           images_tag = NA,
+           images_web_tag = NA,
+           images_face_tone = NA,
+           images_num_faces = NA,
+           images_web_count = NA,
+           search_language = 'eng',
+           timespans = c("24 hours"),
+           wordcloud_timespans  = c("1 month"),
+           dates = NA,
+           source_countries = NA,
+           source_languages = "English",
+           tone = NA,
+           tone_absolute_value = NA,
+           maximum_records = 250,
+           translate = NULL,
+           timeline_smooth = 5,
+           sort_by = 'DateDesc',
+           base_path = NULL,
+           rows = 1,
+           columns = 2,
+           id_columns = NULL,
+           group_columns = NULL,
+           return_message = TRUE) {
+    if (base_path %>% purrr::is_null()) {
+      stop("Please enter a path to save the trelliscopes")
+    }
+
+    if (base_path %>% is.na()) {
+      stop("Please enter a path to save the trelliscopes")
+    }
+
+    build_folder(path = base_path)
+
+    data <- data_frame()
+
+    if (include_image_panel) {
+      path <-
+        glue::glue("{base_path}/image_panel") %>% as.character() %>% str_replace_all('//', '/')
+
+      trelliscopeImage <-
+        get_data_ft_v2_api(
+          terms = terms,
+          domains = domains,
+          images_face_tone = images_face_tone,
+          images_num_faces = images_num_faces,
+          images_ocr = images_ocr,
+          images_tag = images_tag,
+          images_web_tag = images_web_tag,
+          images_web_count = images_web_count,
+          source_countries = source_countries,
+          source_languages = source_languages,
+          gkg_themes = gkg_themes,
+          tone = tone,
+          tone_absolute_value = tone_absolute_value,
+          use_or = FALSE,
+          modes = "ArtList",
+          search_language = search_language,
+          timespans = timespans,
+          dates = dates,
+          maximum_records = maximum_records,
+          translate = translate,
+          timeline_smooth = timeline_smooth,
+          sort_by = sort_by,
+          nest_data = FALSE,
+          return_message = TRUE,
+          visualize_results = TRUE,
+          trelliscope_parameters = list(
+            path = path,
+            rows = rows,
+            columns = columns,
+            id_columns  = id_columns,
+            group_columns = group_columns
+          )
+        )
+
+      data <-
+        data %>%
+        bind_rows(data_frame(nameTrelliscope = "Image", dataTrelliscope = list(trelliscopeImage)))
+    }
+
+    if (include_sentiment_bin) {
+      path <-
+        glue::glue("{base_path}/sentiment_bin") %>% as.character() %>% str_replace_all('//', '/')
+      trelliscopeBIN <-
+        get_data_ft_v2_api(
+          terms = terms,
+          domains = domains,
+          images_face_tone = images_face_tone,
+          images_num_faces = images_num_faces,
+          images_ocr = images_ocr,
+          images_tag = images_tag,
+          images_web_tag = images_web_tag,
+          images_web_count = images_web_count,
+          source_countries = source_countries,
+          source_languages = source_languages,
+          gkg_themes = gkg_themes,
+          tone = tone,
+          tone_absolute_value = tone_absolute_value,
+          use_or = FALSE,
+          modes = "ToneChart",
+          search_language = search_language,
+          timespans = timespans,
+          dates = dates,
+          maximum_records = maximum_records,
+          translate = translate,
+          timeline_smooth = timeline_smooth,
+          sort_by = sort_by,
+          nest_data = FALSE,
+          return_message = TRUE,
+          visualize_results = TRUE,
+          trelliscope_parameters = list(
+            path = path,
+            rows = rows,
+            columns = columns
+          )
+        )
+
+      data <-
+        data %>%
+        bind_rows(data_frame(nameTrelliscope = "BIN", dataTrelliscope = list(trelliscopeBIN)))
+
+      glue::glue("\n
+                 Saved Sentiment Panel Trelliscope to {path}
+                 \n") %>% message()
+    }
+
+    if (include_timeline_info) {
+      path <-
+        glue::glue("{base_path}/timeline_info") %>% as.character() %>% str_replace_all('//', '/')
+
+      trelliscopeTimeline <-
+        gdeltr2::get_data_ft_v2_api(
+          terms = terms,
+          domains = domains,
+          images_face_tone = images_face_tone,
+          images_num_faces = images_num_faces,
+          images_ocr = images_ocr,
+          images_tag = images_tag,
+          images_web_tag = images_web_tag,
+          images_web_count = images_web_count,
+          source_countries = source_countries,
+          source_languages = source_languages,
+          gkg_themes = gkg_themes,
+          tone = tone,
+          tone_absolute_value = tone_absolute_value,
+          modes = "timelinevolinfo",
+          search_language = search_language,
+          timespans = "12 Weeks",
+          dates = dates,
+          maximum_records = maximum_records,
+          translate = translate,
+          timeline_smooth = timeline_smooth,
+          sort_by = sort_by,
+          visualize_results = T,
+          trelliscope_parameters = list(path = path, rows = 1, columns = 1)
+        )
+
+      data <-
+        data %>%
+        bind_rows(data_frame(nameTrelliscope = "Timelineinfo", dataTrelliscope = list(trelliscopeTimeline)))
+
+
+      glue::glue("\n
+                 Saved Timline Info Panel Trelliscope to {path}
+                 \n") %>% message()
+    }
+
+    if (include_timeline_tone) {
+      trelliscopeTimelinetone <-
+        get_data_ft_v2_api(
+          terms = terms,
+          domains = domains,
+          images_face_tone = images_face_tone,
+          images_num_faces = images_num_faces,
+          images_ocr = images_ocr,
+          images_tag = images_tag,
+          images_web_tag = images_web_tag,
+          images_web_count = images_web_count,
+          source_countries = source_countries,
+          source_languages = source_languages,
+          gkg_themes = gkg_themes,
+          tone = tone,
+          tone_absolute_value = tone_absolute_value,
+          modes = "TimelineTone",
+          search_language = search_language,
+          timespans = "12 Weeks",
+          dates = dates,
+          maximum_records = maximum_records,
+          translate = translate,
+          timeline_smooth = timeline_smooth,
+          sort_by = sort_by,
+          nest_data = FALSE,
+          return_message = TRUE,
+          visualize_results = TRUE,
+          trelliscope_parameters = list(
+            path = path,
+            rows = rows,
+            id_columns = id_columns,
+            group_columns = group_columns,
+            columns = columns
+          )
+        )
+
+      data <-
+        data %>%
+        bind_rows(data_frame(nameTrelliscope = "TimelineTone", dataTrelliscope = list(trelliscopeTimelinetone)))
+
+      glue::glue("\n
+                 Saved Timline Tone Panel Trelliscope to {path}
+                 \n") %>% message()
+    }
+
+    has_wordclouds <-
+      (wordcloud_modes %>% length()) > 0 & (!wordcloud_modes %>% is.na() %>% sum(na.rm = TRUE)  > 0)
+
+    if (has_wordclouds) {
+      path <-
+        glue::glue("{base_path}/wordclouds") %>% as.character() %>% str_replace_all('//', '/')
+      trelliscopeWordcloud <-
+        get_data_ft_v2_api(
+          terms = terms,
+          domains = domains,
+          images_face_tone = images_face_tone,
+          images_num_faces = images_num_faces,
+          images_ocr = images_ocr,
+          images_tag = images_tag,
+          images_web_tag = images_web_tag,
+          images_web_count = images_web_count,
+          source_countries = source_countries,
+          source_languages = source_languages,
+          gkg_themes = gkg_themes,
+          tone = tone,
+          tone_absolute_value = tone_absolute_value,
+          modes = wordcloud_modes,
+          search_language = search_language,
+          timespans = wordcloud_timespans,
+          dates = dates,
+          maximum_records = maximum_records,
+          translate = translate,
+          timeline_smooth = timeline_smooth,
+          sort_by = sort_by,
+          return_message = TRUE,
+          visualize_results = TRUE,
+          trelliscope_parameters = list(
+            path = path,
+            rows = 1,
+            id_columns = id_columns,
+            group_columns = group_columns,
+            columns = 1
+          )
+        )
+
+      data <-
+        data %>%
+        bind_rows(data_frame(nameTrelliscope = "Wordcloud", dataTrelliscope = list(trelliscopeWordcloud)))
+
+    }
+    data$dataTrelliscope %>% walk(print)
+    data
+    }
