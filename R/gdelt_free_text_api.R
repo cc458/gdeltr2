@@ -6250,6 +6250,8 @@ generate_trelliscope_bundle <-
     }
 
     if (include_timeline_tone) {
+      path <-
+        glue::glue("{base_path}/timeline_tone") %>% as.character() %>% str_replace_all('//', '/')
       trelliscopeTimelinetone <-
         get_data_ft_v2_api(
           terms = terms,
