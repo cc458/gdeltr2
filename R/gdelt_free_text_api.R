@@ -5940,7 +5940,7 @@ get_data_ft_v2_api <-
 
     search_options <- c(terms, domains, images_face_tone, images_num_faces, images_web_count, images_web_tag, gkg_themes)
 
-    is_not_artlist <- !modes %>% str_to_lower() == 'artlist'
+    is_not_artlist <- !modes %>% str_to_lower() %>% str_detect('artlist') %>% sum(na.rm = TRUE) > 0
     if (search_options[!search_options %>% is.na()] %>% length() <= 1 && visualize_results && is_not_artlist) {
       stop("Need more than 1 search parameter to create a trelliscope please add a term, webdomain, theme, imagetag, imagewebtag or anyother V2 api search parameter")
     }
