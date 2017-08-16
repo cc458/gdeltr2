@@ -5937,6 +5937,14 @@ get_data_ft_v2_api <-
     if (domains %>% purrr::is_null()) {
       domains <- NA
     }
+
+    search_options <- c(terms, domains, images_face_tone, images_num_faces, images_web_count, images_web_tag, gkg_themes)
+
+    is_not_artlist <- !modes %>% str_to_lower() == 'artlist'
+    if (search_options[!search_options %>% is.na()] %>% length() <= 1 && visualize_results && is_not_artlist) {
+      stop("Need more than 1 search parameter to create a trelliscope please add a term, webdomain, theme, imagetag, imagewebtag or anyother V2 api search parameter")
+    }
+
     query_gdelt_ft_v2_api_safe <-
       purrr::possibly(query_gdelt_ft_v2_api, data_frame())
     all_data <-
