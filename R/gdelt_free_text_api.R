@@ -2872,9 +2872,10 @@ plot_wordcloud <-
 
 
 # trelliscope -------------------------------------------------------------
-build_folder <- function(path = "Desktop/abresler.github.io/trelliscopes/wc_test") {
+build_folder <- function(path = "Desktop/abresler.github.io/trelliscopes/jinkie/otr/kaute") {
   oldwd <- getwd()
   setwd("~")
+
   folder_exists <-
     dir.exists(paths = path)
 
@@ -2883,16 +2884,24 @@ build_folder <- function(path = "Desktop/abresler.github.io/trelliscopes/wc_test
     return(invisible())
   }
 
-  levels <- path %>% stringr::str_count("/")
+  parts <- path %>% str_split("/") %>% flatten_chr()
 
-  level_parts <- path %>% stringr::str_split('/') %>% purrr::flatten_chr()
+  1:length(parts) %>%
+    map(function(x){
+      if (x == 1) {
+        directory <- parts[x]
+        if (!dir.exists(directory)) {
+          dir.create(directory)
+        }
+        return(invisible())
+      }
+      directory <- parts[1:x] %>% str_c(collapse = '/')
+      if (!dir.exists(directory)) {
+        dir.create(directory)
+      }
+      return(invisible())
+    })
 
-  parent_dir <- level_parts[1:(levels)] %>% str_c(collapse = '/')
-
-  folder_name <- level_parts[level_parts %>% length()]
-
-  setwd(parent_dir)
-  dir.create(folder_name)
   setwd(oldwd)
   return(invisible())
 }
@@ -6120,9 +6129,9 @@ generate_trelliscope_bundle <-
     if (base_path %>% is.na()) {
       stop("Please enter a path to save the trelliscopes")
     }
-
+    oldwd <- getwd()
+    setwd("~")
     build_folder(path = base_path)
-
     data <- data_frame()
 
     if (include_image_panel) {
@@ -6350,5 +6359,6 @@ generate_trelliscope_bundle <-
 
     }
     data$dataTrelliscope %>% walk(print)
-    data
+    setwd(oldwd)
+    return(data)
     }

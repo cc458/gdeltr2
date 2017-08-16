@@ -2,7 +2,7 @@ Package: gdeltr2
 Type: Package
 Title: R's modern interface GDELT Project Interface
 Year: 2017
-Version: 0.3.1102301
+Version: 0.3.11023021
 Authors@R: person("Alex", "Bresler", email = "abreselr@asbcllc.com", role = c("aut", "cre"))
 URL: https://github.com/abresler/gdeltr2
 Description: A tool to efficently access the GDELT Project's raw data
