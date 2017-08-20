@@ -412,7 +412,7 @@ get_data_ft_api_term <-
 
   }
 
-#' Returns GDELT free text API results for multiple terms
+#' Returns GDELT full text API results for multiple terms
 #'
 #' @param terms vector of words to search
 #' @parram
@@ -603,7 +603,7 @@ get_data_ft_v1_api_terms <-
 #' @param
 #' @param
 #' @param return_message if \code{TRUE} return a message
-#' Returns GDELT free text API results for multiple webdomains
+#' Returns GDELT full text API results for multiple webdomains
 #'
 #' @param terms vector of words to search
 #' @param visualize_results
@@ -1020,7 +1020,7 @@ get_data_wordcloud_ft_api <-
   }
 
 
-#' Returns GDELT free text API word clouds for a given domain, can be term restricted
+#' Returns GDELT full text API word clouds for a given domain, can be term restricted
 #'
 #' @param domains
 #' @param term options \code{c(NA, "term_name")}
@@ -1116,7 +1116,7 @@ get_data_wordcloud_ft_api_domains <-
 
   }
 
-#' Returns GDELT free text API word clouds for a given term, can be domain restricted
+#' Returns GDELT full text API word clouds for a given term, can be domain restricted
 #'
 #' @param terms any word, can be quoted or not
 #' @param domain domain name \code{NA} - domains, else vector of daomins
@@ -1450,12 +1450,17 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
 
 }
 
-#' Returns GDELT free text API word clouds for a given domain, can be term restricted
+#' Returns GDELT full text API word clouds for a given domain, can be term restricted
 #'
-#' @param domains
-#' @param term options \code{c(NA, "term_name")}
-#' @param last_minutes
-#' @param search_language
+#' @param domains vector of domains
+#' @param term specific terms to search
+#' @param last_minutes last n minutes to search
+#' @param visualization \itemize{
+#' \item NULL - returns raw data
+#' \item static returns static visualization
+#' \item interactive returns interactiev visualization
+#' }
+#' @param search_language language to search
 #' @param tone_more_than
 #' @param tone_less_than
 #' @param source_language
@@ -1537,7 +1542,7 @@ get_data_sentiment_ft_api_domains <-
         labs(
           x = NULL,
           y = "Tone",
-          title = list("GDELT Domain Sentiment Analysis as of ", Sys.Date()) %>% purrr::reduce(paste0),
+          title = list("GDELT V1 API Domain Sentiment Analysis as of ", Sys.Date()) %>% purrr::reduce(paste0),
           caption = "Data from GDELT via gdeltr2"
         )
 
@@ -1586,12 +1591,17 @@ get_data_sentiment_ft_api_domains <-
 
   }
 
-#' Returns GDELT free text API sentiment for a given term, can be domain restricted
+#' Returns GDELT full text API sentiment for a given term, can be domain restricted
 #'
-#' @param terms
-#' @param domain  \code{c(NA, "domain_name")}
-#' @param last_minutes
-#' @param search_language
+#' @param terms a vector of terms
+#' @param domain specificied domain
+#' @param last_minutes timeperiod to search
+#' @param search_language langeuage to search
+#' @param visualization \itemize{
+#' \item NULL - returns raw data
+#' \item static returns static visualization
+#' \item interactive returns interactiev visualization
+#' }
 #' @param tone_more_than
 #' @param tone_less_than
 #' @param source_language
@@ -1675,7 +1685,7 @@ get_data_sentiment_ft_api_terms <-
         labs(
           x = NULL,
           y = "Tone",
-          title = list("GDELT Term Sentiment Analysis as of ", Sys.Date()) %>% purrr::reduce(paste0),
+          title = list("GDELT V1 API Term Sentiment Analysis as of ", Sys.Date()) %>% purrr::reduce(paste0),
           caption = "Data from GDELT via gdeltr2"
         )
 
@@ -3049,7 +3059,7 @@ plot_wc_trelliscope <-
       get_trelliscope_id_columns(id_columns = id_columns)
 
     title <-
-      glue::glue("GDELT V2 Free Text API World Cloud Trelliscope")
+      glue::glue("GDELT V2 Full Text API World Cloud Trelliscope")
 
     df_trelliscope_params <-
       trelliscope_parameters %>% flatten_df()
@@ -3483,7 +3493,7 @@ plot_hc_trelliscope <-
       data$data[[1]]$modeSearch %>% unique()
 
     title <-
-      glue::glue("GDELT Free Text API {search_mode} Trelliscope")
+      glue::glue("GDELT Full Text API {search_mode} Trelliscope")
 
     df_trelliscope_params <-
       trelliscope_parameters %>% flatten_df()
@@ -3988,7 +3998,7 @@ plot_wc_trelliscope <-
       get_trelliscope_id_columns(id_columns = id_columns)
     mode_names <- data$modeSearch %>% unique() %>% str_c(collapse = ', ')
     title <-
-      glue::glue("GDELT Free Text API {mode_names} Trelliscope")
+      glue::glue("GDELT Full Text API {mode_names} Trelliscope")
 
     df_trelliscope_params <-
       trelliscope_parameters %>% flatten_df()
@@ -4109,7 +4119,7 @@ plot_panel_trelliscope <-
       suppressWarnings()
 
     title <-
-      glue::glue("GDELT Free Text API Image Trelliscope") %>%
+      glue::glue("GDELT Full Text API Image Trelliscope") %>%
       as.character()
 
     df_trelliscope_params <-
@@ -4178,6 +4188,7 @@ plot_trelliscope <-
       id_columns <- list(
         is_except = FALSE,
         columns = c(
+          "termSearch",
           'datetimeArticle',
           'domainArticle',
           "titleArticle",
@@ -4497,7 +4508,8 @@ codebook_trelliscope <-
 
     data <-
       data %>%
-      mutate(idPanel = 1:n(),
+      mutate(urlImage = "https://blog.gdeltproject.org/wp-content/uploads/2015-gdelt-api.png",
+             idPanel = 1:n(),
              panel = trelliscopejs::img_panel(urlImage)) %>%
       mutate_at(
         data %>% dplyr::select(matches("^url")) %>% dplyr::select(-urlImage) %>% names(),
@@ -4968,7 +4980,7 @@ plot_hc_trelliscope <-
     search_mode <- data$data[[1]]$modeSearch %>% unique()
 
     title <-
-      glue::glue("GDELT Free Text API {search_mode} Trelliscope")
+      glue::glue("GDELT Full Text API {search_mode} Trelliscope")
 
     df_trelliscope_params <-
       trelliscope_parameters %>% flatten_df()
@@ -5125,7 +5137,7 @@ munge_gkg_themes <- function(data) {
 
 # http://blog.gdeltproject.org/gdelt-doc-2-0-api-debuts/
 
-#' GDELT Free Text API 2.0 Codebooks
+#' GDELT Full Text API 2.0 Codebooks
 #'
 #' @param code_book code book selection \itemize{
 #' \item gkg: Global knowledge graph codes
@@ -5819,9 +5831,9 @@ query_gdelt_ft_v2_api <-
     all_data
   }
 
-#' Query GDELT V2 Free Text API
+#' Query GDELT V2 Full Text API
 #'
-#' Queries GDELT's free text API for
+#' Queries GDELT's full text API for
 #' user specified terms, machine learned items,
 #' web domains and more.  Users can return raw data
 #' or a Trelliscope of visual results.  Data is a available
