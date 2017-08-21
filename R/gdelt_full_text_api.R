@@ -5396,8 +5396,8 @@ generate_free_text_api <-
         "{format_slug}",
         "{timespan_slug}",
         "{datetime_slug}",
-        "{max_slug}",
-        "{sort_slug}"
+         #"{sort_slug}"
+        "{max_slug}"
       ) %>%
       str_to_lower()
 
