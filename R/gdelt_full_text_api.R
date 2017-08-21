@@ -5255,7 +5255,7 @@ generate_free_text_api <-
   timeline_smooth = 5,
   sort_by = 'DateDesc' # DateDesc, DateAsc, ToneDesc
   ) {
-    base <- "http://api.gdeltproject.org/api/v2/doc/doc?query="
+    base <- "https://api.gdeltproject.org/api/v2/doc/doc?query="
 
     for (i in 1:length(query_parameters)) {
       query_parameters[query_parameters[i] %>% names()] %>% is.na()
