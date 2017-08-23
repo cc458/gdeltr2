@@ -4234,8 +4234,8 @@ plot_trelliscope <-
         widget_size = c(500, 500)
       }
 
-      id_columns <- list(is_except = TRUE,
-                         columns = c("idPanel", "data", "plot"),
+      id_columns <- list(is_except = FALSE,
+                         columns = c("modeSearch", "periodtimeSearch", "termSearch"),
                          regex = NULL)
 
 
@@ -5396,12 +5396,11 @@ generate_free_text_api <-
         "{format_slug}",
         "{timespan_slug}",
         "{datetime_slug}",
-         #"{sort_slug}"
-        "{max_slug}"
+        "{max_slug}",
+        "{sort_slug}"
       ) %>%
       str_to_lower()
 
-    url_api %>% str_replace_all('\\&&', '\\&')
     url_api
   }
 
