@@ -79,7 +79,7 @@ get_data_ft_api_term <-
            sort_by = 'date',
            return_message = T) {
     url_base <-
-      'http://api.gdeltproject.org/api/v1/search_ftxtsearch/search_ftxtsearch?query='
+      'https://api.gdeltproject.org/api/v1/search_ftxtsearch/search_ftxtsearch?query='
 
     if (term %>% is.na()) {
       term_slug <-
@@ -816,7 +816,7 @@ get_data_wordcloud_ft_api <-
            dedeup_results = T,
            return_message = T) {
     url_base <-
-      'http://api.gdeltproject.org/api/v1/search_ftxtsearch/search_ftxtsearch?query='
+      'https://api.gdeltproject.org/api/v1/search_ftxtsearch/search_ftxtsearch?query='
 
     if (term %>% is.na()) {
       term_slug <-
@@ -1233,7 +1233,7 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
                                       dedeup_results = T,
                                       return_message = T) {
   url_base <-
-    'http://api.gdeltproject.org/api/v1/search_ftxtsearch/search_ftxtsearch?query='
+    'https://api.gdeltproject.org/api/v1/search_ftxtsearch/search_ftxtsearch?query='
 
   if (term %>% is.na()) {
     term_slug <-
@@ -1790,7 +1790,8 @@ get_codes_stability_locations <-
       bind_rows(country_df) %>%
       arrange(idLocation) %>%
       mutate(countryLocation = if_else(countryLocation %>% is.na, nameLocation, countryLocation))
-
+    closeAllConnections()
+    gc()
     return(location_df)
 
   }
@@ -2547,7 +2548,7 @@ generate_geo_query <-
   sort =  NULL,
   browse_url = TRUE) {
     base <-
-      "http://api.gdeltproject.org/api/v2/geo/geo?query="
+      "https://api.gdeltproject.org/api/v2/geo/geo?query="
 
     query_slug <-
       parse_query(query_parameters = query_parameters)
@@ -4424,25 +4425,25 @@ codebook_trelliscope <-
         data %>%
         mutate(
           urlNews1D = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=artlist&timespan=24h&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=artlist&timespan=24h&maxrecords=250&sort=datedesc'
           ),
           urlNews1M = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=artlist&timespan=1m&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=artlist&timespan=1m&maxrecords=250&sort=datedesc'
           ),
           urlNews3M = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=artlist&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=artlist&timespan=12w&maxrecords=250&sort=datedesc'
           ),
           urlWordCloudEnglish3M = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=wordcloudenglish&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=wordcloudenglish&timespan=12w&maxrecords=250&sort=datedesc'
           ),
           urlWordCloudTheme3M = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=wordcloudtheme&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=wordcloudtheme&timespan=12w&maxrecords=250&sort=datedesc'
           ),
           urlTimelineVol = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=timelinevolinfo&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=timelinevolinfo&timespan=12w&maxrecords=250&sort=datedesc'
           ),
           urlSentiment = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=ToneChart&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=ToneChart&timespan=12w&maxrecords=250&sort=datedesc'
           )
         )
     }
@@ -4453,25 +4454,25 @@ codebook_trelliscope <-
         data %>%
         mutate(
           urlNews1D = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=artlist&timespan=24h&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=artlist&timespan=24h&maxrecords=250&sort=datedesc'
           ),
           urlNews1M = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=artlist&timespan=1m&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=artlist&timespan=1m&maxrecords=250&sort=datedesc'
           ),
           urlNews3M = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=artlist&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=artlist&timespan=12w&maxrecords=250&sort=datedesc'
           ),
           urlWordCloudEnglish3M = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=wordcloudenglish&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=wordcloudenglish&timespan=12w&maxrecords=250&sort=datedesc'
           ),
           urlWordCloudTheme3M = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=wordcloudtheme&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=wordcloudtheme&timespan=12w&maxrecords=250&sort=datedesc'
           ),
           urlTimelineVol = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=timelinevolinfo&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=timelinevolinfo&timespan=12w&maxrecords=250&sort=datedesc'
           ),
           urlSentiment = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=ToneChart&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=ToneChart&timespan=12w&maxrecords=250&sort=datedesc'
           )
         )
     }
@@ -4482,25 +4483,25 @@ codebook_trelliscope <-
         data %>%
         mutate(
           urlNews1D = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=artlist&timespan=24h&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=artlist&timespan=24h&maxrecords=250&sort=datedesc'
           ),
           urlNews1M = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=artlist&timespan=1m&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=artlist&timespan=1m&maxrecords=250&sort=datedesc'
           ),
           urlNews3M = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=artlist&timespan=12w&maxrecords=250&sort=datedesc'
+            'httpss://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=artlist&timespan=12w&maxrecords=250&sort=datedesc'
           ),
           urlWordCloudEnglish3M = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=wordcloudenglish&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=wordcloudenglish&timespan=12w&maxrecords=250&sort=datedesc'
           ),
           urlWordCloudTheme3M = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=wordcloudtheme&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=wordcloudtheme&timespan=12w&maxrecords=250&sort=datedesc'
           ),
           urlTimelineVol = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=timelinevolinfo&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=timelinevolinfo&timespan=12w&maxrecords=250&sort=datedesc'
           ),
           urlSentiment = glue::glue(
-            'http://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=ToneChart&timespan=12w&maxrecords=250&sort=datedesc'
+            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=ToneChart&timespan=12w&maxrecords=250&sort=datedesc'
           )
         )
     }
@@ -5205,7 +5206,7 @@ get_gdelt_codebook_ft_api <-
       suppressMessages()
 
     if (code_book %>% str_to_lower() == "gkg") {
-      data <- data %>% munge_gkg_themes()
+      data <- data %>% munge_gkg_themes() %>% arrange(desc(idGKGTheme))
     }
 
     if (!visualize_trelliscope) {
