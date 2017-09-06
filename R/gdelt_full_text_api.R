@@ -4604,6 +4604,7 @@ plot_ft_v2_highchart <-
   function(data,
            search_mode = 'TimelineVolInfo',
            include_title = TRUE) {
+    
     data <-
       data %>%
       dplyr::mutate(typeChart = search_mode) %>%
@@ -4796,20 +4797,20 @@ plot_ft_v2_highchart <-
         text = glue::glue("Data from GDELT Project via gdeltr2") %>% as.character(),
         href = "http://gdeltproject.org"
       ) %>%
-      hc_responsive(
-        rules = list(
-          # remove legend if there is no much space
-          list(
-            condition = list(maxWidth  = 500),
-            chartOptions = list(legend = leg_500_opts)
-          ),
+      #hc_responsive(
+       # rules = list(
+        #  # remove legend if there is no much space
+         # list(
+          #  condition = list(maxWidth  = 500),
+           # chartOptions = list(legend = leg_500_opts)
+          #),
           # put legend on the right when there is much space
-          list(
-            condition = list(minWidth  = 900),
-            chartOptions = list(legend = leg_900_opts)
-          )
-        )
-      ) %>%
+          #list(
+           # condition = list(minWidth  = 900),
+            #chartOptions = list(legend = leg_900_opts)
+          #)
+        #)
+      #) %>%
       hc_exporting(enabled = TRUE) %>%
       hc_chart(zoomType = "x") %>%
       suppressWarnings()
