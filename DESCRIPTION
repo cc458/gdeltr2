@@ -2,22 +2,13 @@ Package: gdeltr2
 Type: Package
 Title: R's modern interface GDELT Project Interface
 Year: 2017
-Version: 0.3.11024
+Version: 0.3.110242
 Authors@R: person("Alex", "Bresler", email = "abreselr@asbcllc.com", role = c("aut", "cre"))
 URL: https://github.com/abresler/gdeltr2
 Description: A tool to efficently and interactively interface with GDELT data and
     and APIs.
 Depends:
-    R (>= 3.2.0),
-    readr,
-    stringr,
-    stringi,
-    dplyr,
-    tidyr,
-    lubridate,
-    purrr,
-    curl,
-    magrittr
+    R (>= 3.2.0)
 License: MIT + file LICENSE
 LazyData: TRUE
 Imports:
@@ -32,6 +23,7 @@ Imports:
     readr,
     urltools,
     jsonlite,
+    broom,
     highcharter,
     glue,
     anytime,
