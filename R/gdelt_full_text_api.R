@@ -434,7 +434,7 @@ get_data_ft_api_term <-
 #' @param only_english if \code{TRUE} returns only english results
 #' @param nest_data if \code{TRUE} retrns a nested data frame
 #' @param return_message if \code{TRUE} return a messag
-#' @import tidyr stringr rvest tidyverse dplyr trelliscopejs devtools
+#' @import tidyr stringr rvest readr dplyr trelliscopejs devtools
 #' @importFrom lubridate with_tz
 #' @importFrom lubridate mdy_hm
 #' @importFrom jsonlite fromJSON
@@ -624,7 +624,7 @@ get_data_ft_v1_api_terms <-
 #' @param only_english if \code{TRUE} returns only english results
 #' @param return_message if \code{TRUE} return a message
 #' @param nest_data if \code{TRUE} return a nested data frame
-#' @import tidyr stringr rvest tidyverse trelliscopejs purrr dplyr devtools
+#' @import tidyr stringr rvest readr trelliscopejs purrr dplyr devtools
 #' @importFrom xml2 read_html
 #' @return
 #' @export
@@ -1033,7 +1033,7 @@ get_data_wordcloud_ft_api <-
 #' @param dedeup_results
 #' @param return_message
 #' @param nest_data
-#' @import tidyr stringr rvest tidyverse dplyr purrr stringr wordcloud2
+#' @import tidyr stringr rvest readr dplyr purrr stringr wordcloud2
 #' @return
 #' @export
 #'
@@ -1138,7 +1138,7 @@ get_data_wordcloud_ft_api_domains <-
 #' @param nest_data returns a nested data frame
 #' \code{c(T, F)}
 #' @importFrom tidyr nest
-#' @import tidyr stringr rvest tidyverse
+#' @import tidyr stringr rvest readr purrr dplyr
 #' @return if \code{visualize_results} an interactive wordcloud else a \code{data_frame}
 #' @export
 #'
@@ -1469,7 +1469,7 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
 #' @param return_message
 #' @param nest_data
 #' @return
-#' @import tidyr stringr rvest tidyverse ggplot2 ggthemes hrbrthemes
+#' @import tidyr stringr rvest purrr readr dplyr ggplot2 ggthemes hrbrthemes
 #' @importFrom grDevices colors
 #' @importFrom plotly ggplotly
 #' @export
@@ -1611,7 +1611,7 @@ get_data_sentiment_ft_api_domains <-
 #'
 #' @return
 #' @export
-#' @import tidyr stringr rvest tidyverse ggplot2 ggthemes hrbrthemes
+#' @import tidyr stringr rvest dplyr readr purrr ggplot2 ggthemes hrbrthemes
 #' @importFrom grDevices colors
 #' @importFrom plotly ggplotly
 #' @examples
@@ -2041,7 +2041,7 @@ get_data_location_instability_api <-
 #'
 #' @return if \code{visualize} a ggplot visualization else a \code{data_frame}
 #' @export
-#' @import tidyr stringr rvest tidyverse ggplot2 ggthemes hrbrthemes
+#' @import tidyr stringr rvest purrr readr dplyr ggplot2 ggthemes hrbrthemes
 #' @importFrom magrittr extract2
 #' @importFrom grDevices colors
 #' @importFrom plotly ggplotly
@@ -2202,7 +2202,7 @@ get_data_locations_instability_api <-
 #'
 #' @return
 #' @export
-#' @import tidyr stringr rvest tidyverse
+#' @import tidyr stringr rvest purrr dplyr
 #' @importFrom readr read_csv
 #' @importFrom magrittr extract2
 #' @examples
@@ -2265,7 +2265,7 @@ read_codebook <-
 #'
 #' @return
 #' @export
-#' @import readr dplyr stringr purrr tibble tidyverse
+#' @import readr dplyr stringr purrr tibble readr
 #' @examples
 #' get_gdelt_codebook_geo_api(code_book = 'imagetags')
 get_gdelt_codebook_geo_api <-
@@ -4604,7 +4604,7 @@ plot_ft_v2_highchart <-
   function(data,
            search_mode = 'TimelineVolInfo',
            include_title = TRUE) {
-    
+
     data <-
       data %>%
       dplyr::mutate(typeChart = search_mode) %>%
