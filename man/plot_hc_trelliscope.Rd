@@ -2,7 +2,6 @@
 % Please edit documentation in R/gdelt_full_text_api.R
 \name{plot_hc_trelliscope}
 \alias{plot_hc_trelliscope}
-\alias{plot_hc_trelliscope}
 \title{Plot a highchart trelliscope}
 \usage{
 plot_hc_trelliscope(data, remove_columns = c("countMaximumRecords",

@@ -2,7 +2,6 @@
 % Please edit documentation in R/gdelt_full_text_api.R
 \name{plot_wc_trelliscope}
 \alias{plot_wc_trelliscope}
-\alias{plot_wc_trelliscope}
 \title{Plot wordcloud trelliscope}
 \usage{
 plot_wc_trelliscope(data, remove_columns = c("countMaximumRecords",

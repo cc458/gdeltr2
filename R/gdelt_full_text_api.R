@@ -411,43 +411,6 @@ get_data_ft_api_term <-
     return(url_df)
 
   }
-
-#' Returns GDELT full text API results for multiple terms
-#'
-#' @param terms vector of words to search
-#' @parram
-#' @param visualize_results if \code{TRUE} returns an interactive trelliscope
-#' @param trelliscope_parameters list of parameters to pass along to trelliscope \itemize{
-#' \item path: if not \code{NULL} the path to save the trelliscope
-#' \item rows: rows for trelliscope
-#' \item columns: columns for trelliscope
-#' \item id_columns: initial columns
-#' }
-#' @param domain domains you wish to restrict the search to
-#' @param return_image_url if \code{TRUE} returns only articles with photos
-#' @param last_minutes restrict to last x minutes
-#' @param max_rows maximum rows
-#' @param search_language article language to search
-#' @param source_language source article search
-#' @param sort_by sort by
-#' @param dedeup_results if \code{TRUE} remove duplicate results
-#' @param only_english if \code{TRUE} returns only english results
-#' @param nest_data if \code{TRUE} retrns a nested data frame
-#' @param return_message if \code{TRUE} return a messag
-#' @import tidyr stringr rvest readr dplyr trelliscopejs devtools
-#' @importFrom lubridate with_tz
-#' @importFrom lubridate mdy_hm
-#' @importFrom jsonlite fromJSON
-#' @importFrom httr GET
-#' @importFrom purrr flatten_df
-#' @importFrom xml2 read_html
-#' @return if \code{visualize_results} an interactive trelliscope else a \code{data_frame}
-#' @export
-#'
-#' @examples
-#' \donotrun{
-#' get_data_ft_v1_api_terms(terms = c('"Kevin Durant"','"Stephen Curry"', "Donald Trump", '"Blackstone Real Estate"', "'Cap Rate'"), only_english = T)
-#' }
 get_data_ft_v1_api_terms <-
   function(terms = c('"Kevin Durant"', '"Stephen Curry"'),
            visualize_results = TRUE,
@@ -592,48 +555,6 @@ get_data_ft_v1_api_terms <-
 
 
 # domains -----------------------------------------------------------------
-
-#' @param
-#' @param
-#' @param
-#' @param
-#' @param
-#' @param
-#' @param
-#' @param
-#' @param
-#' @param return_message if \code{TRUE} return a message
-#' Returns GDELT full text API results for multiple webdomains
-#'
-#' @param terms vector of words to search
-#' @param visualize_results
-#' @param trelliscope_parameters list of parameters to pass along to trelliscope \itemize{
-#' \item path: if not \code{NULL} the path to save the trelliscope
-#' \item rows: rows for trelliscope
-#' \item columns: columns for trelliscope
-#' \item id_columns: initial columns
-#' }
-#' @param domain domains you wish to restrict the search to
-#' @param return_image_url if \code{TRUE} returns only articles with photos
-#' @param last_minutes restrict to last x minutes
-#' @param max_rows maximum rows
-#' @param search_language article language to search
-#' @param source_language source article search
-#' @param sort_by sort by
-#' @param dedeup_results if \code{TRUE} remove duplicate results
-#' @param only_english if \code{TRUE} returns only english results
-#' @param return_message if \code{TRUE} return a message
-#' @param nest_data if \code{TRUE} return a nested data frame
-#' @import tidyr stringr rvest readr trelliscopejs purrr dplyr devtools
-#' @importFrom xml2 read_html
-#' @return
-#' @export
-#'
-#' @examples
-#' \donotrun{
-#' get_data_ft_v1_api_domains(domains = c('realdeal.com', 'pehub.com', 'sbnation.com', 'wsj.com', 'seekingalpha.com', 'washingtonpost.com', 'nytimes.com'))
-#' }
-
 get_data_ft_v1_api_domains <-
   function(domains = c('washingtonpost.com', 'nytimes.com'),
            visualize_results = TRUE,
@@ -1018,27 +939,6 @@ get_data_wordcloud_ft_api <-
     return(wordcloud_data)
 
   }
-
-
-#' Returns GDELT full text API word clouds for a given domain, can be term restricted
-#'
-#' @param domains
-#' @param term options \code{c(NA, "term_name")}
-#' @param last_minutes
-#' @param search_language
-#' @param tone_more_than
-#' @param tone_less_than
-#' @param source_language
-#' @param sort_by
-#' @param dedeup_results
-#' @param return_message
-#' @param nest_data
-#' @import tidyr stringr rvest readr dplyr purrr stringr wordcloud2
-#' @return
-#' @export
-#'
-#' @examples
-
 get_data_wordcloud_ft_api_domains <-
   function(domains = c('nytimes.com', 'washingtonpost.com'),
            term = NA,
@@ -1115,34 +1015,6 @@ get_data_wordcloud_ft_api_domains <-
     return(all_data)
 
   }
-
-#' Returns GDELT full text API word clouds for a given term, can be domain restricted
-#'
-#' @param terms any word, can be quoted or not
-#' @param domain domain name \code{NA} - domains, else vector of daomins
-#' @param return_image_url if \code{TRUE} returns an image url
-#' @param last_minutes how many prior minutes
-#' @param max_rows number of rows
-#' @param tone_less_than tone more than specified number
-#' @param tone_more_than tone less than specified number
-#' @param search_language language to search
-#' @param source_language soruce language
-#' @param sort_by method to sort the data
-#' \code{c('date', 'relevence', 'tone.ascending', 'tone.descending')}
-#' @param dedeup_results return unique results
-#' \code{c(T, F)}
-#' @param only_english return only english results
-#' \code{c(T, F)}
-#' @param return_message if \code{true} returns a message
-#' \code{c(T, F)}
-#' @param nest_data returns a nested data frame
-#' \code{c(T, F)}
-#' @importFrom tidyr nest
-#' @import tidyr stringr rvest readr purrr dplyr
-#' @return if \code{visualize_results} an interactive wordcloud else a \code{data_frame}
-#' @export
-#'
-#' @examples
 get_data_wordcloud_ft_api_terms <-
   function(terms = c('"Donald Trump"', '"Hilary Clinton"'),
            domain = NA,
@@ -1449,33 +1321,6 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
   return(sentiment_data)
 
 }
-
-#' Returns GDELT full text API word clouds for a given domain, can be term restricted
-#'
-#' @param domains vector of domains
-#' @param term specific terms to search
-#' @param last_minutes last n minutes to search
-#' @param visualization \itemize{
-#' \item NULL - returns raw data
-#' \item static returns static visualization
-#' \item interactive returns interactiev visualization
-#' }
-#' @param search_language language to search
-#' @param tone_more_than
-#' @param tone_less_than
-#' @param source_language
-#' @param sort_by
-#' @param dedeup_results
-#' @param return_message
-#' @param nest_data
-#' @return
-#' @import tidyr stringr rvest purrr readr dplyr ggplot2 ggthemes hrbrthemes
-#' @importFrom grDevices colors
-#' @importFrom plotly ggplotly
-#' @export
-#'
-#' @examples
-
 get_data_sentiment_ft_api_domains <-
   function(domains = c('nytimes.com', 'washingtonpost.com'),
            visualization = 'static',
@@ -1590,32 +1435,6 @@ get_data_sentiment_ft_api_domains <-
     return(all_data)
 
   }
-
-#' Returns GDELT full text API sentiment for a given term, can be domain restricted
-#'
-#' @param terms a vector of terms
-#' @param domain specificied domain
-#' @param last_minutes timeperiod to search
-#' @param search_language langeuage to search
-#' @param visualization \itemize{
-#' \item NULL - returns raw data
-#' \item static returns static visualization
-#' \item interactive returns interactiev visualization
-#' }
-#' @param tone_more_than
-#' @param tone_less_than
-#' @param source_language
-#' @param sort_by
-#' @param dedeup_results
-#' @param return_message
-#'
-#' @return
-#' @export
-#' @import tidyr stringr rvest dplyr readr purrr ggplot2 ggthemes hrbrthemes
-#' @importFrom grDevices colors
-#' @importFrom plotly ggplotly
-#' @examples
-#' get_data_sentiment_ft_api_terms(terms = c("Zika", '"Golden State Warriors"')) %>% View
 get_data_sentiment_ft_api_terms <-
   function(terms = c("Zika", '"Golden State Warriors"'),
            visualization = NULL,
@@ -3393,6 +3212,7 @@ plot_ft_v2_highchart <-
           style = list(pointerEvents = "auto"),
           enabled = FALSE
         ) %>%
+
         hc_chart(events = list(
           load = JS(
             "function(){ this.myTooltip = new Highcharts.Tooltip(this, this.options.tooltip);}"
@@ -3406,11 +3226,17 @@ plot_ft_v2_highchart <-
             events = list(
               click = JS(
                 "function(evt) {
-                this.chart.myTooltip.refresh(evt.point, evt);}"
-              ),
-              mouseOut = JS("function() {this.chart.myTooltip.hide();}")
-              ),
-            stickyTracking = TRUE
+                this.chart.myTooltip.options.enabled = true;
+                this.chart.myTooltip.refresh(evt.point, evt)
+    }"
+        ),
+        mouseOut = JS("function() {
+                      this.chart.myTooltip.hide();
+                      this.chart.myTooltip.options.enabled = false;
+
+  }")
+        ),
+        stickyTracking = T
           )
           )
 
@@ -5800,9 +5626,10 @@ query_gdelt_ft_v2_api <-
       dplyr::select(one_of(search_params), everything())
     parse_v2_urls_safe <-
       purrr::possibly(parse_v2_urls, data_frame())
+
     all_data <-
       all_url_df$urlGDELTV2FTAPI %>%
-      parse_v2_urls(return_message = return_message)
+      parse_v2_urls_safe(return_message = return_message)
 
     all_data <-
       all_data %>% tidyr::nest(-urlGDELTV2FTAPI)

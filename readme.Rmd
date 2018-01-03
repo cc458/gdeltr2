@@ -73,13 +73,7 @@ The data tidying functions begin with `parse_` and they apply to a number of the
 
 #### <strong>Primary Functions</strong>
 * <strong>Full Text API</strong>
-	*   `get_data_ft_api_domains()` - retrieves descriptive data from specified domains over the last 24 hours
-	*   `get_data_ft_api_terms()`  - retrieves descriptive data for specified terms over the last 24 hours
-	*   `get_data_wordcloud_ft_api_domains()`  - retrieves wordcloud data for specified domains over the last 24 hours
-	*   `get_data_wordcloud_ft_api_terms()`  - retrieves wordcloud data for specified terms over the last 24 hours
-	*   `get_data_sentiment_ft_api_domains()`  - retrieves sentiment data for specified domains over the last 24 hours
-	*   `get_data_sentiment_ft_api_terms()` - retrieves sentiment data for specified terms over the last 24 hours
-	
+	*   `get_data_ft_v2_api()` - retrieves descriptive data from V2 API
 	*   `get_data_ft_trending_terms()` - retrieves trending terms over the last 15 minutes.  The term can be a GDELT tag, location, person, place, or thing.
 
 * <strong>[GDELT Events](http://gdeltproject.org/data.html#documentation)</strong>
@@ -158,50 +152,6 @@ All these the GDELT and GKG datasets contain a whole host of codes that need res
 ```{r eval=FALSE}
 library(gdeltr2)
 load_needed_packages(c('dplyr', 'magrittr'))
-```
-### Full Text API
-```{r eval=FALSE}
-test_terms <-
-  c('"Brooklyn Nets"', 'El Chapo', '"Hassan Whiteside"', '"EB5"', '"Toy Poodle"', "Gary Vaynerchuk")
-
-term_data <- 
-  get_data_ft_api_terms(
-    terms = test_terms,
-    dedeup_results = T,
-    only_english = T,
-    restrict_to_usa = F,
-    max_rows = 15000,
-    nest_data = F,
-    sort_by = 'date',
-    return_image_url = F,
-    domain = NA,
-    return_message = T
-  )
-
-test_domains <- 
-  c('realdeal.com', 'nytimes.com', 'curbed.com', 'pehub.com', 'wsj.com')
-  
-domain_data <- 
-  get_data_ft_api_domains(term = NA, domains = test_domains)
-
-nested_domains <-
-  get_data_ft_api_domains(
-    domains = c('netsdaily.com', 'washingtonpost.com', 'curbed.com'),
-    nest_data = T
-  )
-
-domain_wordcloud <- 
-  get_data_wordcloud_ft_api_domains(domains = test_domains, term = NA, tone_more_than = 1)
-
-term_wordcloud <- 
-  get_data_wordcloud_ft_api_terms(terms = test_terms, domain = NA)
-
-term_sentiment <-
-  get_data_sentiment_ft_api_terms(terms = test_terms, domain = NA )
-
-domain_sentiment <-
-  get_data_sentiment_ft_api_domains(domains = test_domains)
-
 ```
 
 ### GDELT Event Data
