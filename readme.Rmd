@@ -51,6 +51,8 @@ This package may require the development versions of `devtools` and `dplyr` so, 
 ```{r eval=FALSE}
 devtools::install_github("hadley/devtools")
 devtools::install_github("hadley/dplyr")
+devtools::install_github("hafen/trelliscopejs")
+
 ```
 
 #### <strong>Installation</strong>
@@ -106,6 +108,10 @@ The data tidying functions begin with `parse_` and they apply to a number of the
 #### <strong>Tidying Functions</strong>
 Many of the columns in the GKG output are concatenated and require further parsing for proper analysis.
 These function tidy those concatenated columns, note given file sizes the functions may be time consuming.
+
+### V2 Full Text API
+
+You can refer to [this](http://asbcllc.com/blog/2017/august/intro_to_programming_with_gdeltr2/index.html) blog post that discusses how to use this functionality.
 
 #### Global Knowledge Graph
 

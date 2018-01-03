@@ -5104,7 +5104,7 @@ generate_free_text_api <-
 
     if (source_language %>% length() > 0) {
       source_language_slug <-
-        glue::glue("%20sourcelang:{source_language}")
+        glue::glue("&sourcelang:{source_language}")
     } else {
       source_language_slug <- ""
     }
@@ -5220,7 +5220,7 @@ generate_free_text_api <-
         "{base}",
         "{query_slug}",
         "{source_language_slug}",
-        '{mode_slug}',
+        "{mode_slug}",
         "{format_slug}",
         "{timespan_slug}",
         "{datetime_slug}",

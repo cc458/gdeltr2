@@ -78,6 +78,7 @@ This package may require the development versions of `devtools` and
 ``` r
 devtools::install_github("hadley/devtools")
 devtools::install_github("hadley/dplyr")
+devtools::install_github("hafen/trelliscopejs")
 ```
 
 #### <strong>Installation</strong>
