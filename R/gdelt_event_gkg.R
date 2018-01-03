@@ -4530,7 +4530,7 @@ get_data_gkg_day_summary <- function(date_data = "2016-06-01",
 
   if (return_message) {
     "You retrieved " %>%
-      paste0(all_data %>% nrow, " gkg summary events for ", date_data) %>%
+      paste0(all_data %>% nrow(), " gkg summary events for ", date_data) %>%
       message()
   }
 
@@ -5511,7 +5511,7 @@ parse_vgkg_logos <- function(gdelt_data,
   if (filter_na) {
     all_data <-
       all_data %>%
-      dplyr::filter(!nameLogo %>% is.na)
+      dplyr::filter(!nameLogo %>% is.na())
   }
 
   all_data <-
@@ -5711,7 +5711,7 @@ parse_vgkg_faces <- function(gdelt_data,
   if (filter_na) {
     all_data <-
       all_data %>%
-      dplyr::filter(!scoreDetectionConfidence %>% is.na)
+      dplyr::filter(!scoreDetectionConfidence %>% is.na())
   }
 
   all_data <-
@@ -5793,7 +5793,7 @@ parse_vgkg_ocr <- function(gdelt_data,
   if (filter_na) {
     all_data <-
       all_data %>%
-      dplyr::filter(!idItemOCR %>% is.na)
+      dplyr::filter(!idItemOCR %>% is.na())
   }
 
   all_data <-
@@ -5872,7 +5872,7 @@ parse_vgkg_languages <- function(gdelt_data,
   if (filter_na) {
     all_data <-
       all_data %>%
-      dplyr::filter(!idItemLanguage %>% is.na)
+      dplyr::filter(!idItemLanguage %>% is.na())
   }
 
   all_data <-
