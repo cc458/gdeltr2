@@ -6,10 +6,9 @@
 \usage{
 get_data_locations_instability_api(location_ids = c("US", "IS", "TU"),
   random_locations = NULL, variable_names = c("instability", "conflict",
-  "tone", "protest", "artvolnorm"), visualization = "static",
-  days_moving_average = NA, time_periods = "daily",
-  use_multi_locations = F, return_wide = T, nest_data = F,
-  return_message = T)
+  "tone", "protest", "artvolnorm"), days_moving_average = NA,
+  time_periods = "daily", use_multi_locations = F, return_wide = T,
+  nest_data = F, return_message = T)
 }
 \arguments{
 \item{location_ids}{Specify the location IDs}
@@ -22,12 +21,6 @@ get_data_locations_instability_api(location_ids = c("US", "IS", "TU"),
 \item \code{protest}
 \item \code{tone}
 \item \code{artvolnorm}: Relative mentions
-}}
-
-\item{visualization}{\itemize{
-\item \code{NULL}: no visualization
-\item \code{interactive}: returns an interactive visualization
-\item \code{static}: returns a ggplot2 visualization
 }}
 
 \item{days_moving_average}{Specify day moving average, NA is unsmoothed}
@@ -45,6 +38,12 @@ get_data_locations_instability_api(location_ids = c("US", "IS", "TU"),
 \item{nest_data}{if \code{TRUE} returns a nested data frame}
 
 \item{return_message}{if \code{TRUE} returns a location}
+
+\item{visualization}{\itemize{
+\item \code{NULL}: no visualization
+\item \code{interactive}: returns an interactive visualization
+\item \code{static}: returns a ggplot2 visualization
+}}
 }
 \value{
 if \code{visualize} a ggplot visualization else a \code{data_frame}

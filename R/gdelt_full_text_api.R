@@ -1860,10 +1860,9 @@ get_data_location_instability_api <-
 #'
 #' @return if \code{visualize} a ggplot visualization else a \code{data_frame}
 #' @export
-#' @import tidyr stringr rvest purrr readr dplyr ggplot2 ggthemes hrbrthemes
+#' @import tidyr stringr rvest purrr readr dplyr ggplot2 ggthemes
 #' @importFrom magrittr extract2
 #' @importFrom grDevices colors
-#' @importFrom plotly ggplotly
 #' @examples
 #' \donotrun{
 #' get_data_locations_instability_api(location_ids = NULL, random_locations = 5, visualization = 'static)
@@ -1872,7 +1871,6 @@ get_data_locations_instability_api <-
   function(location_ids = c('US', 'IS', "TU"),
            random_locations = NULL,
            variable_names = c('instability', 'conflict', 'tone', 'protest', 'artvolnorm'),
-           visualization = 'static',
            days_moving_average = NA,
            time_periods = 'daily',
            use_multi_locations = F,
@@ -1922,92 +1920,7 @@ get_data_locations_instability_api <-
         ) %>%
           suppressWarnings()
       }))
-    is_viz <-
-      !visualization %>% purrr::is_null()
-
-    if (is_viz) {
-      viz <-
-        all_data %>%
-        ggplot(aes(x = dateData, y = value)) +
-        geom_line(aes(color = nameLocation)) +
-        facet_wrap(~ item, scales = "free") +
-        hrbrthemes::theme_ipsum_rc(grid = "XY") +
-        scale_x_date(expand = c(0, 0)) +
-        labs(
-          x = NULL,
-          y = NULL,
-          title = "GDELT Stabilitiy Analysis",
-          subtitle = list(
-            all_data$dateData %>% min(na.rm = TRUE),
-            ' to ',
-            all_data$dateData %>% max(na.rm = TRUE)
-          ) %>% purrr::reduce(paste0),
-          caption = "Data from GDELT via gdeltr2"
-        )
-
-      if (location_ids %>% length() <= 8) {
-        viz <-
-          viz +
-          ggthemes::scale_color_colorblind(guide = guide_legend(title = ""))
-      } else {
-        manual_colors <-
-          RColorBrewer::brewer.pal(12, "Paired")
-        over_12 <-
-          location_ids %>% length() > 12
-        if (over_12) {
-          more_colors <-
-            location_ids %>% length() - 12
-          add_colors <-
-            grDevices::colors() %>% sample(more_colors)
-          manual_colors <-
-            c(manual_colors, add_colors)
-        }
-        viz <-
-          viz +
-          scale_color_manual(values = manual_colors, guide = guide_legend(title = ""))
-      }
-
-      is_interactive <-
-        visualization %>% str_to_lower() == 'interactive'
-
-      if (is_interactive) {
-        viz <-
-          plotly::ggplotly(viz)
-      }
-
-      return(viz)
-
-    }
-
-    if (return_wide) {
-      all_data <-
-        all_data %>%
-        spread(item, value)
-    }
-
-    if (nest_data) {
-      nest_cols <-
-        all_data %>% dplyr::select(one_of(
-          c(
-            'value',
-            'dateData',
-            'datetimeData',
-            'instability',
-            'conflict',
-            'protest',
-            'tone',
-            'artvolnorm'
-          )
-        )) %>% suppressWarnings() %>%
-        names()
-
-      all_data <-
-        all_data %>%
-        nest_(key_col = 'data', nest_cols = nest_cols) %>%
-        arrange(idLocation)
-    }
-
-    return(all_data)
+    all_data
   }
 
 
