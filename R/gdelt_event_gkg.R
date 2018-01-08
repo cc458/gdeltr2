@@ -77,13 +77,14 @@ resolve_long_names <-
 
 #' Loads needed packages
 #'
-#' @param required_packages
+#' @param required_packages vector of pckages to lad
 #'
-#' @return
+#' @return invisible
 #' @export
 #'
 #' @examples
 #' load_neeeded_packages(c('magrittr', 'dplyr))
+#'
 load_needed_packages <- function(required_packages = c('dplyr')) {
   loaded_packages <- gsub("package:", "", search())
   package_to_load <- required_packages[!required_packages %in%

@@ -80,6 +80,9 @@ This function will generate a V2 GEO api query and either open
 the URL in the browser for exploration or download the GEOJSON data
 for users to explore in R
 }
+\examples{
+generate_geo_query(query_parameters = list(term = "Brooklyn Nets"))
+}
 \references{
 \href{http://blog.gdeltproject.org/gdelt-geo-2-0-api-debuts/}{GDELT GEO API}
 }

@@ -10,9 +10,8 @@ generate_trelliscope_bundle(include_image_panel = TRUE,
   "WordCloudImageTags", "WordCloudEnglish", "WordCloudImageWebTags"),
   terms = NA, domains = NA, gkg_themes = NA, images_ocr = NA,
   images_tag = NA, images_web_tag = NA, images_face_tone = NA,
-  images_num_faces = NA, images_web_count = NA, search_language = "eng",
-  timespans = c("24 hours"), wordcloud_timespans = c("1 month"),
-  dates = NA, source_countries = NA, source_languages = "English",
+  images_num_faces = NA, images_web_count = NA, timespans = c("24 hours"),
+  wordcloud_timespans = c("1 month"), dates = NA, source_countries = NA,
   tone = NA, tone_absolute_value = NA, maximum_records = 250,
   translate = NULL, timeline_smooth = 5, sort_by = "DateDesc",
   base_path = NULL, rows = 1, columns = 2, id_columns = NULL,
@@ -57,9 +56,6 @@ use \code{get_gdelt_codebook_ft_api(code_book = "imageweb"))}}
 
 \item{images_web_count}{numeric vector of number of times photo appeared}
 
-\item{search_language}{vector of search language - default is english
-see \code{get_gdelt_codebook_ft_api(code_book = "languages")} for options}
-
 \item{timespans}{character vector of the time frame - no more than 12 weeks -
 default is 24 hours
 acceptable periods include: \itemize{
@@ -77,9 +73,6 @@ default \code{NULL}}
 
 \item{source_countries}{character source countries
 #' see \code{get_gdelt_codebook_ft_api(code_book = "countries")} for options}
-
-\item{source_languages}{vector of source language - default is English
-#' see \code{get_gdelt_codebook_ft_api(code_book = "languages")} for options}
 
 \item{tone}{numeric tone - default (NA)}
 

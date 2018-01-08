@@ -9,12 +9,11 @@ get_data_ft_v2_api(terms = NA, domains = NA, images_face_tone = NA,
   images_web_tag = NA, images_web_count = NA, source_countries = NA,
   source_languages = "English", gkg_themes = NA, tone = NA,
   tone_absolute_value = NA, use_or = FALSE, modes = "ArtList",
-  search_language = "eng", timespans = c("24 hours"), dates = NA,
-  maximum_records = 250, translate = NULL, timeline_smooth = 5,
-  sort_by = "DateDesc", visualize_results = TRUE,
-  trelliscope_parameters = list(path = NULL, rows = 1, columns = 2, id_columns
-  = NULL, group_columns = NULL), nest_data = FALSE, return_message = TRUE,
-  ...)
+  timespans = c("24 hours"), dates = NA, maximum_records = 250,
+  translate = NULL, timeline_smooth = 5, sort_by = "DateDesc",
+  visualize_results = TRUE, trelliscope_parameters = list(path = NULL, rows
+  = 1, columns = 2, id_columns = NULL, group_columns = NULL),
+  nest_data = FALSE, return_message = TRUE, ...)
 }
 \arguments{
 \item{terms}{a vector of terms}
@@ -38,8 +37,7 @@ use \code{get_gdelt_codebook_ft_api(code_book = "imageweb"))}}
 \item{source_countries}{character source countries
 #' see \code{get_gdelt_codebook_ft_api(code_book = "countries")} for options}
 
-\item{source_languages}{vector of source language - default is English
-#' see \code{get_gdelt_codebook_ft_api(code_book = "languages")} for options}
+\item{source_languages}{source languages}
 
 \item{gkg_themes}{global knowledge graph theme
 #' use \code{get_gdelt_codebook_ft_api(code_book = "gkg"))} for options}
@@ -69,16 +67,14 @@ else chained by and}
 \item WordCloudImageWebTags - word cloud of resolved image web tags for specified terms/domains/webtags/imagewebtags and OCR'd text
 }}
 
-\item{search_language}{vector of search language - default is english
-see \code{get_gdelt_codebook_ft_api(code_book = "languages")} for options}
-
-\item{timespans}{character vector of the time frame - no more than 12 weeks -
+\item{timespans}{character vector of the time frame - no more than 52 weeks -
 default is 24 hours
 acceptable periods include: \itemize{
 \item hours (default)
 \item minutes
 \item weeks
 \item months
+\item years
 }}
 
 \item{dates}{vector of dates in YMD HMS format, seperated by \code{ - }
@@ -86,6 +82,8 @@ you can use the \code{generate_dates()} function to generate a vector of
 default \code{NULL}}
 
 \item{maximum_records}{Number between 1 and 250}
+
+\item{translate}{if \code{TRUE} translatse}
 
 \item{timeline_smooth}{if \code{mode} is a timeline}
 
@@ -119,4 +117,9 @@ user specified terms, machine learned items,
 web domains and more.  Users can return raw data
 or a Trelliscope of visual results.  Data is a available
 in rolling three month periods.
+}
+\examples{
+terms <- c('"Brooklyn Nets"', '"Donovan Mitchell"', 'Blackston Real Estate', '"Tom Brady"')
+web_sites <- c("realdeal.com", "netsdaily.com", "wsj.com", "archdaily.com", "alphr.com")
+get_data_ft_v2_api(terms = terms, domains = web_sites, timespans = "28 Weeks")
 }

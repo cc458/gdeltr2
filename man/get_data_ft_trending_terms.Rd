@@ -12,3 +12,6 @@ get_data_ft_trending_terms(sort_data = T)
 \description{
 Gets most recent terms
 }
+\examples{
+get_data_ft_trending_terms()
+}

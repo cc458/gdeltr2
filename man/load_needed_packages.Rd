@@ -7,7 +7,10 @@
 load_needed_packages(required_packages = c("dplyr"))
 }
 \arguments{
-\item{required_packages}{}
+\item{required_packages}{vector of pckages to lad}
+}
+\value{
+invisible
 }
 \description{
 Loads needed packages

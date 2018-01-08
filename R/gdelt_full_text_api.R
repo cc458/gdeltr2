@@ -74,8 +74,6 @@ get_data_ft_api_term <-
            return_image_url = F,
            tone_less_than = NA,
            tone_more_than = NA,
-           search_language = 'English',
-           source_language = 'English',
            sort_by = 'date',
            return_message = T) {
     url_base <-
@@ -106,24 +104,6 @@ get_data_ft_api_term <-
         paste0(domain %>% URLencode())
     } else {
       domain_slug <-
-        ''
-    }
-
-    if (!search_language %>% is.na()) {
-      search_lang_slug <-
-        '&searchlang:' %>%
-        paste0(search_language %>% str_to_lower())
-    } else {
-      search_lang_slug <-
-        ''
-    }
-
-    if (!source_language %>% is.na()) {
-      source_lang_slug <-
-        '&sourcelang:' %>%
-        paste0(source_language %>% str_to_lower())
-    } else {
-      source_lang_slug <-
         ''
     }
 
@@ -166,10 +146,7 @@ get_data_ft_api_term <-
         domain_slug,
         last_minute_slug,
         tone_more_slug,
-        tone_less_slug,
-        search_lang_slug,
-        source_lang_slug
-      )
+        tone_less_slug)
 
     sort_df <-
       data_frame(
@@ -427,8 +404,6 @@ get_data_ft_v1_api_terms <-
            return_image_url = TRUE,
            last_minutes = NA,
            max_rows = 1000000,
-           search_language = 'English',
-           source_language = 'English',
            sort_by = 'date',
            nest_data = FALSE,
            return_message = TRUE) {
@@ -441,8 +416,6 @@ get_data_ft_v1_api_terms <-
         return_image_url = return_image_url,
         last_minutes = last_minutes,
         max_rows = max_rows,
-        search_language = search_language,
-        source_language = source_language,
         stringsAsFactors = F
       ) %>%
       as_data_frame() %>%
@@ -458,8 +431,6 @@ get_data_ft_v1_api_terms <-
           return_image_url = var_matrix$return_image_url[x],
           last_minutes = var_matrix$last_minutes[x],
           max_rows = var_matrix$max_rows[x],
-          search_language = var_matrix$search_language[x],
-          source_language = var_matrix$source_language[x],
           sort_by = sort_by,
           restrict_to_usa = var_matrix$restrict_to_usa[x],
           only_english = var_matrix$only_english[x],
@@ -569,8 +540,6 @@ get_data_ft_v1_api_domains <-
            return_image_url = T,
            last_minutes = NA,
            max_rows = 1000,
-           search_language = 'English',
-           source_language = 'English',
            sort_by = 'date',
            restrict_to_usa = F,
            dedeup_results = T,
@@ -589,8 +558,6 @@ get_data_ft_v1_api_domains <-
         return_image_url = return_image_url,
         last_minutes = last_minutes,
         max_rows = max_rows,
-        search_language = search_language,
-        source_language = source_language,
         stringsAsFactors = F
       ) %>%
       as_data_frame() %>%
@@ -606,8 +573,6 @@ get_data_ft_v1_api_domains <-
             return_image_url = var_matrix$return_image_url[x],
             last_minutes = var_matrix$last_minutes[x],
             max_rows = var_matrix$max_rows[x],
-            search_language = var_matrix$search_language[x],
-            source_language = var_matrix$source_language[x],
             sort_by = sort_by,
             restrict_to_usa = var_matrix$restrict_to_usa[x],
             only_english = var_matrix$only_english[x],
@@ -722,374 +687,6 @@ get_data_ft_v1_api_domains <-
 
   }
 
-# word clouds -------------------------------------------------------------
-
-
-get_data_wordcloud_ft_api <-
-  function(term = '"Brooklyn Nets"',
-           domain = NA,
-           last_minutes = NA,
-           search_language = 'English',
-           tone_more_than = NA,
-           tone_less_than = NA,
-           source_language = 'English',
-           sort_by = 'date',
-           dedeup_results = T,
-           return_message = T) {
-    url_base <-
-      'https://api.gdeltproject.org/api/v1/search_ftxtsearch/search_ftxtsearch?query='
-
-    if (term %>% is.na()) {
-      term_slug <-
-        ''
-      term_word <-
-        'all words'
-    } else {
-      term_slug <-
-        term %>%
-        str_to_lower() %>%
-        URLencode()
-      term_word <-
-        term
-    }
-
-    if (term %>% is.na() & !domain %>% is.na()) {
-      term_word <-
-        domain
-    }
-
-    if (!domain %>% is.na()) {
-      domain_slug <-
-        '%20domain:' %>%
-        paste0(domain)
-    } else {
-      domain_slug <-
-        ''
-    }
-
-    if (!search_language %>% is.na()) {
-      search_lang_slug <-
-        '&searchlang:' %>%
-        paste0(search_language %>% str_to_lower())
-    } else {
-      search_lang_slug <-
-        ''
-    }
-
-    if (!source_language %>% is.na()) {
-      source_lang_slug <-
-        '&sourcelang:' %>%
-        paste0(source_language %>% str_to_lower())
-    } else {
-      source_lang_slug <-
-        ''
-    }
-
-    if (!last_minutes %>% is.na()) {
-      last_minute_slug <-
-        '%20lastminutes:' %>%
-        paste0(last_minutes)
-    } else {
-      last_minute_slug <-
-        ''
-    }
-
-    if (!tone_more_than %>% is.na()) {
-      if (tone_more_than >= 100) {
-        stop("Tone can't be over 100")
-      }
-      tone_more_slug <-
-        '%20tonemorethan:' %>%
-        paste0(tone_more_than)
-    } else {
-      tone_more_slug <-
-        ''
-    }
-
-    if (!tone_less_than %>% is.na()) {
-      if (tone_less_than >= 100) {
-        stop("Tone can't be under 100")
-      }
-      tone_less_slug <-
-        '%20tonelessthan:' %>%
-        paste0(tone_less_than)
-    } else {
-      tone_less_slug <-
-        ''
-    }
-
-    term_slug <-
-      term_slug %>%
-      paste0(
-        domain_slug,
-        last_minute_slug,
-        tone_more_slug,
-        tone_less_slug,
-        search_lang_slug,
-        source_lang_slug
-      )
-
-    sort_df <-
-      data_frame(
-        sort_term = c('date', 'relevence', 'tone.ascending', 'tone.descending'),
-        sort_slug = c('date', 'rel', 'toneasc', 'tonedesc')
-      )
-
-    if (sort_by %in% sort_df$sort_term == F) {
-      stop("Sorry sort terms can only be\n" %>%
-             paste0(paste0(sort_df$sort_term, collapse = '\n')))
-    }
-
-    slug_sort <-
-      sort_df %>%
-      dplyr::filter(sort_term == sort_by) %>%
-      .$sort_slug
-
-    slug_sort <-
-      '&sort=:' %>%
-      paste0(slug_sort)
-
-    if (dedeup_results) {
-      dup_slug <-
-        '&dropdup=true'
-    } else {
-      dup_slug <-
-        ''
-    }
-    output_slug <-
-      '&output=wordcloudcsv'
-
-    url <-
-      url_base %>%
-      paste0(term_slug,
-             dup_slug,
-             slug_sort,
-             output_slug)
-
-    page.has.content <-
-      url %>%
-      httr::GET()
-
-    page_size_df <-
-      page.has.content$headers  %>%
-      flatten_df() %>%
-      mutate(`content-length` = `content-length` %>% as.numeric)
-
-    if (page_size_df$`content-length` <= 41) {
-      stop("This search has no data")
-    }
-
-    wordcloud_data <-
-      url %>%
-      read_csv() %>%
-      mutate(term, url, dateTimeData = Sys.time()) %>%
-      dplyr::select(term, everything()) %>%
-      suppressMessages()
-
-    names(wordcloud_data)[2:3] <-
-      c('word', 'articles')
-
-    wordcloud_data <-
-      wordcloud_data %>%
-      tidyr::separate(articles,
-                      into = c('countArticles', 'size'),
-                      sep = '\\(') %>%
-      mutate(
-        countArticles = countArticles %>% readr::parse_number(),
-        size = size %>% readr::parse_number()
-      ) %>%
-      dplyr::rename(urlSearch = url,
-                    sizeWord = size)
-
-    if (!domain %>% is.na()) {
-      wordcloud_data <-
-        wordcloud_data  %>%
-        mutate(domainSearch = domain) %>%
-        dplyr::select(term, domainSearch, everything())
-    }
-
-    if (term %>% is.na()) {
-      wordcloud_data <-
-        wordcloud_data %>%
-        dplyr::select(-term)
-    }
-
-    if (!tone_more_than %>% is.na()) {
-      wordcloud_data <-
-        wordcloud_data %>%
-        mutate(tone_more_than)
-    }
-
-    if (!tone_less_than %>% is.na()) {
-      wordcloud_data <-
-        wordcloud_data  %>%
-        mutate(tone_less_than)
-    }
-
-    if (return_message) {
-      "You got " %>%
-        paste0(wordcloud_data %>% nrow(),
-               ' words for ',
-               term_word,
-               ' at ',
-               Sys.time()) %>%
-        message()
-    }
-
-    return(wordcloud_data)
-
-  }
-get_data_wordcloud_ft_api_domains <-
-  function(domains = c('nytimes.com', 'washingtonpost.com'),
-           term = NA,
-           visualize_word_cloud = TRUE,
-           last_minutes = NA,
-           search_language = 'English',
-           tone_more_than = NA,
-           tone_less_than = NA,
-           source_language = 'English',
-           sort_by = 'date',
-           dedeup_results = TRUE,
-           nest_data = FALSE,
-           return_message = TRUE) {
-    get_data_wordcloud_ft_api_safe <-
-      possibly(get_data_wordcloud_ft_api, data_frame())
-
-    var_matrix <-
-      expand.grid(
-        domain = domains,
-        term = term,
-        last_minutes = last_minutes,
-        search_language = search_language,
-        tone_more_than = tone_more_than,
-        tone_less_than = tone_less_than,
-        source_language = source_language,
-        stringsAsFactors = F
-      ) %>%
-      as_data_frame %>%
-      suppressWarnings()
-
-    all_data <-
-      seq_len(var_matrix %>% nrow()) %>%
-      purrr::map_df(
-        function(x)
-          get_data_wordcloud_ft_api_safe(
-            term = var_matrix$term[x],
-            domain = var_matrix$domain[x],
-            last_minutes = var_matrix$last_minutes[x],
-            search_language = var_matrix$search_language[x],
-            tone_more_than = var_matrix$tone_more_than[x],
-            tone_less_than = var_matrix$tone_less_than[x],
-            source_language = var_matrix$source_language[x],
-            sort_by = sort_by,
-            dedeup_results = dedeup_results,
-            return_message = return_message
-          ) %>%
-          suppressWarnings()
-      ) %>%
-      suppressWarnings()
-
-    if (visualize_word_cloud) {
-      viz <-
-        all_data %>%
-        select(word, countArticles) %>%
-        group_by(word) %>%
-        summarise(countArticles = sum(countArticles, na.rm = T)) %>%
-        arrange(desc(countArticles)) %>%
-        ungroup() %>%
-        data.frame(stringsAsFactors = TRUE) %>%
-        wordcloud2::wordcloud2(fontFamily = 'Arial',
-                               shuffle = F,
-                               shape = 'pentagon')
-      return(viz)
-    }
-
-    if (nest_data) {
-      all_data <-
-        all_data %>%
-        nest_(nest_cols =
-                all_data %>% dplyr::select(-one_of(c('domainSearch'))) %>% names,
-              key_col = 'data')
-    }
-
-    return(all_data)
-
-  }
-get_data_wordcloud_ft_api_terms <-
-  function(terms = c('"Donald Trump"', '"Hilary Clinton"'),
-           domain = NA,
-           visualize_word_cloud = TRUE,
-           last_minutes = NA,
-           search_language = 'English',
-           tone_more_than = NA,
-           tone_less_than = NA,
-           source_language = 'English',
-           sort_by = 'date',
-           dedeup_results = T,
-           nest_data = F,
-           return_message = T) {
-    get_data_wordcloud_ft_api_safe <-
-      purrr::possibly(get_data_wordcloud_ft_api, NULL)
-
-    var_matrix <-
-      expand.grid(
-        domain = domain,
-        term = terms,
-        last_minutes = last_minutes,
-        search_language = search_language,
-        tone_more_than = tone_more_than,
-        tone_less_than = tone_less_than,
-        source_language = source_language,
-        stringsAsFactors = F
-      ) %>%
-      as_data_frame %>%
-      suppressWarnings()
-
-    all_data <-
-      seq_len(var_matrix %>% nrow()) %>%
-      purrr::map_df(
-        function(x)
-          get_data_wordcloud_ft_api_safe(
-            term = var_matrix$term[x],
-            domain = var_matrix$domain[x],
-            last_minutes = var_matrix$last_minutes[x],
-            search_language = var_matrix$search_language[x],
-            tone_more_than = var_matrix$tone_more_than[x],
-            tone_less_than = var_matrix$tone_less_than[x],
-            source_language = var_matrix$source_language[x],
-            sort_by = sort_by,
-            dedeup_results = dedeup_results,
-            return_message = return_message
-          )
-      )
-
-    if (visualize_word_cloud) {
-      viz <-
-        all_data %>%
-        select(word, countArticles) %>%
-        group_by(word) %>%
-        summarise(countArticles = sum(countArticles, na.rm = T)) %>%
-        arrange(desc(countArticles)) %>%
-        ungroup() %>%
-        data.frame(stringsAsFactors = TRUE) %>%
-        wordcloud2::wordcloud2(fontFamily = 'Arial',
-                               shuffle = F,
-                               shape = 'pentagon')
-      return(viz)
-    }
-
-    if (nest_data) {
-      all_data <-
-        all_data %>%
-        nest_(nest_cols =
-                all_data %>% dplyr::select(-one_of(c('term'))) %>% names,
-              key_col = 'data')
-    }
-
-    return(all_data)
-
-  }
-
 # sentiment ---------------------------------------------------------------
 
 
@@ -1099,7 +696,6 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
                                       is_tone = T,
                                       tone_less_than = NA,
                                       tone_more_than = NA,
-                                      search_language = NA,
                                       source_language = NA,
                                       sort_by = 'date',
                                       dedeup_results = T,
@@ -1136,24 +732,6 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
       ''
   }
 
-
-  if (!search_language %>% is.na()) {
-    search_lang_slug <-
-      '&searchlang:' %>%
-      paste0(search_language %>% str_to_lower())
-  } else {
-    search_lang_slug <-
-      ''
-  }
-
-  if (!source_language %>% is.na()) {
-    source_lang_slug <-
-      '&sourcelang:' %>%
-      paste0(source_language %>% str_to_lower())
-  } else {
-    source_lang_slug <-
-      ''
-  }
 
   if (!last_minutes %>% is.na()) {
     last_minute_slug <-
@@ -1194,9 +772,7 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
       domain_slug,
       last_minute_slug,
       tone_more_slug,
-      tone_less_slug,
-      search_lang_slug,
-      source_lang_slug
+      tone_less_slug
     )
   sort_df <-
     data_frame(
@@ -1321,15 +897,35 @@ get_data_sentiment_ft_api <- function(term = 'Clinton',
   return(sentiment_data)
 
 }
+#' Get V1 sentiment from specified domains
+#'
+#' @param domains vector of domain names
+#' @param visualization if `TRUE` returns a ggplot2 visualization
+#' @param term specific term
+#' @param last_minutes how long
+#' @param is_tone use tone
+#' @param tone_less_than tone minimum
+#' @param tone_more_than tone maximum
+#' @param source_language vector search language
+#' @param sort_by sort by
+#' @param dedeup_results if `TRUE` dedupes results
+#' @param nest_data if `TRUE` returns nested data frame
+#' @param return_message if `TRUE` returns a messaage
+#'
+#' @return a `data_frame` or a ggplot visualiation
+#' @export
+#' @import dplyr jsonlite ggthemes ggplot2
+#' @examples
+#' get_data_sentiment_ft_api_domains(domains = c("foxnews.com", "cnn.com", "washingtonpost.com"), term = "Donald Trump", visualization = T)
+#'
 get_data_sentiment_ft_api_domains <-
   function(domains = c('nytimes.com', 'washingtonpost.com'),
-           visualization = 'static',
+           visualization = TRUE,
            term = NA,
            last_minutes = NA,
            is_tone = T,
            tone_less_than = NA,
            tone_more_than = NA,
-           search_language = NA,
            source_language = NA,
            sort_by = 'date',
            dedeup_results = T,
@@ -1346,7 +942,6 @@ get_data_sentiment_ft_api_domains <-
         last_minutes = last_minutes,
         tone_less_than = tone_less_than,
         tone_more_than = tone_more_than,
-        search_language = search_language,
         source_language = source_language,
         stringsAsFactors = F
       ) %>%
@@ -1364,7 +959,6 @@ get_data_sentiment_ft_api_domains <-
             is_tone = var_matrix$is_tone[x],
             tone_less_than = var_matrix$tone_less_than[x],
             tone_more_than = var_matrix$tone_more_than[x],
-            search_language = var_matrix$search_language[x],
             source_language = var_matrix$source_language[x],
             sort_by = sort_by,
             dedeup_results = dedeup_results,
@@ -1412,15 +1006,6 @@ get_data_sentiment_ft_api_domains <-
           viz +
           scale_color_manual(values = manual_colors, guide = guide_legend(title = ""))
       }
-
-      is_interactive <-
-        visualization %>% str_to_lower() == 'interactive'
-
-      if (is_interactive) {
-        viz <-
-          plotly::ggplotly(viz)
-      }
-
       return(viz)
     }
 
@@ -1435,6 +1020,27 @@ get_data_sentiment_ft_api_domains <-
     return(all_data)
 
   }
+#' Get V1 API sentiment for terms
+#'
+#' @param terms vector of terms
+#' @param visualization if `TRUE` returns a visualization
+#' @param domain vector of domain
+#' @param last_minutes how long
+#' @param is_tone use tone
+#' @param tone_less_than tone minimum
+#' @param tone_more_than tone maximum
+#' @param source_language vector search language
+#' @param sort_by sort by
+#' @param dedeup_results if `TRUE` dedupes results
+#' @param nest_data if `TRUE` returns nested data frame
+#' @param return_message if `TRUE` returns a messaage
+#'
+#' @return a `data_frame` or a ggplot visualiation
+#' @export
+#' @import dplyr jsonlite ggthemes ggplot2
+#' @examples
+#' get_data_sentiment_ft_api_terms(terms = c("Zika", "Brooklyn Nets"), visualization = T)
+
 get_data_sentiment_ft_api_terms <-
   function(terms = c("Zika", '"Golden State Warriors"'),
            visualization = NULL,
@@ -1443,7 +1049,6 @@ get_data_sentiment_ft_api_terms <-
            is_tone = T,
            tone_less_than = NA,
            tone_more_than = NA,
-           search_language = NA,
            source_language = NA,
            sort_by = 'date',
            dedeup_results = T,
@@ -1460,7 +1065,6 @@ get_data_sentiment_ft_api_terms <-
         last_minutes = last_minutes,
         tone_less_than = tone_less_than,
         tone_more_than = tone_more_than,
-        search_language = search_language,
         source_language = source_language,
         stringsAsFactors = F
       ) %>%
@@ -1479,7 +1083,6 @@ get_data_sentiment_ft_api_terms <-
             is_tone = var_matrix$is_tone[x],
             tone_less_than = var_matrix$tone_less_than[x],
             tone_more_than = var_matrix$tone_more_than[x],
-            search_language = var_matrix$search_language[x],
             source_language = var_matrix$source_language[x],
             sort_by = sort_by,
             dedeup_results = dedeup_results,
@@ -1528,14 +1131,6 @@ get_data_sentiment_ft_api_terms <-
         viz <-
           viz +
           scale_color_manual(values = manual_colors, guide = guide_legend(title = ""))
-      }
-
-      is_interactive <-
-        visualization %>% str_to_lower() == 'interactive'
-
-      if (is_interactive) {
-        viz <-
-          plotly::ggplotly(viz)
       }
 
       return(viz)
@@ -1724,7 +1319,7 @@ get_data_location_instability_api <-
                           ma_slug,
                           mode_slug)
 
-    if (use_multi_locations == F) {
+    if (!use_multi_locations) {
       data <-
         data_url %>%
         read_csv() %>%
@@ -1813,17 +1408,12 @@ get_data_location_instability_api <-
 
     if (return_message) {
       locations <-
-        data$nameLocation %>% unique %>% paste0(collapse = '\n')
-      time_period <-
-        " from " %>% paste0(
-          data %>% dplyr::select(1) %>% extract2(1) %>% min,
-          ' to ',
-          data %>% dplyr::select(1) %>% extract2(1) %>% max
-        )
-      "You got GDELT " %>%
-        paste0(variable_name, ' data', time_period, ' for:\n',
-               locations) %>%
-        message()
+        data$nameLocation %>% unique() %>% paste0(collapse = '\n')
+      min_data <- data %>% pull(dateData) %>% min()
+      max_data <-   data %>% pull(dateData) %>% max()
+
+
+      glue::glue("You got GDELT {variable_name} during {min_data}-{max_data} for {locations}") %>% message()
     }
 
     return(data)
@@ -1835,11 +1425,6 @@ get_data_location_instability_api <-
 #'
 #' @param location_ids Specify the location IDs
 #' @param random_locations Number of random location IDs to add
-#' @param visualization \itemize{
-#' \item \code{NULL}: no visualization
-#' \item \code{interactive}: returns an interactive visualization
-#' \item \code{static}: returns a ggplot2 visualization
-#' }
 #' @param variable_names Specify variables they can include: \itemize{
 #' \item \code{instability}
 #' \item \code{conflict}
@@ -1857,6 +1442,7 @@ get_data_location_instability_api <-
 #' @param return_wide if \code{TRUE} returns a wide data frame
 #' @param nest_data if \code{TRUE} returns a nested data frame
 #' @param return_message if \code{TRUE} returns a location
+#' @param visualize  if `TRUE` returns a ggplot2 visualization
 #'
 #' @return if \code{visualize} a ggplot visualization else a \code{data_frame}
 #' @export
@@ -1864,9 +1450,7 @@ get_data_location_instability_api <-
 #' @importFrom magrittr extract2
 #' @importFrom grDevices colors
 #' @examples
-#' \donotrun{
-#' get_data_locations_instability_api(location_ids = NULL, random_locations = 5, visualization = 'static)
-#' }
+#' get_data_locations_instability_api(location_ids = c('US', 'IS', "TU"), random_locations = NULL, variable_names = c('instability', 'conflict', 'tone', 'protest', 'artvolnorm'), visualization = T, days_moving_average = NA, time_periods = 'daily', use_multi_locations = F, return_wide = T, nest_data = F, return_message = T)
 get_data_locations_instability_api <-
   function(location_ids = c('US', 'IS', "TU"),
            random_locations = NULL,
@@ -1875,6 +1459,7 @@ get_data_locations_instability_api <-
            time_periods = 'daily',
            use_multi_locations = F,
            return_wide = T,
+           visualize = F,
            nest_data = F,
            return_message = T) {
     get_data_location_instability_api_safe <-
@@ -1920,6 +1505,27 @@ get_data_locations_instability_api <-
         ) %>%
           suppressWarnings()
       }))
+
+    if (visualize) {
+      viz <-
+        all_data %>%
+        arrange(dateData, value) %>%
+        ggplot(aes(x = dateData, y = value)) +
+        geom_line(aes(color = item)) +
+        scale_y_continuous(limits = c(-7, 7)) +
+        facet_wrap(~ nameLocation, scales = "free") +
+        hrbrthemes::theme_ipsum_rc(grid = "XY") +
+        scale_x_date(expand = c(0, 0)) +
+        theme(legend.position = "bottom") +
+        labs(
+          x = NULL,
+          y = "Tone",
+          title = list("GDELT Country Stability ", Sys.Date()) %>% purrr::reduce(paste0),
+          caption = "Data from GDELT via gdeltr2"
+        )
+      return(viz)
+    }
+
     all_data
   }
 
@@ -1938,6 +1544,7 @@ get_data_locations_instability_api <-
 #' @importFrom readr read_csv
 #' @importFrom magrittr extract2
 #' @examples
+#' get_data_ft_trending_terms()
 get_data_ft_trending_terms <-
   function(sort_data = T) {
     data <-
@@ -2252,6 +1859,7 @@ parse_query <-
 #' @export
 #' @import purrr glue readr stringr dplyr curl tibble tidyr httr
 #' @examples
+#' generate_geo_query(query_parameters = list(term = "Brooklyn Nets"))
 generate_geo_query <-
   function(query_parameters = list(
     term = NULL,
@@ -3300,10 +2908,11 @@ generate_ymd_hms <- function(date) {
 #' \item minutess
 #' }
 #'
-#' @return
+#' @return a `vector` of date times
 #' @export
 #' @import glue dplyr lubridate stringr purrr
 #' @examples
+#' generate_dates(start_date = Sys.Date()  -365, end_date = Sys.Date(), time_interval = "weeks")
 generate_dates <-
   function(start_date = NULL,
            end_date = NULL,
@@ -3313,7 +2922,7 @@ generate_dates <-
       time_interval <- 'hours'
     }
     time_interval <- time_interval %>% str_to_lower()
-    period_types <- c("months","weeks", 'days', 'hours', 'minutes')
+    period_types <- c("months","weeks", 'days', 'hours', 'minutes', "year")
     if (!time_interval %in% period_types) {
       stop(glue::glue("Sorry period types can on only be {str_c(period_types, collapse = ', ')}") %>% as.character())
     }
@@ -4987,8 +4596,6 @@ generate_free_text_api <-
   #ArtList, ImageCollage,  ImageCollageInfo, ImageCollageShare, TimelineVol, TimelineVolInfo, TimelineTone, TimelineLang, TimelineSourceCountry, ToneChart, WordCloudEnglish, WordCloudNative, WordCloudTheme, WordCloudImageTags, WordCloudImageWebTags
   format = 'JSON',
   # HTML, CSV, JSON, JSONP, RSS, RSS archive,
-  search_language = 'eng',
-  # http://data.gdeltproject.org/api/v2/guides/LOOKUP-LANGUAGES.TXT
   timespan = "24 hours",
   dates = NULL,
   maximum_records = 250,
@@ -5078,7 +4685,8 @@ generate_free_text_api <-
         metric %>% str_detect("hour") ~ 'h',
         metric %>% str_detect("day") ~ 'd',
         metric %>% str_detect("week") ~ 'w',
-        metric %>% str_detect("month") ~ 'm'
+        metric %>% str_detect("month") ~ 'm',
+        metric %>% str_detect("year") ~ "y"
       )
 
       timespan_slug <-
@@ -5258,9 +4866,6 @@ generate_v2_url_df <-
            use_or = FALSE,
            mode = 'ArtList',
            #ArtList, ImageCollage,  ImageCollageInfo, ImageCollageShare, TimelineVol, TimelineVolInfo, TimelineTone, TimelineLang, TimelineSourceCountry, ToneChart, WordCloudEnglish, WordCloudNative, WordCloudTheme, WordCloudImageTags, WordCloudImageWebTags
-           search_language = 'eng',
-           # http://data.gdeltproject.org/api/v2/guides/LOOKUP-LANGUAGES.TXT
-
            timespan = "24 hours",
            dates = NULL,
            maximum_records = 250,
@@ -5333,7 +4938,6 @@ generate_v2_url_df <-
         use_or = use_or,
         mode = mode,
         format = "JSON",
-        search_language = search_language,
         timespan = timespan,
         dates = dates,
         source_language = source_language,
@@ -5420,15 +5024,14 @@ query_gdelt_ft_v2_api <-
            images_tag = NA,
            images_web_tag = NA,
            images_web_count = NA,
-           source_countries = NA,
            source_languages = "English",
+           source_countries = NA,
            gkg_themes = NA,
            tone = NA,
            tone_absolute_value = NA,
            use_or = FALSE,
            modes = 'ArtList',
            #ArtList, ImageCollage,  ImageCollageInfo, ImageCollageShare, TimelineVol, TimelineVolInfo, TimelineTone, TimelineLang, TimelineSourceCountry, ToneChart, WordCloudEnglish, WordCloudNative, WordCloudTheme, WordCloudImageTags, WordCloudImageWebTags
-           search_language = 'eng',
            timespans = "12 weeks",
            dates = NA,
            maximum_records = 250,
@@ -5471,9 +5074,11 @@ query_gdelt_ft_v2_api <-
       df_terms %>%
       odd_expand(column_name = "dates", column_values = dates)
 
+
     df_terms <-
       df_terms %>%
       odd_expand(column_name = "source_language", column_values = source_languages)
+
 
     df_terms <-
       df_terms %>%
@@ -5514,7 +5119,6 @@ query_gdelt_ft_v2_api <-
           tone_absolute_value = tone_absolute_value,
           use_or = use_or,
           mode = df_row$mode,
-          search_language = search_language,
           dates = date,
           timespan = df_row$timespan,
           maximum_records = maximum_records,
@@ -5592,9 +5196,6 @@ query_gdelt_ft_v2_api <-
 #' @param images_web_count numeric vector of number of times photo appeared
 #' @param source_countries character source countries
 #' #' see \code{get_gdelt_codebook_ft_api(code_book = "countries")} for options
-#' @param source_languages vector of source language - default is English
-#' #' see \code{get_gdelt_codebook_ft_api(code_book = "languages")} for options
-
 #' @param gkg_themes global knowledge graph theme
 #' #' use \code{get_gdelt_codebook_ft_api(code_book = "gkg"))} for options
 #' @param tone numeric tone - default (NA)
@@ -5618,22 +5219,21 @@ query_gdelt_ft_v2_api <-
 #' \item WordCloudImageTags - word cloud of resolved imagetags for specified terms/domains/webtags/imagewebtags and OCR'd text
 #' \item WordCloudImageWebTags - word cloud of resolved image web tags for specified terms/domains/webtags/imagewebtags and OCR'd text
 #' }
-#' @param search_language vector of search language - default is english
-#' see \code{get_gdelt_codebook_ft_api(code_book = "languages")} for options
-#' @param timespans character vector of the time frame - no more than 12 weeks -
+#' @param timespans character vector of the time frame - no more than 52 weeks -
 #' default is 24 hours
 #' acceptable periods include: \itemize{
 #' \item hours (default)
 #' \item minutes
 #' \item weeks
 #' \item months
+#' \item years
 #' }
-
 #' @param dates vector of dates in YMD HMS format, seperated by \code{ - }
 #' you can use the \code{generate_dates()} function to generate a vector of
 #' default \code{NULL}
 #' @param maximum_records Number between 1 and 250
-#' @param translate
+#' @param source_languages  source languages
+#' @param translate if \code{TRUE} translatse
 #' @param timeline_smooth if \code{mode} is a timeline
 #' @param sort_by sorting method \itemize{
 #' \item DateDesc - descending by date (default)
@@ -5656,6 +5256,10 @@ query_gdelt_ft_v2_api <-
 #' @export
 #'
 #' @examples
+#' terms <- c('"Brooklyn Nets"', '"Donovan Mitchell"', 'Blackston Real Estate', '"Tom Brady"')
+#' web_sites <- c("realdeal.com", "netsdaily.com", "wsj.com", "archdaily.com", "alphr.com")
+#' get_data_ft_v2_api(terms = terms, domains = web_sites, timespans = "28 Weeks")
+
 get_data_ft_v2_api <-
   function(terms = NA,
            domains = NA,
@@ -5673,7 +5277,6 @@ get_data_ft_v2_api <-
            use_or = FALSE,
            modes = 'ArtList',
            #ArtList, ImageCollage,  ImageCollageInfo, ImageCollageShare, TimelineVol, TimelineVolInfo, TimelineTone, TimelineLang, TimelineSourceCountry, ToneChart, WordCloudEnglish, WordCloudNative, WordCloudTheme, WordCloudImageTags, WordCloudImageWebTags
-           search_language = 'eng',
            timespans = c("24 hours"),
            dates = NA,
            maximum_records = 250,
@@ -5726,7 +5329,6 @@ get_data_ft_v2_api <-
         tone_absolute_value = tone_absolute_value,
         use_or = use_or,
         modes = modes,
-        search_language = search_language,
         timespans = timespans,
         dates = dates,
         maximum_records = maximum_records,
@@ -5798,15 +5400,10 @@ get_data_ft_v2_api <-
 #' @param images_web_count numeric vector of number of times photo appeared
 #' @param source_countries character source countries
 #' #' see \code{get_gdelt_codebook_ft_api(code_book = "countries")} for options
-#' @param source_languages vector of source language - default is English
-#' #' see \code{get_gdelt_codebook_ft_api(code_book = "languages")} for options
-
 #' @param gkg_themes global knowledge graph theme
 #' #' use \code{get_gdelt_codebook_ft_api(code_book = "gkg"))} for options
 #' @param tone numeric tone - default (NA)
 #' @param tone_absolute_value numeric tone absolute value (default NA)
-#' @param search_language vector of search language - default is english
-#' see \code{get_gdelt_codebook_ft_api(code_book = "languages")} for options
 #' @param timespans character vector of the time frame - no more than 12 weeks -
 #' default is 24 hours
 #' acceptable periods include: \itemize{
@@ -5857,12 +5454,10 @@ generate_trelliscope_bundle <-
            images_face_tone = NA,
            images_num_faces = NA,
            images_web_count = NA,
-           search_language = 'eng',
            timespans = c("24 hours"),
            wordcloud_timespans  = c("1 month"),
            dates = NA,
            source_countries = NA,
-           source_languages = "English",
            tone = NA,
            tone_absolute_value = NA,
            maximum_records = 250,
@@ -5902,13 +5497,11 @@ generate_trelliscope_bundle <-
           images_web_tag = images_web_tag,
           images_web_count = images_web_count,
           source_countries = source_countries,
-          source_languages = source_languages,
           gkg_themes = gkg_themes,
           tone = tone,
           tone_absolute_value = tone_absolute_value,
           use_or = FALSE,
           modes = "ArtList",
-          search_language = search_language,
           timespans = timespans,
           dates = dates,
           maximum_records = maximum_records,
@@ -5946,13 +5539,11 @@ generate_trelliscope_bundle <-
           images_web_tag = images_web_tag,
           images_web_count = images_web_count,
           source_countries = source_countries,
-          source_languages = source_languages,
           gkg_themes = gkg_themes,
           tone = tone,
           tone_absolute_value = tone_absolute_value,
           use_or = FALSE,
           modes = "ToneChart",
-          search_language = search_language,
           timespans = timespans,
           dates = dates,
           maximum_records = maximum_records,
@@ -5993,13 +5584,11 @@ generate_trelliscope_bundle <-
           images_web_tag = images_web_tag,
           images_web_count = images_web_count,
           source_countries = source_countries,
-          source_languages = source_languages,
           gkg_themes = gkg_themes,
           tone = tone,
           tone_absolute_value = tone_absolute_value,
           modes = "timelinevolinfo",
-          search_language = search_language,
-          timespans = "12 Weeks",
+          timespans = "52 Weeks",
           dates = dates,
           maximum_records = maximum_records,
           translate = translate,
@@ -6033,13 +5622,11 @@ generate_trelliscope_bundle <-
           images_web_tag = images_web_tag,
           images_web_count = images_web_count,
           source_countries = source_countries,
-          source_languages = source_languages,
           gkg_themes = gkg_themes,
           tone = tone,
           tone_absolute_value = tone_absolute_value,
           modes = "TimelineTone",
-          search_language = search_language,
-          timespans = "12 Weeks",
+          timespans = "52 Weeks",
           dates = dates,
           maximum_records = maximum_records,
           translate = translate,
@@ -6083,12 +5670,10 @@ generate_trelliscope_bundle <-
           images_web_tag = images_web_tag,
           images_web_count = images_web_count,
           source_countries = source_countries,
-          source_languages = source_languages,
           gkg_themes = gkg_themes,
           tone = tone,
           tone_absolute_value = tone_absolute_value,
           modes = wordcloud_modes,
-          search_language = search_language,
           timespans = wordcloud_timespans,
           dates = dates,
           maximum_records = maximum_records,

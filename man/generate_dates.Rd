@@ -21,6 +21,12 @@ if \code{NULL} defaults to system time}
 \item minutess
 }}
 }
+\value{
+a `vector` of date times
+}
 \description{
 Generates sequences of dates
+}
+\examples{
+generate_dates(start_date = Sys.Date()  -365, end_date = Sys.Date(), time_interval = "weeks")
 }

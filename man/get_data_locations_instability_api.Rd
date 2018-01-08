@@ -8,7 +8,7 @@ get_data_locations_instability_api(location_ids = c("US", "IS", "TU"),
   random_locations = NULL, variable_names = c("instability", "conflict",
   "tone", "protest", "artvolnorm"), days_moving_average = NA,
   time_periods = "daily", use_multi_locations = F, return_wide = T,
-  nest_data = F, return_message = T)
+  visualize = F, nest_data = F, return_message = T)
 }
 \arguments{
 \item{location_ids}{Specify the location IDs}
@@ -35,19 +35,18 @@ get_data_locations_instability_api(location_ids = c("US", "IS", "TU"),
 
 \item{return_wide}{if \code{TRUE} returns a wide data frame}
 
+\item{visualize}{if `TRUE` returns a ggplot2 visualization}
+
 \item{nest_data}{if \code{TRUE} returns a nested data frame}
 
 \item{return_message}{if \code{TRUE} returns a location}
-
-\item{visualization}{\itemize{
-\item \code{NULL}: no visualization
-\item \code{interactive}: returns an interactive visualization
-\item \code{static}: returns a ggplot2 visualization
-}}
 }
 \value{
 if \code{visualize} a ggplot visualization else a \code{data_frame}
 }
 \description{
 Returns instability data for given locations
+}
+\examples{
+get_data_locations_instability_api(location_ids = c('US', 'IS', "TU"), random_locations = NULL, variable_names = c('instability', 'conflict', 'tone', 'protest', 'artvolnorm'), visualization = T, days_moving_average = NA, time_periods = 'daily', use_multi_locations = F, return_wide = T, nest_data = F, return_message = T)
 }
