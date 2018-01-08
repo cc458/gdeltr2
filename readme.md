@@ -115,6 +115,9 @@ get described in further detail farther below.
 
   - <strong>Full Text API</strong>
       - `get_data_ft_v2_api()` - retrieves descriptive data from V2 API
+        see
+        [this](http://asbcllc.com/blog/2017/august/intro_to_programming_with_gdeltr2/index.html)
+        blog post for more on how to use this
       - `get_data_ft_trending_terms()` - retrieves trending terms over
         the last 15 minutes. The term can be a GDELT tag, location,
         person, place, or thing.
@@ -181,6 +184,12 @@ Many of the columns in the GKG output are concatenated and require
 further parsing for proper analysis. These function tidy those
 concatenated columns, note given file sizes the functions may be time
 consuming.
+
+### V2 Full Text API
+
+You can refer to
+[this](http://asbcllc.com/blog/2017/august/intro_to_programming_with_gdeltr2/index.html)
+blog post that discusses how to use this functionality.
 
 #### Global Knowledge Graph
 
