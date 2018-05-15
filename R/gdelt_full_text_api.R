@@ -1204,7 +1204,6 @@ get_codes_stability_locations <-
       bind_rows(country_df) %>%
       arrange(idLocation) %>%
       mutate(countryLocation = if_else(countryLocation %>% is.na, nameLocation, countryLocation))
-    closeAllConnections()
     gc()
     return(location_df)
 
@@ -5010,7 +5009,6 @@ parse_v2_urls <-
         curl_fetch_multi(url = x, success, failure)
       })
     multi_run()
-    closeAllConnections()
     df
   }
 
@@ -5699,4 +5697,25 @@ generate_trelliscope_bundle <-
     data$dataTrelliscope %>% walk(print)
     setwd(oldwd)
     return(data)
-    }
+  }
+
+
+
+# domains -----------------------------------------------------------------
+
+#' GDELT
+#'
+#' GDELT news outlets as of May 2018
+#'
+#' @return a \code{data_frame}
+#' @export
+#'
+#' @examples
+get_gdelt_news_domains <- function() {
+  data <-
+    "http://data.gdeltproject.org/blog/2018-news-outlets-by-country-may2018-update/MASTER-GDELTDOMAINSBYCOUNTRY-MAY2018.TXT" %>%
+    read_tsv(col_names = F)
+
+  data %>%
+    purrr::set_names(c("domainSite", "slugCountry", "nameCountry"))
+}

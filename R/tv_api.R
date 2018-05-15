@@ -176,7 +176,6 @@ parse_summary_inventory_data_urls <-
         curl_fetch_multi(url = x, success, failure)
       })
     multi_run()
-    closeAllConnections()
     df
   }
 
