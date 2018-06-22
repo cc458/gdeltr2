@@ -49,8 +49,10 @@ filter_sources <-
       mutate(
         numberItem = ifelse(
           item %>% str_detect("idADM"),
-          item %>% str_replace_all("idADM1", '') %>% readr::parse_number(),
-          item %>% readr::parse_number()
+          item %>% str_replace_all("idADM1", '') %>% as.character() %>% readr::parse_number(),
+          item %>%
+            as.character() %>%
+            readr::parse_number()
         ),
         numberItem = ifelse(numberItem %>% is.na(), 0 , numberItem),
         item = item %>% str_replace_all("^\\d+|\\d+$", '')
@@ -70,7 +72,7 @@ filter_sources <-
           "^score|^count|^amount|^value|^face|^angle|^latitude|^longitude|^day|^month|^year|^idTypeLocation"
         )
       ) %>% names,
-      funs(. %>% readr::parse_number()))
+      funs(. %>% as.character() %>% readr::parse_number()))
 
     return(data)
   }
@@ -1544,6 +1546,7 @@ get_gdelt_url_data <-
         csv_file_loc %>%
         read_tsv(col_names = F,
                  n_max = 1) %>% ncol %>% suppressWarnings() %>%
+        as.character() %>%
         readr::parse_number() %>%
         suppressMessages()
 
@@ -4007,6 +4010,7 @@ parse_gkg_mentioned_gcams <- function(gdelt_data,
 
         articleWordCount <-
           fields[1] %>%
+          as.character() %>%
           readr::parse_number()
 
         fields_df <-
@@ -4847,6 +4851,7 @@ get_urls_vgkg_most_recent  <- function() {
     if (!ok_url) {
       stop("Invalid url")
     }
+
     cloud_vision_data <-
       url %>%
       curl::curl() %>%
@@ -4856,7 +4861,7 @@ get_urls_vgkg_most_recent  <- function() {
       suppressMessages()
 
     names(cloud_vision_data) <-
-      get_vgkg_schema() %>% .$nameActual
+      get_vgkg_schema() %>% pull(nameActual)
 
     cloud_vision_data <-
       cloud_vision_data %>%
@@ -4866,7 +4871,7 @@ get_urls_vgkg_most_recent  <- function() {
         idVGKG = dateTimeDocument %>% paste0('-', idDateTime),
         dateTimeDocument = dateTimeDocument %>% lubridate::ymd_hms() %>% lubridate::with_tz(Sys.timezone()),
         dateDocument = dateTimeDocument %>% as.Date(),
-        dimWidthHeight = dimWidthHeight %>% readr::parse_number()
+        dimWidthHeight = dimWidthHeight %>% as.character() %>% readr::parse_number()
       ) %>%
       dplyr::select(idVGKG, idDateTime, everything())
 
@@ -4889,51 +4894,52 @@ get_urls_vgkg_most_recent  <- function() {
 
 .get_data_vgkg_day <-
   function(date_data = "2016-06-08",
+           only_most_recent = F,
            include_translations = F,
            remove_json_column = T,
-           only_most_recent = F,
            return_message = T) {
-    if (!date_data %>% substr(5, 5) == "-") {
-      stop("Sorry data must be in YMD format, ie, 2016-06-01")
-    }
-
-    date_data <-
-      date_data %>%
-      lubridate::ymd() %>%
-      as.Date()
-
-    if (date_data < "2016-02-22") {
-      stop("Sorry data starts on February 22, 2016")
-    }
-
-    if (date_data > Sys.Date()) {
-      stop("Sorry data can't go into the future")
-    }
-
-    if (!'cv_urls' %>% exists()) {
-      cv_urls <-
-        get_urls_vgkg()
-
-      assign(x = 'get_urls_vgkg', eval(get_urls_vgkg), env = .GlobalEnv)
-    }
-    urls <-
-      cv_urls %>%
-      dplyr::filter(dateData == date_data) %>%
-      .$urlCloudVisionTags
-
-    if (include_translations) {
-      urls <-
-        c(urls,
-          cv_urls %>%
-            dplyr::filter(dateData == date_data) %>%
-            .$urlTranslationTags)
-    }
-
     if (only_most_recent) {
       urls <-
         get_urls_vgkg_most_recent() %>%
         .$urlCloudVisionTags
+    } else {
+      if (!date_data %>% substr(5, 5) == "-") {
+        stop("Sorry data must be in YMD format, ie, 2016-06-01")
+      }
+
+      date_data <-
+        date_data %>%
+        lubridate::ymd() %>%
+        as.Date()
+
+      if (date_data < "2016-02-22") {
+        stop("Sorry data starts on February 22, 2016")
+      }
+
+      if (date_data > Sys.Date()) {
+        stop("Sorry data can't go into the future")
+      }
+
+      if (!'cv_urls' %>% exists()) {
+        cv_urls <-
+          get_urls_vgkg()
+
+        assign(x = 'get_urls_vgkg', eval(get_urls_vgkg), env = .GlobalEnv)
+      }
+      urls <-
+        cv_urls %>%
+        dplyr::filter(dateData == date_data) %>%
+        .$urlCloudVisionTags
+
+      if (include_translations) {
+        urls <-
+          c(urls,
+            cv_urls %>%
+              dplyr::filter(dateData == date_data) %>%
+              .$urlTranslationTags)
+      }
     }
+
     .get_data_vgkg_url_safe <-
       purrr::possibly(.get_data_vgkg_url, data_frame())
 

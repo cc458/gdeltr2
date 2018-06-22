@@ -6,16 +6,16 @@
 \usage{
 generate_trelliscope_bundle(include_image_panel = TRUE,
   include_timeline_info = TRUE, include_timeline_tone = FALSE,
-  include_sentiment_bin = TRUE, wordcloud_modes = c("WordCloudTheme",
-  "WordCloudImageTags", "WordCloudEnglish", "WordCloudImageWebTags"),
-  terms = NA, domains = NA, gkg_themes = NA, images_ocr = NA,
-  images_tag = NA, images_web_tag = NA, images_face_tone = NA,
-  images_num_faces = NA, images_web_count = NA, timespans = c("24 hours"),
-  wordcloud_timespans = c("1 month"), dates = NA, source_countries = NA,
-  tone = NA, tone_absolute_value = NA, maximum_records = 250,
-  translate = NULL, timeline_smooth = 5, sort_by = "DateDesc",
-  base_path = NULL, rows = 1, columns = 2, id_columns = NULL,
-  group_columns = NULL, return_message = TRUE)
+  include_sentiment_bin = TRUE, wordcloud_modes = c("WordCloudImageTags",
+  "WordCloudImageWebTags"), terms = NA, domains = NA, gkg_themes = NA,
+  images_ocr = NA, images_tag = NA, images_web_tag = NA,
+  images_face_tone = NA, images_num_faces = NA, images_web_count = NA,
+  timespans = c("24 hours"), wordcloud_timespans = c("1 month"),
+  dates = NA, source_countries = NA, tone = NA,
+  tone_absolute_value = NA, maximum_records = 250, translate = NULL,
+  timeline_smooth = 5, sort_by = "DateDesc", base_path = NULL, rows = 1,
+  columns = 2, id_columns = NULL, group_columns = NULL,
+  return_message = TRUE)
 }
 \arguments{
 \item{include_image_panel}{if \code{TRUE} includes ArtList}
@@ -28,9 +28,7 @@ generate_trelliscope_bundle(include_image_panel = TRUE,
 
 \item{wordcloud_modes}{Wordcloud items \itemize{
 \item NA - none
-\item WordCloudEnglish - word cloud of English words for specified terms/domains/webtags/imagewebtags and OCR'd text
 \item WordCloudNative - word cloud of native text for specified specified terms/domains/webtags/imagewebtags and OCR'd text
-\item WordCloudTheme - word cloud of Global Knowledge Graph themes specified terms/domains/webtags/imagewebtags and OCR'd text
 \item WordCloudImageTags - word cloud of resolved imagetags for specified terms/domains/webtags/imagewebtags and OCR'd text
 \item WordCloudImageWebTags - word cloud of resolved image web tags for specified terms/domains/webtags/imagewebtags and OCR'd text
 }}

@@ -3786,12 +3786,6 @@ codebook_trelliscope <-
           urlNews3M = glue::glue(
             'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=artlist&timespan=12w&maxrecords=250&sort=datedesc'
           ),
-          urlWordCloudEnglish3M = glue::glue(
-            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=wordcloudenglish&timespan=12w&maxrecords=250&sort=datedesc'
-          ),
-          urlWordCloudTheme3M = glue::glue(
-            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=wordcloudtheme&timespan=12w&maxrecords=250&sort=datedesc'
-          ),
           urlTimelineVol = glue::glue(
             'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:{idGKGTheme}%20sourcelang:english&mode=timelinevolinfo&timespan=12w&maxrecords=250&sort=datedesc'
           ),
@@ -3815,12 +3809,6 @@ codebook_trelliscope <-
           urlNews3M = glue::glue(
             'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=artlist&timespan=12w&maxrecords=250&sort=datedesc'
           ),
-          urlWordCloudEnglish3M = glue::glue(
-            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=wordcloudenglish&timespan=12w&maxrecords=250&sort=datedesc'
-          ),
-          urlWordCloudTheme3M = glue::glue(
-            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=wordcloudtheme&timespan=12w&maxrecords=250&sort=datedesc'
-          ),
           urlTimelineVol = glue::glue(
             'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageWeb}"%20sourcelang:english&mode=timelinevolinfo&timespan=12w&maxrecords=250&sort=datedesc'
           ),
@@ -3843,12 +3831,6 @@ codebook_trelliscope <-
           ),
           urlNews3M = glue::glue(
             'httpss://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=artlist&timespan=12w&maxrecords=250&sort=datedesc'
-          ),
-          urlWordCloudEnglish3M = glue::glue(
-            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=wordcloudenglish&timespan=12w&maxrecords=250&sort=datedesc'
-          ),
-          urlWordCloudTheme3M = glue::glue(
-            'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=wordcloudtheme&timespan=12w&maxrecords=250&sort=datedesc'
           ),
           urlTimelineVol = glue::glue(
             'https://api.gdeltproject.org/api/v2/doc/doc?query={parameter}:"{idImageTag}"%20sourcelang:english&mode=timelinevolinfo&timespan=12w&maxrecords=250&sort=datedesc'
@@ -4299,7 +4281,7 @@ plot_hc_trelliscope <-
     if (data %>% tibble::has_name("periodtimeSearch")) {
     data <-
       data %>%
-      dpltr::rename(periodChart = periodtimeSearch)
+      dplyr::rename(periodChart = periodtimeSearch)
 
     }
 
@@ -4637,9 +4619,6 @@ get_gdelt_codebook_ft_api <-
         "TimelineLang",
         "TimelineSourceCountry",
         "ToneChart",
-        "WordCloudEnglish",
-        "WordCloudNative",
-        "WordCloudTheme",
         "WordCloudImageTags",
         "WordCloudImageWebTags"
     ) %>% str_to_lower()
@@ -5208,9 +5187,7 @@ get_gdelt_codebook_ft_api <-
 #' \item TimelineLang - Timeline of of article language for specified terms/domains/webtags/imagewebtags and OCR'd text
 #' \item TimelineSourceCountry - Timeline of of article sourcelanguage for specified terms/domains/webtags/imagewebtags and OCR'd text
 #' \item ToneChart - histogram of binned counts by tone for specified terms/domains/webtags/imagewebtags and OCR'd text
-#' \item WordCloudEnglish - word cloud of English words for specified terms/domains/webtags/imagewebtags and OCR'd text
 #' \item WordCloudNative - word cloud of native text for specified specified terms/domains/webtags/imagewebtags and OCR'd text
-#' \item WordCloudTheme - word cloud of Global Knowledge Graph themes specified terms/domains/webtags/imagewebtags and OCR'd text
 #' \item WordCloudImageTags - word cloud of resolved imagetags for specified terms/domains/webtags/imagewebtags and OCR'd text
 #' \item WordCloudImageWebTags - word cloud of resolved image web tags for specified terms/domains/webtags/imagewebtags and OCR'd text
 #' }
@@ -5390,9 +5367,7 @@ get_data_ft_v2_api <-
 #' @param include_sentiment_bin if \code{TRUE} includes sentiment bin
 #' @param wordcloud_modes Wordcloud items \itemize{
 #' \item NA - none
-#' \item WordCloudEnglish - word cloud of English words for specified terms/domains/webtags/imagewebtags and OCR'd text
 #' \item WordCloudNative - word cloud of native text for specified specified terms/domains/webtags/imagewebtags and OCR'd text
-#' \item WordCloudTheme - word cloud of Global Knowledge Graph themes specified terms/domains/webtags/imagewebtags and OCR'd text
 #' \item WordCloudImageTags - word cloud of resolved imagetags for specified terms/domains/webtags/imagewebtags and OCR'd text
 #' \item WordCloudImageWebTags - word cloud of resolved image web tags for specified terms/domains/webtags/imagewebtags and OCR'd text
 
@@ -5450,9 +5425,7 @@ generate_trelliscope_bundle <-
            include_timeline_info = TRUE,
            include_timeline_tone = FALSE,
            include_sentiment_bin = TRUE,
-           wordcloud_modes = c("WordCloudTheme",
-                               "WordCloudImageTags",
-                               "WordCloudEnglish",
+           wordcloud_modes = c("WordCloudImageTags",
                                "WordCloudImageWebTags"),
            terms = NA,
            domains = NA,

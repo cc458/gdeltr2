@@ -60,9 +60,7 @@ else chained by and}
 \item TimelineLang - Timeline of of article language for specified terms/domains/webtags/imagewebtags and OCR'd text
 \item TimelineSourceCountry - Timeline of of article sourcelanguage for specified terms/domains/webtags/imagewebtags and OCR'd text
 \item ToneChart - histogram of binned counts by tone for specified terms/domains/webtags/imagewebtags and OCR'd text
-\item WordCloudEnglish - word cloud of English words for specified terms/domains/webtags/imagewebtags and OCR'd text
 \item WordCloudNative - word cloud of native text for specified specified terms/domains/webtags/imagewebtags and OCR'd text
-\item WordCloudTheme - word cloud of Global Knowledge Graph themes specified terms/domains/webtags/imagewebtags and OCR'd text
 \item WordCloudImageTags - word cloud of resolved imagetags for specified terms/domains/webtags/imagewebtags and OCR'd text
 \item WordCloudImageWebTags - word cloud of resolved image web tags for specified terms/domains/webtags/imagewebtags and OCR'd text
 }}
