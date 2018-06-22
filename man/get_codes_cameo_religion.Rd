@@ -10,5 +10,5 @@ get_codes_cameo_religion()
 Retrives GDELT CAMEO religion code book
 }
 \examples{
-get_codes_cameo_religion
+get_codes_cameo_religion()
 }
