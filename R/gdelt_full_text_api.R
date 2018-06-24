@@ -975,7 +975,7 @@ get_data_sentiment_ft_api_domains <-
         geom_line(aes(color = domainSearch)) +
         scale_y_continuous(limits = c(-7, 7)) +
         facet_wrap(~ domainSearch, scales = "free") +
-        hrbrthemes::theme_ipsum_rc(grid = "XY") +
+        hrbrthemes::theme_ipsum(grid = "XY") +
         scale_x_datetime(expand = c(0, 0)) +
         theme(legend.position = "none") +
         labs(
@@ -1054,7 +1054,7 @@ get_data_sentiment_ft_api_terms <-
            dedeup_results = T,
            nest_data = F,
            return_message = T) {
-    get_data_sentiment_ft_api_safe <-
+    .get_data_sentiment_ft_api_safe <-
       purrr::possibly(.get_data_sentiment_ft_api, data_frame())
 
     var_matrix <-
@@ -1101,7 +1101,7 @@ get_data_sentiment_ft_api_terms <-
         geom_line(aes(color = term)) +
         scale_y_continuous(limits = c(-7, 7)) +
         facet_wrap(~ term, scales = "free") +
-        hrbrthemes::theme_ipsum_rc(grid = "XY") +
+        hrbrthemes::theme_ipsum(grid = "XY") +
         scale_x_datetime(expand = c(0, 0)) +
         theme(legend.position = "none") +
         labs(
@@ -1513,7 +1513,7 @@ get_data_locations_instability_api <-
         geom_line(aes(color = item)) +
         scale_y_continuous(limits = c(-7, 7)) +
         facet_wrap(~ nameLocation, scales = "free") +
-        hrbrthemes::theme_ipsum_rc(grid = "XY") +
+        hrbrthemes::theme_ipsum(grid = "XY") +
         scale_x_date(expand = c(0, 0)) +
         theme(legend.position = "bottom") +
         labs(
@@ -5687,7 +5687,7 @@ generate_trelliscope_bundle <-
 
 # domains -----------------------------------------------------------------
 
-#' GDELT
+#' GDELT Outlets by Country
 #'
 #' GDELT news outlets as of May 2018
 #'
@@ -5695,7 +5695,8 @@ generate_trelliscope_bundle <-
 #' @export
 #'
 #' @examples
-get_gdelt_news_domains <- function() {
+#' dictionary_country_domains()
+dictionary_country_domains <- function() {
   data <-
     "http://data.gdeltproject.org/blog/2018-news-outlets-by-country-may2018-update/MASTER-GDELTDOMAINSBYCOUNTRY-MAY2018.TXT" %>%
     read_tsv(col_names = F)
