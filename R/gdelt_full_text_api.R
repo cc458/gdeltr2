@@ -4036,6 +4036,12 @@ codebook_trelliscope <-
 
       data <-
         data %>%
+        group_by(xAxis, itemSearch, typeChart, periodChart) %>%
+        dplyr::transmute(
+          yAxis = max(yAxis, na.rm = TRUE),
+          htmlArticles = htmlArticle %>% str_c(collapse = '')
+        ) %>%
+        ungroup() %>%
         separate(
           itemSearch,
           into = c('item', 'value'),
@@ -4053,10 +4059,11 @@ codebook_trelliscope <-
         data <- data %>%
           mutate(xAxisV = xAxis)
       }
-      data <- data %>%
+      data <-
+        data %>%
         mutate(
           htmlTooltip = glue::glue(
-            "<div><p><strong>{item}:</strong> {value}</p><p><strong>{y_axis_name}:</strong> {yAxis}</p><p><strong>{x_axis_name}:</strong> {xAxisV}</p><span><ul>{htmlArticle}</ul></span></div>"
+            "<div><p><strong>{item}:</strong> {value}</p><p><strong>{y_axis_name}:</strong> {yAxis}</p><p><strong>{x_axis_name}:</strong> {xAxisV}</p><span><ul>{htmlArticles}</ul></span></div>"
           ) %>% as.character()
         )
     }
@@ -4196,7 +4203,7 @@ codebook_trelliscope <-
       viz <-
         viz %>%
         hc_tooltip(
-          pointFormat = "{point.htmlArticle}",
+          pointFormat = "{point.htmlArticles}",
           headerFormat = "",
           useHTML = TRUE,
           crosshairs = F,
