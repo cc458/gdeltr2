@@ -487,7 +487,7 @@ get_codes_cameo_events <- function() {
   code_df <-
     code_df %>%
     dplyr::mutate(
-      isParentCode = ifelse(idCAMEOEvent %>% nchar == 2, T, F),
+      isParentCode = ifelse(idCAMEOEvent %>% nchar() == 2, T, F),
       idParentCode = idCAMEOEvent %>% substr(1, 2)
     ) %>%
     dplyr::select(idParentCode, everything()) %>%
@@ -828,9 +828,9 @@ get_schema_gdelt_events <- function() {
         "codeCAMEOType2Actor2",
         "codeCAMEOType3Actor.3",
         "isRootEvent",
-        "codeEvent",
-        "codeEventBase",
-        "codeEventRoot",
+        "idCAMEOEvent",
+        "idCAMEOEventBase",
+        "idCAMEOEventRoot",
         "classQuad",
         "scoreGoldstein",
         "countMentions",
@@ -1249,9 +1249,9 @@ get_gdelt_url_data <-
             "codeCAMEOType2Actor2",
             "codeCAMEOType3Actor.3",
             "isRootEvent",
-            "codeEvent",
-            "codeEventBase",
-            "codeEventRoot",
+            "idCAMEOEvent",
+            "idCAMEOEventBase",
+            "idCAMEOEventRoot",
             "classQuad",
             "scoreGoldstein",
             "countMentions",
@@ -1345,9 +1345,9 @@ get_gdelt_url_data <-
             "codeCAMEOType2Actor2",
             "codeCAMEOType3Actor.3",
             "isRootEvent",
-            "codeEvent",
-            "codeEventBase",
-            "codeEventRoot",
+            "idCAMEOEvent",
+            "idCAMEOEventBase",
+            "idCAMEOEventRoot",
             "classQuad",
             "scoreGoldstein",
             "countMentions",
@@ -1693,9 +1693,9 @@ get_gdelt_url_data <-
             "codeCAMEOType2Actor2",
             "codeCAMEOType3Actor.3",
             "isRootEvent",
-            "codeEvent",
-            "codeEventBase",
-            "codeEventRoot",
+            "idCAMEOEvent",
+            "idCAMEOEventBase",
+            "idCAMEOEventRoot",
             "classQuad",
             "scoreGoldstein",
             "countMentions",
@@ -1790,9 +1790,9 @@ get_gdelt_url_data <-
             "codeCAMEOType2Actor2",
             "codeCAMEOType3Actor.3",
             "isRootEvent",
-            "codeEvent",
-            "codeEventBase",
-            "codeEventRoot",
+            "idCAMEOEvent",
+            "idCAMEOEventBase",
+            "idCAMEOEventRoot",
             "classQuad",
             "scoreGoldstein",
             "countMentions",
@@ -1981,11 +1981,13 @@ get_gdelt_url_data <-
 
     }
 
-    if ('codeEvent' %in% names(gdelt_data)) {
+    if ('idCAMEOEvent' %in% names(gdelt_data)) {
       gdelt_data <-
         gdelt_data %>%
-        mutate_at(.vars = gdelt_data %>% dplyr::select(matches('codeEvent')) %>% names(),
-                  .funs = as.character)
+        mutate_at(
+          .vars = gdelt_data %>% dplyr::select(matches('idCAMEOEvent')) %>% names(),
+          funs(. %>% as.character() %>% as.numeric())
+        )
 
     }
 
