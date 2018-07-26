@@ -138,7 +138,7 @@ get_urls_gkg_15_minute_log <- function() {
   log_df <-
     log_df %>%
     dplyr::mutate(
-      dateTimeData = timestamp %>% as.numeric %>% lubridate::ymd_hms() %>% lubridate::with_tz(Sys.timezone()),
+      dateTimeData = timestamp %>% as.numeric() %>% lubridate::ymd_hms() %>% lubridate::with_tz(Sys.timezone()),
       dateData = dateTimeData %>% as.Date(),
       typeFile = typeFile %>% str_to_lower(),
       idFile = idFile %>% as.integer()
