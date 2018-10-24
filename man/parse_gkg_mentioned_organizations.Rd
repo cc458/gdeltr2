@@ -5,7 +5,8 @@
 \title{Returns long or wide mentioned organizations from a GKG data frame}
 \usage{
 parse_gkg_mentioned_organizations(gdelt_data,
-  organization_column = "organizations", filter_na = T, return_wide = T)
+  organization_column = "organizations", filter_na = T,
+  return_wide = T)
 }
 \arguments{
 \item{organization_column}{options \code{c('organization', 'organizations', 'organizations.count', 'organizationsCharLoc', 'charLoc'))}}

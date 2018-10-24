@@ -5,13 +5,13 @@
 \title{Generate a GDELT GEO V2 API query}
 \usage{
 generate_geo_query(query_parameters = list(term = NULL, domain = NULL,
-  gkg_theme = NULL, image_face_tone = NULL, image_num_faces = NULL, image_ocr =
-  NULL, image_tag = NULL, image_web_tag = NULL, image_web_count = NULL,
-  location_name = NULL, location_adm1 = NULL, location_country = NULL, near =
-  NULL, source_country = NULL, source_language = NULL, tone = NULL,
-  tone_absolute_value = NULL), mode = "adm1", format = "ImageHTML",
-  timespan = NULL, max_points = NULL, geore = NULL, sort = NULL,
-  browse_url = TRUE)
+  gkg_theme = NULL, image_face_tone = NULL, image_num_faces = NULL,
+  image_ocr = NULL, image_tag = NULL, image_web_tag = NULL, image_web_count
+  = NULL, location_name = NULL, location_adm1 = NULL, location_country =
+  NULL, near = NULL, source_country = NULL, source_language = NULL, tone =
+  NULL, tone_absolute_value = NULL), mode = "adm1",
+  format = "ImageHTML", timespan = NULL, max_points = NULL,
+  geore = NULL, sort = NULL, browse_url = TRUE)
 }
 \arguments{
 \item{query_parameters}{list of query parameters \itemize{

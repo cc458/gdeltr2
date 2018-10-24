@@ -4,8 +4,8 @@
 \alias{get_gdelt_codebook_ft_api}
 \title{GDELT Full Text API 2.0 Codebooks}
 \usage{
-get_gdelt_codebook_ft_api(code_book = "gkg", visualize_trelliscope = FALSE,
-  path = NULL)
+get_gdelt_codebook_ft_api(code_book = "gkg",
+  visualize_trelliscope = FALSE, path = NULL)
 }
 \arguments{
 \item{code_book}{code book selection \itemize{

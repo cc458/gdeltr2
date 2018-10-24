@@ -4,9 +4,9 @@
 \alias{filter_sources}
 \title{Filters a gdelt data frame to specified sources}
 \usage{
-filter_sources(data, sources = c("netsdaily", "realdeal", "curbed", "law360",
-  "dailymail", "wsj.com", "law360", "pehub", "techcrunch", "washingtonpost",
-  "bloomberg", "archdaily", "espn.com", "venturebeat"))
+filter_sources(data, sources = c("netsdaily", "realdeal", "curbed",
+  "law360", "dailymail", "wsj.com", "law360", "pehub", "techcrunch",
+  "washingtonpost", "bloomberg", "archdaily", "espn.com", "venturebeat"))
 }
 \arguments{
 \item{data}{gkg or vgkg data frame}

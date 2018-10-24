@@ -37,7 +37,7 @@ events1983 %>%
   geom_bar(aes(nameQuad))
 
 c(2,1 ,.5, .01) %>%
-  purrr::map(function (x){
+  future_map(function (x){
   events1983 %>%
   dplyr::filter(!avgTone %>% is.na()) %>%
   ggplot() +

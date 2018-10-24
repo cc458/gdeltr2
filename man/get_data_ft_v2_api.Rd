@@ -11,8 +11,8 @@ get_data_ft_v2_api(terms = NA, domains = NA, images_face_tone = NA,
   tone_absolute_value = NA, use_or = FALSE, modes = "ArtList",
   timespans = c("24 hours"), dates = NA, maximum_records = 250,
   translate = NULL, timeline_smooth = 5, sort_by = "DateDesc",
-  visualize_results = TRUE, trelliscope_parameters = list(path = NULL, rows
-  = 1, columns = 2, id_columns = NULL, group_columns = NULL),
+  visualize_results = TRUE, trelliscope_parameters = list(path = NULL,
+  rows = 1, columns = 2, id_columns = NULL, group_columns = NULL),
   nest_data = FALSE, return_message = TRUE, ...)
 }
 \arguments{

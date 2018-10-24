@@ -108,7 +108,7 @@ generate_tv_inventory_urls <-
 
     data <-
       dates %>%
-      map_df(function(date) {
+      future_map_dfr(function(date) {
         generate_tv_inventory_url_safe(date = date)
       })
 
@@ -157,7 +157,7 @@ parse_summary_inventory_data_urls <-
       url <-
         res$url
       if (return_message) {
-        glue::glue("Parsing {url}") %>% message()
+        glue::glue("Parsing {url}") %>% cat(fill = T)
       }
 
       data <-

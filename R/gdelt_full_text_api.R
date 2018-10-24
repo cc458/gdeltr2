@@ -382,7 +382,7 @@
     if (return_message) {
       "You got " %>%
         paste0(url_df %>% nrow(), ' urls for ', term_word, ' at ', Sys.time()) %>%
-        message()
+        cat(fill = T)
     }
 
     return(url_df)
@@ -424,7 +424,7 @@ get_data_ft_v1_api_terms <-
       purrr::possibly(.get_data_ft_api_term, data_frame())
     all_data <-
       1:nrow(var_matrix) %>%
-      purrr::map_df(function(x) {
+      future_map_dfr(function(x) {
         .get_data_ft_api_term_safe(
           term = var_matrix$term[x],
           domain = var_matrix$domain[x],
@@ -565,7 +565,7 @@ get_data_ft_v1_api_domains <-
 
     all_data <-
       seq_len(var_matrix %>% nrow()) %>%
-      purrr::map_df(
+      future_map_dfr(
         function(x)
           .get_data_ft_api_term_safe(
             term = var_matrix$term[x],
@@ -891,7 +891,7 @@ get_data_ft_v1_api_domains <-
              term_word,
              ' at ',
              Sys.time()) %>%
-      message()
+      cat(fill = T)
   }
 
   return(sentiment_data)
@@ -950,7 +950,7 @@ get_data_sentiment_ft_api_domains <-
 
     all_data <-
       seq_len(var_matrix %>% nrow()) %>%
-      purrr::map_df(
+      future_map_dfr(
         function(x)
           get_data_sentiment_ft_api_safe(
             term = var_matrix$term[x],
@@ -1074,7 +1074,7 @@ get_data_sentiment_ft_api_terms <-
 
     all_data <-
       seq_len(var_matrix %>% nrow()) %>%
-      purrr::map_df(
+      future_map_dfr(
         function(x)
           .get_data_sentiment_ft_api_safe(
             term = var_matrix$term[x],
@@ -1412,7 +1412,7 @@ get_codes_stability_locations <-
       max_data <-   data %>% pull(dateData) %>% max()
 
 
-      glue::glue("You got GDELT {variable_name} during {min_data}-{max_data} for {locations}") %>% message()
+      glue::glue("You got GDELT {variable_name} during {min_data}-{max_data} for {locations}") %>% cat(fill = T)
     }
 
     return(data)
@@ -1492,7 +1492,7 @@ get_data_locations_instability_api <-
 
     all_data <-
       seq_len(var_matrix %>% nrow()) %>%
-      purrr::map_df((function(x) {
+      future_map_dfr((function(x) {
         .get_data_location_instability_api_safe(
           location_id = var_matrix$id_location[x],
           variable_name = var_matrix$variable_name[x],
@@ -1738,7 +1738,7 @@ get_gdelt_codebook_geo_api <-
 
     df_call <-
       1:length(query_parameters) %>%
-      map_df(function(x) {
+      future_map_dfr(function(x) {
         function_param <-
           names(query_parameters[x])
         value <-
@@ -2008,7 +2008,7 @@ generate_geo_query <-
         mutate(idRow = 1:n())
       df_lat_lon <-
         1:length(df_geo$geometry.coordinates) %>%
-        map_df(function(x) {
+        future_map_dfr(function(x) {
           data_frame(
             item = c('longitudeArticle', 'latitudeArticle'),
             value = df_geo$geometry.coordinates[[x]]
@@ -2237,7 +2237,7 @@ generate_geo_query <-
   parts <- path %>% str_split("/") %>% flatten_chr()
 
   1:length(parts) %>%
-    map(function(x){
+    future_map(function(x){
       if (x == 1) {
         directory <- parts[x]
         if (!dir.exists(directory)) {
@@ -3716,7 +3716,7 @@ plot_trelliscopes <-
 
     df_viz <-
       1:nrow(all_data) %>%
-      map_df(function(x){
+      future_map_dfr(function(x){
         df_row <- all_data %>% slice(x)
         trelliscope_type <-
           df_row$packageVisualization
@@ -3745,7 +3745,7 @@ plot_trelliscopes <-
 
         glue::glue("Trelliscope assigned to {ts_name}
                    in your global environment") %>%
-          message()
+          cat(fill = T)
 
         data_frame(
           idTrelliscope = x,
@@ -4766,7 +4766,7 @@ get_gdelt_codebook_ft_api <-
     if (data %>% tibble::has_name("imageweburls")) {
       df_urls <-
         1:length(data$imageweburls) %>%
-        map_df(function(x){
+        future_map_dfr(function(x){
           value <- data$imageweburls[[x]]
 
           if (value %>% length() == 0) {
@@ -4972,7 +4972,7 @@ get_gdelt_codebook_ft_api <-
 
     success <- function(res){
       if (return_message) {
-        list("Parsing: ", res$url, "\n") %>% purrr::reduce(paste0) %>% message()
+        list("Parsing: ", res$url, "\n") %>% purrr::reduce(paste0) %>% cat(fill = T)
       }
 
       data <-
@@ -5074,7 +5074,7 @@ get_gdelt_codebook_ft_api <-
 
     all_url_df <-
       1:nrow(df_terms) %>%
-      map_df(function(x) {
+      future_map_dfr(function(x) {
         df_row <-
           df_terms %>%
           slice(x)
@@ -5555,7 +5555,7 @@ generate_trelliscope_bundle <-
 
       glue::glue("\n
                  Saved Sentiment Panel Trelliscope to {path}
-                 \n") %>% message()
+                 \n") %>% cat(fill = T)
     }
 
     if (include_timeline_info) {
@@ -5594,7 +5594,7 @@ generate_trelliscope_bundle <-
 
       glue::glue("\n
                  Saved Timline Info Panel Trelliscope to {path}
-                 \n") %>% message()
+                 \n") %>% cat(fill = T)
     }
 
     if (include_timeline_tone) {
@@ -5639,7 +5639,7 @@ generate_trelliscope_bundle <-
 
       glue::glue("\n
                  Saved Timline Tone Panel Trelliscope to {path}
-                 \n") %>% message()
+                 \n") %>% cat(fill = T)
     }
 
     has_wordclouds <-

@@ -4,7 +4,8 @@
 \alias{parse_gkg_mentioned_article_tone}
 \title{Returns article tones from a gkg data frame}
 \usage{
-parse_gkg_mentioned_article_tone(gdelt_data, filter_na = T, return_wide = T)
+parse_gkg_mentioned_article_tone(gdelt_data, filter_na = T,
+  return_wide = T)
 }
 \arguments{
 \item{return_wide}{}

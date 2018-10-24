@@ -47,7 +47,7 @@ parse_query <-
 
   df_call <-
     1:length(query_parameters) %>%
-    map_df(function(x){
+    future_map_dfr(function(x){
       function_param <-
         names(query_parameters[x])
       value <-
@@ -243,7 +243,7 @@ generate_geo_query <-
         mutate(idRow = 1:n())
       df_lat_lon <-
         1:length(df_geo$geometry.coordinates) %>%
-        map_df(function(x) {
+        future_map_dfr(function(x) {
           data_frame(
             item = c('longitudeArticle', 'latitudeArticle'),
             value = df_geo$geometry.coordinates[[x]]

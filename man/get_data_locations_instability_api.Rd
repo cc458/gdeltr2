@@ -5,8 +5,8 @@
 \title{Returns instability data for given locations}
 \usage{
 get_data_locations_instability_api(location_ids = c("US", "IS", "TU"),
-  random_locations = NULL, variable_names = c("instability", "conflict",
-  "tone", "protest", "artvolnorm"), days_moving_average = NA,
+  random_locations = NULL, variable_names = c("instability",
+  "conflict", "tone", "protest", "artvolnorm"), days_moving_average = NA,
   time_periods = "daily", use_multi_locations = F, return_wide = T,
   visualize = F, nest_data = F, return_message = T)
 }

@@ -4,8 +4,8 @@
 \alias{parse_gkg_mentioned_gcams}
 \title{Returns GCAM codes from a gkg data frame}
 \usage{
-parse_gkg_mentioned_gcams(gdelt_data, merge_gcam_codes = F, filter_na = T,
-  return_wide = T)
+parse_gkg_mentioned_gcams(gdelt_data, merge_gcam_codes = F,
+  filter_na = T, return_wide = T)
 }
 \arguments{
 \item{return_wide}{}

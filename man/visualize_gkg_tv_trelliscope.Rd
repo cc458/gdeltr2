@@ -4,8 +4,8 @@
 \alias{visualize_gkg_tv_trelliscope}
 \title{Trelliscope gkg data}
 \usage{
-visualize_gkg_tv_trelliscope(data, stations = c("CNN", "Bloomberg", "FBC",
-  "BBCNews", "WTTG"), random_stations = 5, only_pictures = TRUE,
+visualize_gkg_tv_trelliscope(data, stations = c("CNN", "Bloomberg",
+  "FBC", "BBCNews", "WTTG"), random_stations = 5, only_pictures = TRUE,
   gkg_parse = "people")
 }
 \arguments{
