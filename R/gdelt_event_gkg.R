@@ -68,7 +68,7 @@ filter_sources <-
     data <-
       data %>%
       mutate_at(data %>% select(
-        matches(
+        dplyr::matches(
           "^score|^count|^amount|^value|^face|^angle|^latitude|^longitude|^day|^month|^year|^idTypeLocation"
         )
       ) %>% names,
@@ -1139,7 +1139,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          mutate_at(gdelt_data %>% dplyr::select(matches("is")) %>% names(),
+          mutate_at(gdelt_data %>% dplyr::select(dplyr::matches("is")) %>% names(),
                     funs(. %>% as.logical()))
 
       }
@@ -1198,7 +1198,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          mutate_at(gdelt_data %>% dplyr::select(matches("is")) %>% names(),
+          mutate_at(gdelt_data %>% dplyr::select(dplyr::matches("is")) %>% names(),
                     funs(. %>% as.logical()))
         gdelt_data <-
           gdelt_data %>%
@@ -1293,7 +1293,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          mutate_at(gdelt_data %>% dplyr::select(matches("is")) %>% names(),
+          mutate_at(gdelt_data %>% dplyr::select(dplyr::matches("is")) %>% names(),
                     funs(. %>% as.logical()))
 
         gdelt_data <-
@@ -1390,7 +1390,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          dplyr::mutate_at(gdelt_data %>% dplyr::select(matches("is")) %>% names(),
+          dplyr::mutate_at(gdelt_data %>% dplyr::select(dplyr::matches("is")) %>% names(),
                               funs(. %>% as.logical()))
 
         gdelt_data <-
@@ -1503,7 +1503,7 @@ get_gdelt_url_data <-
         file_directory
 
       file_path <-
-        temp.dir %>% str_split('/') %>% flatten_chr() %>% .[1:length(.)] %>% paste0(collapse = '/')
+        temp.dir %>% str_split('/') %>% flatten_chr() %>% .[seq_along(.)] %>% paste0(collapse = '/')
       if (remove_existing_folder) {
         if (dir.exists(paths = file_path)) {
           "rm -R " %>%
@@ -1583,7 +1583,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          mutate_at(.vars = gdelt_data %>% dplyr::select(matches("is")) %>% names(),
+          mutate_at(.vars = gdelt_data %>% dplyr::select(dplyr::matches("is")) %>% names(),
                     .funs = as.logical)
       }
 
@@ -1641,7 +1641,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          dplyr::mutate_at(gdelt_data %>% dplyr::select(matches("is")) %>% names(),
+          dplyr::mutate_at(gdelt_data %>% dplyr::select(dplyr::matches("is")) %>% names(),
                            funs(. %>% as.logical()))
 
         gdelt_data <-
@@ -1737,7 +1737,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          dplyr::mutate_at(gdelt_data %>% dplyr::select(matches("is")) %>% names(),
+          dplyr::mutate_at(gdelt_data %>% dplyr::select(dplyr::matches("is")) %>% names(),
                            funs(. %>% as.logical()))
 
         gdelt_data <-
@@ -1837,7 +1837,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          dplyr::mutate_at(gdelt_data %>% dplyr::select(matches("is")) %>% names(),
+          dplyr::mutate_at(gdelt_data %>% dplyr::select(dplyr::matches("is")) %>% names(),
                            funs(. %>% as.logical()))
 
         gdelt_data <-
@@ -1985,7 +1985,7 @@ get_gdelt_url_data <-
       gdelt_data <-
         gdelt_data %>%
         mutate_at(
-          .vars = gdelt_data %>% dplyr::select(matches('idCAMEOEvent')) %>% names(),
+          .vars = gdelt_data %>% dplyr::select(dplyr::matches('idCAMEOEvent')) %>% names(),
           funs(. %>% as.character() %>% as.numeric())
         )
 
@@ -1994,7 +1994,7 @@ get_gdelt_url_data <-
     if ('idFeatureActor' %in% names(gdelt_data)) {
       gdelt_data <-
         gdelt_data %>%
-        mutate_at(.vars = gdelt_data %>% dplyr::select(matches('idFeatureActor')) %>% names(),
+        mutate_at(.vars = gdelt_data %>% dplyr::select(dplyr::matches('idFeatureActor')) %>% names(),
                   .funs = as.character)
 
     }
@@ -2123,15 +2123,15 @@ get_clean_count_data <-
 
       length_nums <-
         clean_data %>%
-        dplyr::select(matches(keywords %>% paste0(collapse = '|'))) %>%
-        dplyr::select(-matches('namePerson|idCountry')) %>%
+        dplyr::select(dplyr::matches(keywords %>% paste0(collapse = '|'))) %>%
+        dplyr::select(-dplyr::matches('namePerson|idCountry')) %>%
         names %>% length
 
       if (length_nums > 0) {
         numeric_vars <-
           clean_data %>%
-          dplyr::select(matches(keywords %>% paste0(collapse = '|'))) %>%
-          dplyr::select(-matches('namePerson|idCountry')) %>%
+          dplyr::select(dplyr::matches(keywords %>% paste0(collapse = '|'))) %>%
+          dplyr::select(-dplyr::matches('namePerson|idCountry')) %>%
           names
 
         clean_data <-
@@ -2256,7 +2256,7 @@ parse_gkg_mentioned_numerics <- function(gdelt_data,
           field_data <-
             field_data %>%
             dplyr::mutate_at(
-              field_data %>% dplyr::select(matches('amountValue|charLoc')) %>% names(),
+              field_data %>% dplyr::select(dplyr::matches('amountValue|charLoc')) %>% names(),
               funs(. %>% as.character() %>% readr::parse_number())
             )
 
@@ -2292,7 +2292,7 @@ parse_gkg_mentioned_numerics <- function(gdelt_data,
   }
 
   all_counts <-
-    1:length(counts_data$mentionedNumericsCounts) %>%
+    seq_along(counts_data$mentionedNumericsCounts) %>%
     future_map_dfr(function(x) {
       parse_mentioned_numerics(field = counts_data$mentionedNumericsCounts[x],
                                return_wide = F) %>%
@@ -2417,7 +2417,7 @@ parse_gkg_mentioned_people <- function(gdelt_data,
           field_data <-
             field_data %>%
             mutate_at(
-              field_data %>% dplyr::select(matches('charLoc')) %>% names(),
+              field_data %>% dplyr::select(dplyr::matches('charLoc')) %>% names(),
               funs(. %>% as.character() %>% readr::parse_number())
             )
 
@@ -2456,7 +2456,7 @@ parse_gkg_mentioned_people <- function(gdelt_data,
   }
 
   all_counts <-
-    1:length(counts_data$people_col) %>%
+    seq_along(counts_data$people_col) %>%
     future_map_dfr(function(x) {
       parse_mentioned_people_counts(field = counts_data$people_col[x],
                                     return_wide = F) %>%
@@ -2585,7 +2585,7 @@ parse_gkg_mentioned_organizations <- function(gdelt_data,
           field_data <-
             field_data %>%
             mutate_at(
-              field_data %>% dplyr::select(matches('charLoc')) %>% names(),
+              field_data %>% dplyr::select(dplyr::matches('charLoc')) %>% names(),
               funs(. %>% as.character() %>% readr::parse_number())
             )
         } else {
@@ -2623,7 +2623,7 @@ parse_gkg_mentioned_organizations <- function(gdelt_data,
   }
 
   all_counts <-
-    1:length(counts_data$org_col) %>%
+    seq_along(counts_data$org_col) %>%
     future_map_dfr(function(x) {
       parse_mentioned_organization_counts(field = counts_data$org_col[x],
                                           return_wide = F) %>%
@@ -2720,14 +2720,14 @@ parse_gkg_mentioned_names <- function(gdelt_data,
 
           field_data <-
             fields_df %>%
-            dplyr::select(-matches("charLoc")) %>%
+            dplyr::select(-dplyr::matches("charLoc")) %>%
             spread(item, value) %>%
             dplyr::select_(.dots = order_fields)
 
           field_data <-
             field_data %>%
             mutate_at(
-              field_data %>% dplyr::select(matches('charLoc')) %>% names(),
+              field_data %>% dplyr::select(dplyr::matches('charLoc')) %>% names(),
               funs(. %>% as.character() %>% readr::parse_number())
             )
         } else {
@@ -2754,7 +2754,7 @@ parse_gkg_mentioned_names <- function(gdelt_data,
     dplyr::select(idGKG, mentionedNamesCounts)
 
   all_counts <-
-    1:length(counts_data$mentionedNamesCounts) %>%
+    seq_along(counts_data$mentionedNamesCounts) %>%
     future_map_dfr(function(x) {
       parse_mentioned_names_counts(field = counts_data$mentionedNamesCounts[x],
                                    return_wide = F) %>%
@@ -2781,7 +2781,7 @@ parse_gkg_mentioned_names <- function(gdelt_data,
       remove = F
     ) %>%
     mutate(dateTime = dateTime %>% as.numeric()) %>%
-    select(-matches("charLoc")) %>%
+    select(-dplyr::matches("charLoc")) %>%
     arrange(dateTime) %>%
     dplyr::select(-c(dateTime, GKG)) %>%
     suppressWarnings()
@@ -2889,7 +2889,7 @@ parse_gkg_mentioned_themes <- function(gdelt_data,
           field_data <-
             field_data %>%
             mutate_at(
-              field_data %>% dplyr::select(matches('charLoc')) %>% names(),
+              field_data %>% dplyr::select(dplyr::matches('charLoc')) %>% names(),
               funs(. %>% as.character() %>% readr::parse_number())
             )
         } else {
@@ -2926,7 +2926,7 @@ parse_gkg_mentioned_themes <- function(gdelt_data,
   }
 
   all_counts <-
-    1:length(counts_data$theme_col) %>%
+    seq_along(counts_data$theme_col) %>%
     future_map_dfr(function(x) {
       parse_mentioned_names_themes(field = counts_data$theme_col[x],
                                    return_wide = F) %>%
@@ -3083,7 +3083,7 @@ parse_gkg_mentioned_social_embeds <-
     }
 
     all_counts <-
-      1:length(counts_data$source_col) %>%
+      seq_along(counts_data$source_col) %>%
       future_map_dfr(function(x) {
         parse_embeds(field = counts_data$source_col[x],
                      return_wide = F) %>%
@@ -3110,10 +3110,10 @@ parse_gkg_mentioned_social_embeds <-
 
     all_counts <-
       all_counts %>%
-      dplyr::select(matches("id^[A-Z]"), everything())
+      dplyr::select(dplyr::matches("id^[A-Z]"), everything())
 
     id_col <-
-      all_counts %>% select(matches("^id[A-Z]")) %>% names() %>% .[[1]] %>% suppressWarnings()
+      all_counts %>% select(dplyr::matches("^id[A-Z]")) %>% names() %>% .[[1]] %>% suppressWarnings()
     all_counts <-
       all_counts %>%
       get_clean_count_data(count_col = id_col, return_wide = return_wide) %>%
@@ -3211,7 +3211,7 @@ parse_gkg_mentioned_article_tone <-
       dplyr::select(idGKG, tone)
 
     all_counts <-
-      1:length(counts_data$tone) %>%
+      seq_along(counts_data$tone) %>%
       future_map_dfr(function(x) {
         parse_article_tones(field = counts_data$tone[x], return_wide = F) %>%
           dplyr::mutate(idGKG = counts_data$idGKG[x])
@@ -3334,10 +3334,10 @@ parse_gkg_mentioned_event_counts <- function(gdelt_data,
         fields_df <-
           fields_df %>%
           mutate_at(
-            fields_df %>% dplyr::select(matches("count|charLoc|idTypeLocation")) %>% dplyr::select(-idCountry) %>% names(),
+            fields_df %>% dplyr::select(dplyr::matches("count|charLoc|idTypeLocation")) %>% dplyr::select(-idCountry) %>% names(),
             funs(. %>% as.numeric())
           ) %>%
-          mutate_at(fields_df %>% dplyr::select(matches("latitude|longitude")) %>% names(),
+          mutate_at(fields_df %>% dplyr::select(dplyr::matches("latitude|longitude")) %>% names(),
                     (funs(as.numeric(., digits = 5))))
 
         fields_df$entityEvent[fields_df$entityEvent == ''] <-
@@ -3390,10 +3390,10 @@ parse_gkg_mentioned_event_counts <- function(gdelt_data,
           field_data <-
             field_data %>%
             mutate_at(
-              fields_df %>% dplyr::select(matches("count|charLoc|idTypeLocation")) %>% dplyr::select(-one_of("idCountry")) %>% names(),
+              fields_df %>% dplyr::select(dplyr::matches("count|charLoc|idTypeLocation")) %>% dplyr::select(-one_of("idCountry")) %>% names(),
               funs(. %>% as.numeric())
             ) %>%
-            mutate_at(fields_df %>% dplyr::select(matches("latitude|longitude")) %>% names(),
+            mutate_at(fields_df %>% dplyr::select(dplyr::matches("latitude|longitude")) %>% names(),
                       (funs(as.numeric(., digits = 5))))
 
         } else {
@@ -3430,7 +3430,7 @@ parse_gkg_mentioned_event_counts <- function(gdelt_data,
   }
 
   all_counts <-
-    1:length(counts_data$count_col) %>%
+    seq_along(counts_data$count_col) %>%
     future_map_dfr(function(x) {
       parse_field_count(field = counts_data$count_col[x],
                         return_wide = F) %>%
@@ -3569,10 +3569,10 @@ parse_gkg_mentioned_locations <-
           fields_df <-
             fields_df %>%
             mutate_at(
-              fields_df %>% dplyr::select(matches("idTypeLocation|charLoc")) %>% names(),
+              fields_df %>% dplyr::select(dplyr::matches("idTypeLocation|charLoc")) %>% names(),
               funs(. %>% as.numeric())
             ) %>%
-            mutate_at(fields_df %>% dplyr::select(matches("latitude|longitude")) %>% names(),
+            mutate_at(fields_df %>% dplyr::select(dplyr::matches("latitude|longitude")) %>% names(),
                       (funs(as.numeric(., digits = 5)))) %>%
             dplyr::left_join(data_frame(
               idTypeLocation = 1:5,
@@ -3619,10 +3619,10 @@ parse_gkg_mentioned_locations <-
             field_data <-
               field_data %>%
               mutate_at(
-                fields_df %>% dplyr::select(matches("idTypeLocation|charLoc")) %>% names(),
+                fields_df %>% dplyr::select(dplyr::matches("idTypeLocation|charLoc")) %>% names(),
                 funs(. %>% as.numeric())
               ) %>%
-              mutate_at(fields_df %>% dplyr::select(matches("latitude|longitude")) %>% names(),
+              mutate_at(fields_df %>% dplyr::select(dplyr::matches("latitude|longitude")) %>% names(),
                         (funs(as.numeric(., digits = 5))))
           } else {
             field_data <-
@@ -3658,7 +3658,7 @@ parse_gkg_mentioned_locations <-
     }
 
     all_counts <-
-      1:length(counts_data$loc_col) %>%
+      seq_along(counts_data$loc_col) %>%
       future_map_dfr(function(x) {
         parse_location_count(field = counts_data$loc_col[x],
                              return_wide = F) %>%
@@ -3772,7 +3772,7 @@ parse_gkg_mentioned_dates <- function(gdelt_data,
 
           field_data <-
             field_data %>%
-            mutate_at(field_data %>% dplyr::select(matches(
+            mutate_at(field_data %>% dplyr::select(dplyr::matches(
               "idDateResolution|month|day|year|charLoc"
             )) %>% names(),
             funs(. %>% as.numeric()))
@@ -3804,7 +3804,7 @@ parse_gkg_mentioned_dates <- function(gdelt_data,
   }
 
   all_counts <-
-    1:length(counts_data$dates) %>%
+    seq_along(counts_data$dates) %>%
     future_map_dfr(function(x) {
       parse_dates(field = counts_data$dates[x], return_wide =  F) %>%
         dplyr::mutate(idGKG = counts_data$idGKG[x])
@@ -3907,7 +3907,7 @@ parse_gkg_mentioned_quotes <-
 
             field_data <-
               field_data %>%
-              mutate_at(field_data %>% dplyr::select(matches("charLoc|lengthQuote")) %>% names(),
+              mutate_at(field_data %>% dplyr::select(dplyr::matches("charLoc|lengthQuote")) %>% names(),
                         funs(. %>% as.numeric()))
 
           } else {
@@ -3938,7 +3938,7 @@ parse_gkg_mentioned_quotes <-
     }
 
     all_counts <-
-      1:length(counts_data$quotations) %>%
+      seq_along(counts_data$quotations) %>%
       future_map_dfr(function(x) {
         parse_quotes(field = counts_data$quotations[x], return_wide = F) %>%
           dplyr::mutate(idGKG = counts_data$idGKG[x])
@@ -4044,7 +4044,7 @@ parse_gkg_mentioned_gcams <- function(gdelt_data,
 
           field_data <-
             field_data %>%
-            mutate_at(field_data %>% dplyr::select(matches("scoreGoldsteinWords")) %>% names(),
+            mutate_at(field_data %>% dplyr::select(dplyr::matches("scoreGoldsteinWords")) %>% names(),
                       funs(. %>% as.numeric()))
 
         } else {
@@ -4075,7 +4075,7 @@ parse_gkg_mentioned_gcams <- function(gdelt_data,
   }
 
   all_counts <-
-    1:length(counts_data$gcam) %>%
+    seq_along(counts_data$gcam) %>%
     future_map_dfr(function(x) {
       parse_gcam_data(field = counts_data$gcam[x],
                       return_wide = F) %>%
@@ -4230,7 +4230,7 @@ parse_gkg_mentioned_source_data <-
     }
 
     all_counts <-
-      1:length(counts_data$source_col) %>%
+      seq_along(counts_data$source_col) %>%
       future_map_dfr(function(x) {
         parse_source_name(field = counts_data$source_col[x],
                           return_wide = return_wide) %>%
@@ -4341,7 +4341,7 @@ parse_gkg_mentioned_source_data <-
             empty_trash = empty_trash
           )
         data %>%
-          mutate_at(.vars = data %>% dplyr::select(matches('idFeatureActor|idFeatureAction')) %>% names(),
+          mutate_at(.vars = data %>% dplyr::select(dplyr::matches('idFeatureActor|idFeatureAction')) %>% names(),
                     .funs = as.character)
       }) %>%
       distinct() %>%
@@ -4717,7 +4717,7 @@ get_data_gdelt_periods_event <- function(periods = c(1983, 1989),
     periods %>%
     str_replace_all('\\-', '')
   all_data <-
-    1:length(periods) %>%
+    seq_along(periods) %>%
     future_map_dfr(
       function(x)
         get_data_gdelt_period_event_safe(
@@ -5071,7 +5071,7 @@ get_data_vgkg_dates <-
 
           data_frame(item = x, value = item_value) %>%
             group_by(item) %>%
-            mutate(idXMLItem = 1:length(item)) %>%
+            mutate(idXMLItem = seq_along(item)) %>%
             ungroup() %>%
             dplyr::select(idXMLItem, item, value)
         })
@@ -5236,15 +5236,15 @@ get_clean_count_vkg_data <-
 
       length_nums <-
         clean_data %>%
-        dplyr::select(matches(keywords %>% paste0(collapse = '|'))) %>%
-        dplyr::select(-matches('namePerson|idCountry')) %>%
+        dplyr::select(dplyr::matches(keywords %>% paste0(collapse = '|'))) %>%
+        dplyr::select(-dplyr::matches('namePerson|idCountry')) %>%
         names %>% length
 
       if (length_nums > 0) {
         numeric_vars <-
           clean_data %>%
-          dplyr::select(matches(keywords %>% paste0(collapse = '|'))) %>%
-          dplyr::select(-matches('namePerson|idCountry')) %>%
+          dplyr::select(dplyr::matches(keywords %>% paste0(collapse = '|'))) %>%
+          dplyr::select(-dplyr::matches('namePerson|idCountry')) %>%
           names
         clean_data <-
           clean_data %>%
@@ -5596,7 +5596,7 @@ parse_xml_safe_search <-
 
       xml_df <-
         xml_df %>%
-        mutate_at(xml_df %>% dplyr::select(matches("score")) %>% names(),
+        mutate_at(xml_df %>% dplyr::select(dplyr::matches("score")) %>% names(),
                      funs(as.integer)) %>%
         mutate(idVGKG = id_vgkg,
                idSafeSearchImage = 1:n()) %>%
@@ -5701,7 +5701,7 @@ parse_xml_faces <-
       xml_df <-
         xml_df %>%
         mutate_at(.vars =
-                    xml_df %>% dplyr::select(matches("score|face|angle")) %>% names(),
+                    xml_df %>% dplyr::select(dplyr::matches("score|face|angle")) %>% names(),
                   .funs = as.numeric) %>%
         mutate(idVGKG = id_vgkg,
                idFace = 1:n()) %>%
@@ -6271,7 +6271,7 @@ date_columns_to_numeric <-
            return_message = T) {
     name_df <-
       data %>%
-      dplyr::select(matches(column_keyword)) %>%
+      dplyr::select(dplyr::matches(column_keyword)) %>%
       future_map(class) %>%
       unlist() %>%
       data.frame(col_class = .) %>%
@@ -6284,7 +6284,7 @@ date_columns_to_numeric <-
 
     mutate_cols <-
       data %>%
-      dplyr::select(matches(column_keyword)) %>%
+      dplyr::select(dplyr::matches(column_keyword)) %>%
       dplyr::select(-one_of(exclude_cols)) %>% names
 
     data <-

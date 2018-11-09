@@ -266,7 +266,7 @@
 
     if (!return_image_url) {
       url.source <-
-        1:length(url.source) %>%
+        seq_along(url.source) %>%
         map_chr(function(x) {
           char_url <-
             url.source[x] %>% nchar()
@@ -283,7 +283,7 @@
       url.source %>% length() > sources %>% length()
     if (wrong_length) {
       url.source <-
-        url.source[1:length(sources)]
+        url.source[seq_along(sources)]
     }
     .parse_source_safe <-
       purrr::possibly(.parse_source, data_frame())
@@ -1737,7 +1737,7 @@ get_gdelt_codebook_geo_api <-
       )
 
     df_call <-
-      1:length(query_parameters) %>%
+      seq_along(query_parameters) %>%
       future_map_dfr(function(x) {
         function_param <-
           names(query_parameters[x])
@@ -2007,7 +2007,7 @@ generate_geo_query <-
         df_geo %>%
         mutate(idRow = 1:n())
       df_lat_lon <-
-        1:length(df_geo$geometry.coordinates) %>%
+        seq_along(df_geo$geometry.coordinates) %>%
         future_map_dfr(function(x) {
           data_frame(
             item = c('longitudeArticle', 'latitudeArticle'),
@@ -2071,7 +2071,7 @@ generate_geo_query <-
       id_columns[id_columns %>% names() %>% str_detect("regex")] %>% flatten_dbl() %>% length() > 0
     if (has_regex) {
       regex <- id_columns$regex
-      regex_columns <- data %>% dplyr::select(matches(regex)) %>% names()
+      regex_columns <- data %>% dplyr::select(dplyr::matches(regex)) %>% names()
       column_id_names <-
         column_id_names %>% append(regex_columns)
     }
@@ -2236,7 +2236,7 @@ generate_geo_query <-
 
   parts <- path %>% str_split("/") %>% flatten_chr()
 
-  1:length(parts) %>%
+  seq_along(parts) %>%
     future_map(function(x){
       if (x == 1) {
         directory <- parts[x]
@@ -2301,7 +2301,7 @@ generate_geo_query <-
         regex <-
           df_group$regex
 
-        nest_regex <- data %>% dplyr::select(matches(regex)) %>% names()
+        nest_regex <- data %>% dplyr::select(dplyr::matches(regex)) %>% names()
         nest_names <- nest_names %>% append(nest_regex)
       }
 
@@ -2442,7 +2442,7 @@ plot_wc_trelliscope <-
     gather_cols <-
       data %>%
       dplyr::select(-one_of(c("modeSearch","periodtimeSearch"))) %>%
-      dplyr::select(matches("Search")) %>% names()
+      dplyr::select(dplyr::matches("Search")) %>% names()
 
     df_keys <-
       data %>%
@@ -2508,8 +2508,8 @@ plot_wc_trelliscope <-
 
     gather_cols <-
       data %>%
-      dplyr::select(-matches("modeSearch")) %>%
-      dplyr::select(matches("Search")) %>%
+      dplyr::select(-dplyr::matches("modeSearch")) %>%
+      dplyr::select(dplyr::matches("Search")) %>%
       suppressWarnings() %>%
       names()
 
@@ -2986,7 +2986,7 @@ generate_dates <-
       id_columns$regex %>% length() > 0
     if (has_regex) {
       regex <- id_columns$regex
-      regex_columns <- data %>% dplyr::select(matches(regex)) %>% names()
+      regex_columns <- data %>% dplyr::select(dplyr::matches(regex)) %>% names()
       column_id_names <-
         column_id_names %>% append(regex_columns)
     }
@@ -3251,7 +3251,7 @@ generate_dates <-
         regex <-
           df_group$regex
 
-        nest_regex <- data %>% dplyr::select(matches(regex)) %>% names()
+        nest_regex <- data %>% dplyr::select(dplyr::matches(regex)) %>% names()
         nest_names <- nest_names %>% append(nest_regex)
       }
 
@@ -3442,7 +3442,7 @@ plot_panel_trelliscope <-
 
       data <-
         data %>%
-        mutate_at(data %>% dplyr::select(matches("^date")) %>% names(),
+        mutate_at(data %>% dplyr::select(dplyr::matches("^date")) %>% names(),
                   funs(. %>% as.character()))
 
     }
@@ -3848,14 +3848,14 @@ codebook_trelliscope <-
              idPanel = 1:n(),
              panel = trelliscopejs::img_panel(urlImage)) %>%
       mutate_at(
-        data %>% dplyr::select(matches("^url")) %>% dplyr::select(-urlImage) %>% names(),
+        data %>% dplyr::select(dplyr::matches("^url")) %>% dplyr::select(-urlImage) %>% names(),
         funs(
           trelliscopejs::cog_href(., default_label = TRUE, default_active = TRUE)
         )
       )
 
     id_columns <-
-      data %>% dplyr::select(matches("^id|^url")) %>% dplyr::select(-c(urlImage, idPanel, matches("idWBCode"))) %>% names()
+      data %>% dplyr::select(dplyr::matches("^id|^url")) %>% dplyr::select(-c(urlImage, idPanel, dplyr::matches("idWBCode"))) %>% names()
 
     if (id_columns %>% length() == 1) {
       id_columns <- c('nameCodebook', id_columns)
@@ -3901,7 +3901,7 @@ codebook_trelliscope <-
     gather_cols <-
       data %>%
       dplyr::select(-one_of(c("modeSearch","periodtimeSearch"))) %>%
-      dplyr::select(matches("Search")) %>% names()
+      dplyr::select(dplyr::matches("Search")) %>% names()
 
     df_keys <-
       data %>%
@@ -3977,8 +3977,8 @@ codebook_trelliscope <-
 
     gather_cols <-
       data %>%
-      dplyr::select(-matches("modeSearch")) %>%
-      dplyr::select(matches("Search")) %>%
+      dplyr::select(-dplyr::matches("modeSearch")) %>%
+      dplyr::select(dplyr::matches("Search")) %>%
       suppressWarnings() %>%
       names()
 
@@ -4590,7 +4590,7 @@ get_gdelt_codebook_ft_api <-
   ) {
     base <- "https://api.gdeltproject.org/api/v2/doc/doc?query="
 
-    for (i in 1:length(query_parameters)) {
+    for (i in seq_along(query_parameters)) {
       query_parameters[query_parameters[i] %>% names()] %>% is.na()
     }
     query_slug <-
@@ -4765,7 +4765,7 @@ get_gdelt_codebook_ft_api <-
 
     if (data %>% tibble::has_name("imageweburls")) {
       df_urls <-
-        1:length(data$imageweburls) %>%
+        seq_along(data$imageweburls) %>%
         future_map_dfr(function(x){
           value <- data$imageweburls[[x]]
 
@@ -4824,7 +4824,7 @@ get_gdelt_codebook_ft_api <-
     if (has_datetime) {
       data <-
         data %>%
-        mutate_at(.vars = data %>% dplyr::select(matches("^datetime[A-Z]")) %>% names(),
+        mutate_at(.vars = data %>% dplyr::select(dplyr::matches("^datetime[A-Z]")) %>% names(),
                   funs(. %>% lubridate::ymd_hms() %>% lubridate::with_tz(Sys.timezone())))
     }
 
@@ -4884,7 +4884,7 @@ get_gdelt_codebook_ft_api <-
         tone_absolute_value = tone_absolute_value
       )
 
-    for (i in 1:length(query_params)) {
+    for (i in seq_along(query_params)) {
       query_params[query_params[i] %>% names()] %>% is.na()
     }
 
@@ -5115,7 +5115,7 @@ get_gdelt_codebook_ft_api <-
       distinct()
 
     search_params <-
-      all_url_df %>% dplyr::select(matches("Search")) %>% names()
+      all_url_df %>% dplyr::select(dplyr::matches("Search")) %>% names()
 
     search_params <- c('modeSearch', search_params) %>% unique()
 

@@ -46,7 +46,7 @@ parse_query <-
   typeSep = c('', ':',  '', '', ':', ':', '', ':', ':', ':', ":", ":", ':', ':', ":", '', ''))
 
   df_call <-
-    1:length(query_parameters) %>%
+    seq_along(query_parameters) %>%
     future_map_dfr(function(x){
       function_param <-
         names(query_parameters[x])
@@ -242,7 +242,7 @@ generate_geo_query <-
         df_geo %>%
         mutate(idRow = 1:n())
       df_lat_lon <-
-        1:length(df_geo$geometry.coordinates) %>%
+        seq_along(df_geo$geometry.coordinates) %>%
         future_map_dfr(function(x) {
           data_frame(
             item = c('longitudeArticle', 'latitudeArticle'),
