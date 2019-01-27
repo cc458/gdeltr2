@@ -116,7 +116,7 @@ get described in further detail farther below.
   - <strong>Full Text API</strong>
       - `get_data_ft_v2_api()` - retrieves descriptive data from V2 API
         see
-        [this](http://asbcllc.com/blog/2017/august/intro_to_programming_with_gdeltr2/index.html)
+        [this](https://asbcllc.com/blog/2017/august/intro_to_programming_with_gdeltr2/index.html)
         blog post for more on how to use this
       - `get_data_ft_trending_terms()` - retrieves trending terms over
         the last 15 minutes. The term can be a GDELT tag, location,
@@ -188,7 +188,7 @@ consuming.
 ### V2 Full Text API
 
 You can refer to
-[this](http://asbcllc.com/blog/2017/august/intro_to_programming_with_gdeltr2/index.html)
+[this](https://asbcllc.com/blog/2017/august/intro_to_programming_with_gdeltr2/index.html)
 blog post that discusses how to use this functionality.
 
 #### Global Knowledge Graph

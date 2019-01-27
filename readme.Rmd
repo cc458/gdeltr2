@@ -75,7 +75,7 @@ The data tidying functions begin with `parse_` and they apply to a number of the
 
 #### <strong>Primary Functions</strong>
 * <strong>Full Text API</strong>
-	*   `get_data_ft_v2_api()` - retrieves descriptive data from V2 API see [this](http://asbcllc.com/blog/2017/august/intro_to_programming_with_gdeltr2/index.html) blog post for more on how to use this
+	*   `get_data_ft_v2_api()` - retrieves descriptive data from V2 API see [this](https://asbcllc.com/blog/2017/august/intro_to_programming_with_gdeltr2/index.html) blog post for more on how to use this
 	*   `get_data_ft_trending_terms()` - retrieves trending terms over the last 15 minutes.  The term can be a GDELT tag, location, person, place, or thing.
 
 * <strong>[GDELT Events](http://gdeltproject.org/data.html#documentation)</strong>
@@ -111,7 +111,7 @@ These function tidy those concatenated columns, note given file sizes the functi
 
 ### V2 Full Text API
 
-You can refer to [this](http://asbcllc.com/blog/2017/august/intro_to_programming_with_gdeltr2/index.html) blog post that discusses how to use this functionality.
+You can refer to [this](https://asbcllc.com/blog/2017/august/intro_to_programming_with_gdeltr2/index.html) blog post that discusses how to use this functionality.
 
 #### Global Knowledge Graph
 
