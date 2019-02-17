@@ -34,7 +34,7 @@ c('image_tag', 'imagewebtag')
 
 parse_query <-
   function(query_parameters) {
-  df_query_params <- data_frame(nameFunction = c('term', 'domain', 'image_face_tone', 'iamge_num_faces',
+  df_query_params <- tibble(nameFunction = c('term', 'domain', 'image_face_tone', 'iamge_num_faces',
                                                  'image_ocr', 'image_tag',  'image_web_count',
                                                  'image_web_tag',  'location_name',
                                                  'location_adm1', 'location_country',
@@ -53,7 +53,7 @@ parse_query <-
       value <-
         query_parameters[x][[1]]
       if (value %>% purrr::is_null()) {
-        return(data_frame())
+        return(tibble())
       }
       value <- value %>% curl::curl_escape()
       has_or <-
@@ -76,7 +76,7 @@ parse_query <-
         unite(param, nameSlug, typeSep, sep = '') %>%
         .$param
 
-      data_frame(nameCall = str_c(param, value, collapse = ''))
+      tibble(nameCall = str_c(param, value, collapse = ''))
 
     })
 
@@ -229,7 +229,7 @@ generate_geo_query <-
       url_api %>% httr::BROWSE()
     }
     data <-
-      data_frame(urlAPI = url_api)
+      tibble(urlAPI = url_api)
     is_geo <-
       format %>% str_detect("json")
     if (is_geo) {
@@ -237,14 +237,14 @@ generate_geo_query <-
         url_api %>%
         jsonlite::fromJSON(simplifyDataFrame = TRUE, flatten = TRUE) %>%
         .$features %>%
-        as_data_frame()
+        as_tibble()
       df_geo <-
         df_geo %>%
         mutate(idRow = 1:n())
       df_lat_lon <-
         seq_along(df_geo$geometry.coordinates) %>%
         future_map_dfr(function(x) {
-          data_frame(
+          tibble(
             item = c('longitudeArticle', 'latitudeArticle'),
             value = df_geo$geometry.coordinates[[x]]
           ) %>%

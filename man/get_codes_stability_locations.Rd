@@ -7,7 +7,7 @@
 get_codes_stability_locations()
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 Code book for instability locations

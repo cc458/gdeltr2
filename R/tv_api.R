@@ -18,7 +18,7 @@
 #' Returns information about the television
 #' stations monitored by GDELT
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #' @import dplyr jsonlite lubridate purrr
 #' @importFrom tidyr separate
@@ -33,7 +33,7 @@ dictionary_gdelt_tv_stations <-
 
     data <-
       json_data$station_details %>%
-      as_data_frame() %>%
+      as_tibble() %>%
       purrr::set_names(
         c(
           "idStation",
@@ -86,7 +86,7 @@ generate_tv_inventory_url <-  function(date = Sys.Date()) {
   url <-
     glue::glue("{base}/{date_slug}.inventory.csv") %>% as.character()
 
-  data_frame(dateData = date, urlGDELTInventory = url)
+  tibble(dateData = date, urlGDELTInventory = url)
 
 }
 
@@ -104,7 +104,7 @@ generate_tv_inventory_urls <-
 
     dates <- seq(ymd(date_start), ymd(date_end), by = "days")
     generate_tv_inventory_url_safe <-
-      purrr::possibly(generate_tv_inventory_url, data_frame())
+      purrr::possibly(generate_tv_inventory_url, tibble())
 
     data <-
       dates %>%
@@ -148,10 +148,10 @@ parse_summary_inventory_data_urls <-
   function(urls = "http://data.gdeltproject.org/gdeltv3/iatv/inventory/20180202.inventory.csv",
            return_message = T) {
     df <-
-      data_frame()
+      tibble()
 
     parse_summary_inventoy_data_url_safe <-
-      purrr::possibly(parse_summary_inventoy_data_url, data_frame())
+      purrr::possibly(parse_summary_inventoy_data_url, tibble())
 
     success <- function(res) {
       url <-
@@ -169,7 +169,7 @@ parse_summary_inventory_data_urls <-
         bind_rows(data)
     }
     failure <- function(msg) {
-      data_frame()
+      tibble()
     }
     urls %>%
       walk(function(x) {
@@ -188,7 +188,7 @@ parse_summary_inventory_data_urls <-
 #' @param date_end End date of data, cannot exceed current date
 #' @param return_message if \code{TRUE} returns a messag
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #' @importFrom glue glue
 #' @importFrom readr read_csv

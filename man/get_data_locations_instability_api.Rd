@@ -42,7 +42,7 @@ get_data_locations_instability_api(location_ids = c("US", "IS", "TU"),
 \item{return_message}{if \code{TRUE} returns a location}
 }
 \value{
-if \code{visualize} a ggplot visualization else a \code{data_frame}
+if \code{visualize} a ggplot visualization else a \code{tibble}
 }
 \description{
 Returns instability data for given locations

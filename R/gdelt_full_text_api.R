@@ -16,7 +16,7 @@
 .check_for_trelliscope_js <-
   function() {
     missing <-
-      installed.packages() %>% dplyr::as_data_frame() %>%
+      installed.packages() %>% dplyr::as_tibble() %>%
       dplyr::filter(Package == 'trelliscopejs') %>%
       nrow() == 0
     if (missing) {
@@ -31,7 +31,7 @@
 .parse_source <-
   function(source = "netsdaily.com - writedate('06/02/2016 12:00 UTC'); (English / United States)") {
     source_df <-
-      data_frame(source) %>%
+      tibble(source) %>%
       tidyr::separate(source,
                       sep = '\\ - ',
                       into = c('source', 'date.language')) %>%
@@ -149,7 +149,7 @@
         tone_less_slug)
 
     sort_df <-
-      data_frame(
+      tibble(
         sort_term = c('date', 'relevence', 'tone.ascending', 'tone.descending'),
         sort_slug = c('date', 'rel', 'toneasc', 'tonedesc')
       )
@@ -286,9 +286,9 @@
         url.source[seq_along(sources)]
     }
     .parse_source_safe <-
-      purrr::possibly(.parse_source, data_frame())
+      purrr::possibly(.parse_source, tibble())
     url_df <-
-      data_frame(
+      tibble(
         term,
         titleArticle,
         urlArticle = url.source,
@@ -418,10 +418,10 @@ get_data_ft_v1_api_terms <-
         max_rows = max_rows,
         stringsAsFactors = F
       ) %>%
-      as_data_frame() %>%
+      as_tibble() %>%
       suppressWarnings()
     .get_data_ft_api_term_safe <-
-      purrr::possibly(.get_data_ft_api_term, data_frame())
+      purrr::possibly(.get_data_ft_api_term, tibble())
     all_data <-
       1:nrow(var_matrix) %>%
       future_map_dfr(function(x) {
@@ -547,7 +547,7 @@ get_data_ft_v1_api_domains <-
            nest_data = F,
            return_message = T) {
     .get_data_ft_api_term_safe <-
-      purrr::possibly(.get_data_ft_api_term, data_frame())
+      purrr::possibly(.get_data_ft_api_term, tibble())
 
     var_matrix <-
       expand.grid(
@@ -560,7 +560,7 @@ get_data_ft_v1_api_domains <-
         max_rows = max_rows,
         stringsAsFactors = F
       ) %>%
-      as_data_frame() %>%
+      as_tibble() %>%
       suppressWarnings()
 
     all_data <-
@@ -775,7 +775,7 @@ get_data_ft_v1_api_domains <-
       tone_less_slug
     )
   sort_df <-
-    data_frame(
+    tibble(
       sort_term = c('date', 'relevence', 'tone.ascending', 'tone.descending'),
       sort_slug = c('date', 'rel', 'toneasc', 'tonedesc')
     )
@@ -912,7 +912,7 @@ get_data_ft_v1_api_domains <-
 #' @param nest_data if `TRUE` returns nested data frame
 #' @param return_message if `TRUE` returns a messaage
 #'
-#' @return a `data_frame` or a ggplot visualiation
+#' @return a `tibble` or a ggplot visualiation
 #' @export
 #' @import dplyr jsonlite ggthemes ggplot2
 #' @examples
@@ -932,7 +932,7 @@ get_data_sentiment_ft_api_domains <-
            nest_data = F,
            return_message = T) {
     get_data_sentiment_ft_api_safe <-
-      purrr::possibly(get_data_sentiment_ft_api, data_frame())
+      purrr::possibly(get_data_sentiment_ft_api, tibble())
 
     var_matrix <-
       expand.grid(
@@ -945,7 +945,7 @@ get_data_sentiment_ft_api_domains <-
         source_language = source_language,
         stringsAsFactors = F
       ) %>%
-      as_data_frame %>%
+      as_tibble %>%
       suppressWarnings()
 
     all_data <-
@@ -1035,7 +1035,7 @@ get_data_sentiment_ft_api_domains <-
 #' @param nest_data if `TRUE` returns nested data frame
 #' @param return_message if `TRUE` returns a messaage
 #'
-#' @return a `data_frame` or a ggplot visualiation
+#' @return a `tibble` or a ggplot visualiation
 #' @export
 #' @import dplyr jsonlite ggthemes ggplot2
 #' @examples
@@ -1055,7 +1055,7 @@ get_data_sentiment_ft_api_terms <-
            nest_data = F,
            return_message = T) {
     .get_data_sentiment_ft_api_safe <-
-      purrr::possibly(.get_data_sentiment_ft_api, data_frame())
+      purrr::possibly(.get_data_sentiment_ft_api, tibble())
 
     var_matrix <-
       expand.grid(
@@ -1068,7 +1068,7 @@ get_data_sentiment_ft_api_terms <-
         source_language = source_language,
         stringsAsFactors = F
       ) %>%
-      as_data_frame %>%
+      as_tibble %>%
       suppressWarnings()
 
 
@@ -1155,7 +1155,7 @@ get_data_sentiment_ft_api_terms <-
 
 #' Code book for instability locations
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #' @import dplyr tidyr
 #' @importFrom readr read_tsv
@@ -1233,7 +1233,7 @@ get_codes_stability_locations <-
     }
 
     var_df <-
-      data_frame(
+      tibble(
         idVar = c('instability', 'conflict', 'protest', 'tone', 'artvolnorm'),
         nameVar = c(
           'instability',
@@ -1443,7 +1443,7 @@ get_codes_stability_locations <-
 #' @param return_message if \code{TRUE} returns a location
 #' @param visualize  if `TRUE` returns a ggplot2 visualization
 #'
-#' @return if \code{visualize} a ggplot visualization else a \code{data_frame}
+#' @return if \code{visualize} a ggplot visualization else a \code{tibble}
 #' @export
 #' @import tidyr stringr rvest purrr readr dplyr ggplot2 ggthemes
 #' @importFrom magrittr extract2
@@ -1462,7 +1462,7 @@ get_data_locations_instability_api <-
            nest_data = F,
            return_message = T) {
     .get_data_location_instability_api_safe <-
-      purrr::possibly(.get_data_location_instability_api, data_frame())
+      purrr::possibly(.get_data_location_instability_api, tibble())
 
     if (location_ids %>% purrr::is_null()) {
       location_ids <-
@@ -1488,7 +1488,7 @@ get_data_locations_instability_api <-
         use_multi_locations = use_multi_locations,
         stringsAsFactors = F
       ) %>%
-      as_data_frame
+      as_tibble
 
     all_data <-
       seq_len(var_matrix %>% nrow()) %>%
@@ -1609,7 +1609,7 @@ get_data_ft_trending_terms <-
 get_gdelt_codebook_geo_api <-
   function(code_book = 'adm') {
     df_codebooks <-
-      data_frame(
+      tibble(
         nameCodeBook = c(
           'gkg',
           'adm',
@@ -1676,7 +1676,7 @@ get_gdelt_codebook_geo_api <-
 .parse_query <-
   function(query_parameters) {
     df_query_params <-
-      data_frame(
+      tibble(
         nameFunction = c(
           'term',
           'domain',
@@ -1745,7 +1745,7 @@ get_gdelt_codebook_geo_api <-
           query_parameters[x][[1]]
 
         if (value %>% purrr::is_null()) {
-          return(data_frame())
+          return(tibble())
         }
 
         if (value %>% is.na()) {
@@ -1753,7 +1753,7 @@ get_gdelt_codebook_geo_api <-
         }
 
         if (value %>% purrr::is_null()) {
-          return(data_frame())
+          return(tibble())
         }
         value <- value %>% curl::curl_escape()
         has_or <-
@@ -1783,11 +1783,11 @@ get_gdelt_codebook_geo_api <-
           param <-
             str_c('(', param, sep = '')
           df_call <-
-            data_frame(nameCall = glue::glue("({values})"))
+            tibble(nameCall = glue::glue("({values})"))
           return(df_call)
         }
 
-        data_frame(nameCall = str_c(param, value, collapse = ''))
+        tibble(nameCall = str_c(param, value, collapse = ''))
 
       })
     df_call$nameCall
@@ -1994,7 +1994,7 @@ generate_geo_query <-
       url_api %>% httr::BROWSE()
     }
     data <-
-      data_frame(urlAPI = url_api)
+      tibble(urlAPI = url_api)
     is_geo <-
       format %>% str_detect("json")
     if (is_geo) {
@@ -2002,14 +2002,14 @@ generate_geo_query <-
         url_api %>%
         jsonlite::fromJSON(simplifyDataFrame = TRUE, flatten = TRUE) %>%
         .$features %>%
-        as_data_frame()
+        as_tibble()
       df_geo <-
         df_geo %>%
         mutate(idRow = 1:n())
       df_lat_lon <-
         seq_along(df_geo$geometry.coordinates) %>%
         future_map_dfr(function(x) {
-          data_frame(
+          tibble(
             item = c('longitudeArticle', 'latitudeArticle'),
             value = df_geo$geometry.coordinates[[x]]
           ) %>%
@@ -3138,7 +3138,7 @@ generate_dates <-
 
     col_order <- names(data)
 
-    df <- data_frame(item = column_values)
+    df <- tibble(item = column_values)
 
     names(df)[[1]] <-
       column_name
@@ -3747,7 +3747,7 @@ plot_trelliscopes <-
                    in your global environment") %>%
           cat(fill = T)
 
-        data_frame(
+        tibble(
           idTrelliscope = x,
           typeTrelliscope = trelliscope_type,
           vizTrelliscope = list(viz)
@@ -4363,7 +4363,7 @@ plot_hc_trelliscope <-
 .parse_timespan <- function(timespan = "24 hours") {
   if (timespan %>% purrr::is_null()) {
     df <-
-      data_frame(period_time = NA,
+      tibble(period_time = NA,
                  period_timeframe = NA)
     return(df)
   }
@@ -4374,7 +4374,7 @@ plot_hc_trelliscope <-
     timespan %>% str_split('\\ ') %>% flatten_chr() %>% str_to_lower() %>% {
       .[2]
     }
-  data_frame(period_time, period_timeframe)
+  tibble(period_time, period_timeframe)
 }
 
 .parse_datetimes <-
@@ -4387,7 +4387,7 @@ plot_hc_trelliscope <-
       datetime_start <- dates[1] %>% lubridate::ymd_hms()
       datetime_end <- dates[2]  %>% lubridate::ymd_hms()
       data <-
-        data_frame(datetime_start,
+        tibble(datetime_start,
                    datetime_end)
       return(data)
     }
@@ -4403,7 +4403,7 @@ plot_hc_trelliscope <-
       dates %>% str_split('\\ - ') %>%
       purrr::flatten_chr()
 
-    data_frame(datetime_start = dates[[1]],
+    tibble(datetime_start = dates[[1]],
                datetime_end = dates[[2]])
   }
 
@@ -4499,7 +4499,7 @@ get_gdelt_codebook_ft_api <-
            visualize_trelliscope = FALSE,
            path = NULL) {
     df_codebooks <-
-      data_frame(
+      tibble(
         nameCodeBook = c(
           'gkg',
           'imagetags',
@@ -4739,7 +4739,7 @@ get_gdelt_codebook_ft_api <-
 .get_gdelt_ft_api_names <-
   function() {
     df_name <-
-      data_frame(nameGDELT = c("bin", "count", "date", "domain", "imageurl", "imagewebcount",
+      tibble(nameGDELT = c("bin", "count", "date", "domain", "imageurl", "imagewebcount",
                                "imageweburls", "label", "language", "seendate", "series", "socialimage",
                                "sourcearticleurl", "sourcecountry", "timelapsesec", "title",
                                "url", "url_mobile", "value"),
@@ -4761,7 +4761,7 @@ get_gdelt_codebook_ft_api <-
 
     data <-
       data[[names(data)]] %>%
-      as_data_frame()
+      as_tibble()
 
     if (data %>% tibble::has_name("imageweburls")) {
       df_urls <-
@@ -4770,11 +4770,11 @@ get_gdelt_codebook_ft_api <-
           value <- data$imageweburls[[x]]
 
           if (value %>% length() == 0) {
-            return(data_frame(idRow = x,
+            return(tibble(idRow = x,
                               imageweburls = NA))
           }
           values <- value %>% str_c(collapse = ', ')
-          data_frame(idRow = x, imageweburls = values)
+          tibble(idRow = x, imageweburls = values)
         })
 
       data <-
@@ -4965,10 +4965,10 @@ get_gdelt_codebook_ft_api <-
   ),
   return_message = TRUE) {
     df <-
-      data_frame()
+      tibble()
 
     .parse_json_api_2_safe <-
-      purrr::possibly(.parse_json_api_2, data_frame())
+      purrr::possibly(.parse_json_api_2, tibble())
 
     success <- function(res){
       if (return_message) {
@@ -4985,7 +4985,7 @@ get_gdelt_codebook_ft_api <-
         bind_rows(data)
     }
     failure <- function(msg){
-      data_frame()
+      tibble()
     }
     urls %>%
       walk(function(x){
@@ -5023,15 +5023,15 @@ get_gdelt_codebook_ft_api <-
            return_message = TRUE){
     df_terms <-
       list(
-        data_frame(term = terms),
-        data_frame(domain = domains),
-        data_frame(image_ocr = images_ocr),
-        data_frame(image_face_tone = images_face_tone),
-        data_frame(image_num_faces = images_num_faces),
-        data_frame(image_web_tag = images_web_tag),
-        data_frame(image_tag = images_tag),
-        data_frame(gkg_theme = gkg_themes),
-        data_frame(image_web_count = images_web_count)
+        tibble(term = terms),
+        tibble(domain = domains),
+        tibble(image_ocr = images_ocr),
+        tibble(image_face_tone = images_face_tone),
+        tibble(image_num_faces = images_num_faces),
+        tibble(image_web_tag = images_web_tag),
+        tibble(image_tag = images_tag),
+        tibble(gkg_theme = gkg_themes),
+        tibble(image_web_count = images_web_count)
       ) %>%
       purrr::reduce(bind_rows) %>%
       distinct()
@@ -5070,7 +5070,7 @@ get_gdelt_codebook_ft_api <-
       .odd_expand(column_name = "mode", column_values = modes)
 
     .generate_v2_url_df_safe <-
-      purrr::possibly(.generate_v2_url_df, data_frame())
+      purrr::possibly(.generate_v2_url_df, tibble())
 
     all_url_df <-
       1:nrow(df_terms) %>%
@@ -5123,7 +5123,7 @@ get_gdelt_codebook_ft_api <-
       all_url_df %>%
       dplyr::select(one_of(search_params), everything())
     .parse_v2_urls_safe <-
-      purrr::possibly(.parse_v2_urls, data_frame())
+      purrr::possibly(.parse_v2_urls, tibble())
 
     all_data <-
       all_url_df$urlGDELTV2FTAPI %>%
@@ -5226,12 +5226,12 @@ get_gdelt_codebook_ft_api <-
 #' \item columns: columns for trelliscope
 #' \item id_columns: initial columns
 #' }
-#' @param nest_data if \code{TRUE} returns a nested \code{data_frame()}
+#' @param nest_data if \code{TRUE} returns a nested \code{tibble()}
 #' @param return_message if \code{TRUE} returns a messag
 #' @param ... - additional parameters
 #'
 #' @import tidyr dplyr rlang highcharter trelliscopejs anytime lubridate purrr purrrlyr tibble glue stringr jsonlite
-#' @return a \code{data_frame} or a form of visualization
+#' @return a \code{tibble} or a form of visualization
 #' @export
 #'
 #' @examples
@@ -5303,7 +5303,7 @@ get_data_ft_v2_api <-
     }
 
     .query_gdelt_ft_v2_api_safe <-
-      purrr::possibly(.query_gdelt_ft_v2_api, data_frame())
+      purrr::possibly(.query_gdelt_ft_v2_api, tibble())
 
     all_data <-
       .query_gdelt_ft_v2_api_safe(
@@ -5469,7 +5469,7 @@ generate_trelliscope_bundle <-
     oldwd <- getwd()
     setwd("~")
     .build_folder(path = base_path)
-    data <- data_frame()
+    data <- tibble()
 
     if (include_image_panel) {
       path <-
@@ -5511,7 +5511,7 @@ generate_trelliscope_bundle <-
 
       data <-
         data %>%
-        bind_rows(data_frame(nameTrelliscope = "Image", dataTrelliscope = list(trelliscopeImage)))
+        bind_rows(tibble(nameTrelliscope = "Image", dataTrelliscope = list(trelliscopeImage)))
     }
 
     if (include_sentiment_bin) {
@@ -5551,7 +5551,7 @@ generate_trelliscope_bundle <-
 
       data <-
         data %>%
-        bind_rows(data_frame(nameTrelliscope = "BIN", dataTrelliscope = list(trelliscopeBIN)))
+        bind_rows(tibble(nameTrelliscope = "BIN", dataTrelliscope = list(trelliscopeBIN)))
 
       glue::glue("\n
                  Saved Sentiment Panel Trelliscope to {path}
@@ -5589,7 +5589,7 @@ generate_trelliscope_bundle <-
 
       data <-
         data %>%
-        bind_rows(data_frame(nameTrelliscope = "Timelineinfo", dataTrelliscope = list(trelliscopeTimeline)))
+        bind_rows(tibble(nameTrelliscope = "Timelineinfo", dataTrelliscope = list(trelliscopeTimeline)))
 
 
       glue::glue("\n
@@ -5635,7 +5635,7 @@ generate_trelliscope_bundle <-
 
       data <-
         data %>%
-        bind_rows(data_frame(nameTrelliscope = "TimelineTone", dataTrelliscope = list(trelliscopeTimelinetone)))
+        bind_rows(tibble(nameTrelliscope = "TimelineTone", dataTrelliscope = list(trelliscopeTimelinetone)))
 
       glue::glue("\n
                  Saved Timline Tone Panel Trelliscope to {path}
@@ -5682,7 +5682,7 @@ generate_trelliscope_bundle <-
 
       data <-
         data %>%
-        bind_rows(data_frame(nameTrelliscope = "Wordcloud", dataTrelliscope = list(trelliscopeWordcloud)))
+        bind_rows(tibble(nameTrelliscope = "Wordcloud", dataTrelliscope = list(trelliscopeWordcloud)))
 
     }
     data$dataTrelliscope %>% walk(print)
@@ -5698,7 +5698,7 @@ generate_trelliscope_bundle <-
 #'
 #' GDELT news outlets as of May 2018
 #'
-#' @return a \code{data_frame}
+#' @return a \code{tibble}
 #' @export
 #'
 #' @examples

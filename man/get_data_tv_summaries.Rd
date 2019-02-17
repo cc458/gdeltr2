@@ -15,7 +15,7 @@ get_data_tv_summaries(date_start = "2018-02-02", date_end = Sys.Date(),
 \item{return_message}{if \code{TRUE} returns a messag}
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 Acquires daily summary data for the television shows

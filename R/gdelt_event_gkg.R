@@ -731,13 +731,13 @@ get_data_gdelt_period_event_totals <-
 #' Retrieves GDELT event database schema
 #'
 #' @return
-#' @importFrom dplyr data_frame
+#' @importFrom dplyr tibble
 #' @examples
 #' get_schema_gdelt_events
 
 get_schema_gdelt_events <- function() {
   gdelt_events_schema <-
-    data_frame(
+    tibble(
       nameGDELT = c(
         "GLOBALEVENTID",
         "SQLDATE",
@@ -876,7 +876,7 @@ get_schema_gdelt_events <- function() {
 #' get_schema_gkg_general()
 get_schema_gkg_general <- function() {
   schema_df <-
-    data_frame(
+    tibble(
       nameGDELT = c(
         "GKGRECORDID",
         "DATE",
@@ -970,7 +970,7 @@ get_schema_gkg_general <- function() {
 
 get_schema_gkg_counts <- function() {
   counts_schema <-
-    data_frame(
+    tibble(
       nameGDELT = c(
         "DATE",
         "NUMARTS",
@@ -1017,7 +1017,7 @@ get_schema_gkg_counts <- function() {
 #' get_schema_gkg_mentions()
 get_schema_gkg_mentions <- function() {
   mentions_schema <-
-    data_frame(
+    tibble(
       nameGDELT =
         c(
           "GLOBALEVENTID",
@@ -1128,7 +1128,7 @@ get_gdelt_url_data <-
                         dateTimeEvent,
                         dateTimeMention,
                         everything()) %>%
-          dplyr::left_join(data_frame(
+          dplyr::left_join(tibble(
             idMentionType = 1:6,
             typeMention = c('web', 'citation', 'core', 'dtic', 'jstor', 'nontext')
           )) %>%
@@ -1156,7 +1156,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          dplyr::left_join(data_frame(
+          dplyr::left_join(tibble(
             idTypeLocation = 1:5,
             typeLocation = c(
               'country',
@@ -1202,7 +1202,7 @@ get_gdelt_url_data <-
                     funs(. %>% as.logical()))
         gdelt_data <-
           gdelt_data %>%
-          dplyr::left_join(data_frame(
+          dplyr::left_join(tibble(
             classQuad =  1:4,
             nameQuad =  c(
               'Verbal Cooperation',
@@ -1298,7 +1298,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          dplyr::left_join(data_frame(
+          dplyr::left_join(tibble(
             classQuad =  1:4,
             nameQuad =  c(
               'Verbal Cooperation',
@@ -1395,7 +1395,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          dplyr::left_join(data_frame(
+          dplyr::left_join(tibble(
             classQuad =  1:4,
             nameQuad =  c(
               'Verbal Cooperation',
@@ -1572,7 +1572,7 @@ get_gdelt_url_data <-
                         dateTimeEvent,
                         dateTimeMention,
                         everything()) %>%
-          dplyr::left_join(data_frame(
+          dplyr::left_join(tibble(
             idMentionType = 1:6,
             mention_type = c('web', 'citation', 'core', 'dtic', 'jstor', 'nontext')
           )) %>%
@@ -1599,7 +1599,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          dplyr::left_join(data_frame(
+          dplyr::left_join(tibble(
             idTypeLocation = 1:5,
             typeLocation = c(
               'country',
@@ -1646,7 +1646,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          dplyr::left_join(data_frame(
+          dplyr::left_join(tibble(
             classQuad =  1:4,
             nameQuad =  c(
               'Verbal Cooperation',
@@ -1742,7 +1742,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          dplyr::left_join(data_frame(
+          dplyr::left_join(tibble(
             classQuad =  1:4,
             nameQuad =  c(
               'Verbal Cooperation',
@@ -1842,7 +1842,7 @@ get_gdelt_url_data <-
 
         gdelt_data <-
           gdelt_data %>%
-          dplyr::left_join(data_frame(
+          dplyr::left_join(tibble(
             classQuad =  1:4,
             nameQuad =  c(
               'Verbal Cooperation',
@@ -2205,14 +2205,14 @@ parse_gkg_mentioned_numerics <- function(gdelt_data,
       if (field %>% is.na) {
         if (return_wide) {
           field_data <-
-            data_frame(
+            tibble(
               amountValue1 = NA,
               amountTerm1 = NA,
               charLoc = NA
             )
         } else {
           field_data <-
-            data_frame(
+            tibble(
               amountValue = NA,
               amountTerm = NA,
               charLoc = NA,
@@ -2227,7 +2227,7 @@ parse_gkg_mentioned_numerics <- function(gdelt_data,
           .[!. %in% '']
 
         fields_df <-
-          data_frame(field = fields) %>%
+          tibble(field = fields) %>%
           dplyr::mutate(idArticleNumericItem = 1:n()) %>%
           separate(
             field,
@@ -2373,10 +2373,10 @@ parse_gkg_mentioned_people <- function(gdelt_data,
       if (field %>% is.na) {
         if (return_wide) {
           field_data <-
-            data_frame(namePerson1 = NA, charLoc1 = NA)
+            tibble(namePerson1 = NA, charLoc1 = NA)
         } else {
           field_data <-
-            data_frame(
+            tibble(
               namePerson = NA,
               charLoc = NA,
               idArticlePerson = 1
@@ -2390,7 +2390,7 @@ parse_gkg_mentioned_people <- function(gdelt_data,
           .[!. %in% '']
 
         fields_df <-
-          data_frame(field = fields) %>%
+          tibble(field = fields) %>%
           dplyr::mutate(idArticlePerson = 1:n()) %>%
           separate(field,
                    into = c('namePerson', 'charLoc'),
@@ -2541,11 +2541,11 @@ parse_gkg_mentioned_organizations <- function(gdelt_data,
       if (field %>% is.na) {
         if (return_wide) {
           field_data <-
-            data_frame(nameOrganization1 = NA,
+            tibble(nameOrganization1 = NA,
                        charLoc1 = NA)
         } else {
           field_data <-
-            data_frame(
+            tibble(
               nameOrganization = NA,
               charLoc = NA,
               idArticle.organization = 1
@@ -2559,7 +2559,7 @@ parse_gkg_mentioned_organizations <- function(gdelt_data,
           .[!. %in% '']
 
         fields_df <-
-          data_frame(field = fields) %>%
+          tibble(field = fields) %>%
           dplyr::mutate(idArticle.organization = 1:n()) %>%
           separate(field,
                    into = c('nameOrganization', 'charLoc'),
@@ -2681,11 +2681,11 @@ parse_gkg_mentioned_names <- function(gdelt_data,
       if (field %>% is.na()) {
         if (return_wide) {
           field_data <-
-            data_frame(nameMentionedName1 = NA,
+            tibble(nameMentionedName1 = NA,
                        charLoc1 = NA)
         } else {
           field_data <-
-            data_frame(
+            tibble(
               nameMentionedName = NA,
               charLoc = NA,
               idArticleMentionedName = 1
@@ -2699,7 +2699,7 @@ parse_gkg_mentioned_names <- function(gdelt_data,
           .[!. %in% '']
 
         fields_df <-
-          data_frame(field = fields) %>%
+          tibble(field = fields) %>%
           dplyr::mutate(idArticleMentionedName = 1:n()) %>%
           separate(field,
                    into = c('nameMentionedName', 'charLoc'),
@@ -2847,10 +2847,10 @@ parse_gkg_mentioned_themes <- function(gdelt_data,
       if (field %>% is.na) {
         if (return_wide) {
           field_data <-
-            data_frame(codeTheme1 = NA, charLoc1 = NA)
+            tibble(codeTheme1 = NA, charLoc1 = NA)
         } else {
           field_data <-
-            data_frame(
+            tibble(
               codeTheme = NA,
               charLoc = NA,
               idArticleGKGTheme = 1
@@ -2864,7 +2864,7 @@ parse_gkg_mentioned_themes <- function(gdelt_data,
           .[!. %in% '']
 
         fields_df <-
-          data_frame(field = fields) %>%
+          tibble(field = fields) %>%
           dplyr::mutate(idArticleGKGTheme = 1:n()) %>%
           separate(field,
                    into = c('codeTheme', 'charLoc'),
@@ -3009,10 +3009,10 @@ parse_gkg_mentioned_social_embeds <-
         if (field %>% is.na) {
           if (return_wide) {
             field_data <-
-              data_frame(urlSocialMediaImageEmbed = NA)
+              tibble(urlSocialMediaImageEmbed = NA)
           } else {
             field_data <-
-              data_frame(
+              tibble(
                 urlSocialMediaImageEmbed = NA,
                 idArticleSocialMediaImageEmbed = 1
               )
@@ -3025,7 +3025,7 @@ parse_gkg_mentioned_social_embeds <-
             .[!. %in% '']
 
           fields_df <-
-            data_frame(urlSocialMediaImageEmbed = fields) %>%
+            tibble(urlSocialMediaImageEmbed = fields) %>%
             dplyr::mutate(
               idArticleSocialMediaImageEmbed = 1:n(),
               domainSocialMediaImageEmbed = urlSocialMediaImageEmbed %>% urltools::domain()
@@ -3159,10 +3159,10 @@ parse_gkg_mentioned_article_tone <-
         if (field %>% is.na) {
           if (return_wide) {
             field_data <-
-              data_frame(amount.tone = NA)
+              tibble(amount.tone = NA)
           } else {
             field_data <-
-              data_frame(amount.tone = NA, idArticle.tone = 1)
+              tibble(amount.tone = NA, idArticle.tone = 1)
           }
         }  else {
           fields <-
@@ -3173,7 +3173,7 @@ parse_gkg_mentioned_article_tone <-
             as.numeric()
 
           fields_df <-
-            data_frame(amount.tone = fields) %>%
+            tibble(amount.tone = fields) %>%
             dplyr::mutate(idArticle.tone = 1:n())
           if (return_wide) {
             fields_df <-
@@ -3295,10 +3295,10 @@ parse_gkg_mentioned_event_counts <- function(gdelt_data,
       if (field %>% is.na) {
         if (return_wide) {
           field_data <-
-            data_frame(codeGKGTheme = NA)
+            tibble(codeGKGTheme = NA)
         } else {
           field_data <-
-            data_frame(codeGKGTheme = NA,
+            tibble(codeGKGTheme = NA,
                        idArticle.field = 1)
         }
       }  else {
@@ -3309,7 +3309,7 @@ parse_gkg_mentioned_event_counts <- function(gdelt_data,
           .[!. %in% '']
 
         fields_df <-
-          data_frame(field_item = fields) %>%
+          tibble(field_item = fields) %>%
           dplyr::mutate(idArticle.field = 1:n()) %>%
           separate(
             col = field_item,
@@ -3357,7 +3357,7 @@ parse_gkg_mentioned_event_counts <- function(gdelt_data,
 
         fields_df <-
           fields_df %>%
-          dplyr::left_join(data_frame(
+          dplyr::left_join(tibble(
             idTypeLocation = 1:5,
             typeLocation = c(
               'country',
@@ -3508,10 +3508,10 @@ parse_gkg_mentioned_locations <-
         if (field %>% is.na) {
           if (return_wide) {
             field_data <-
-              data_frame(location = NA)
+              tibble(location = NA)
           } else {
             field_data <-
-              data_frame(location = NA, idArticle.location = 1)
+              tibble(location = NA, idArticle.location = 1)
           }
         }  else {
           fields <-
@@ -3521,7 +3521,7 @@ parse_gkg_mentioned_locations <-
             .[!. %in% '']
 
           fields_df <-
-            data_frame(field_item = fields) %>%
+            tibble(field_item = fields) %>%
             dplyr::mutate(idArticle.location = 1:n())
 
 
@@ -3574,7 +3574,7 @@ parse_gkg_mentioned_locations <-
             ) %>%
             mutate_at(fields_df %>% dplyr::select(dplyr::matches("latitude|longitude")) %>% names(),
                       (funs(as.numeric(., digits = 5)))) %>%
-            dplyr::left_join(data_frame(
+            dplyr::left_join(tibble(
               idTypeLocation = 1:5,
               typeLocation = c(
                 'country',
@@ -3715,10 +3715,10 @@ parse_gkg_mentioned_dates <- function(gdelt_data,
       if (field %>% is.na) {
         if (return_wide) {
           field_data <-
-            data_frame(idDateResolution = NA)
+            tibble(idDateResolution = NA)
         } else {
           field_data <-
-            data_frame(idDateResolution = NA,
+            tibble(idDateResolution = NA,
                        idDateArticle = NA)
         }
       }  else {
@@ -3729,7 +3729,7 @@ parse_gkg_mentioned_dates <- function(gdelt_data,
           .[!. %in% '']
 
         fields_df <-
-          data_frame(field_item = fields) %>%
+          tibble(field_item = fields) %>%
           dplyr::mutate(idDateArticle = 1:n()) %>%
           separate(
             col = field_item,
@@ -3743,7 +3743,7 @@ parse_gkg_mentioned_dates <- function(gdelt_data,
           fields_df %>%
           mutate_at(fields_df  %>% names(),
                     funs(. %>% as.numeric())) %>%
-          dplyr::left_join(data_frame(
+          dplyr::left_join(tibble(
             idDateResolution = 1:4,
             dateResolution = c(
               'ex_mon_date',
@@ -3856,10 +3856,10 @@ parse_gkg_mentioned_quotes <-
         if (field %>% is.na) {
           if (return_wide) {
             field_data <-
-              data_frame(idArticleQuote = NA)
+              tibble(idArticleQuote = NA)
           } else {
             field_data <-
-              data_frame(quote = NA,
+              tibble(quote = NA,
                          idArticleQuote = NA)
           }
         }  else {
@@ -3870,7 +3870,7 @@ parse_gkg_mentioned_quotes <-
             .[!. %in% '']
 
           fields_df <-
-            data_frame(quote_items = fields) %>%
+            tibble(quote_items = fields) %>%
             dplyr::mutate(idArticleQuote = 1:n()) %>%
             separate(
               col = quote_items,
@@ -3997,10 +3997,10 @@ parse_gkg_mentioned_gcams <- function(gdelt_data,
       if (field %>% is.na) {
         if (return_wide) {
           field_data <-
-            data_frame(idGCAM = NA)
+            tibble(idGCAM = NA)
         } else {
           field_data <-
-            data_frame(idGCAM = NA,
+            tibble(idGCAM = NA,
                        idArticleGCAM = 1)
         }
       }  else {
@@ -4016,7 +4016,7 @@ parse_gkg_mentioned_gcams <- function(gdelt_data,
           readr::parse_number()
 
         fields_df <-
-          data_frame(articleWordCount,
+          tibble(articleWordCount,
                      idGCAM = fields[2:length(fields)]) %>%
           separate(idGCAM,
                    into = c('idGCAM', 'scoreGoldsteinWords'),
@@ -4163,10 +4163,10 @@ parse_gkg_mentioned_source_data <-
         if (field %>% is.na) {
           if (return_wide) {
             field_data <-
-              data_frame(nameSource = NA)
+              tibble(nameSource = NA)
           } else {
             field_data <-
-              data_frame(nameSource = NA,
+              tibble(nameSource = NA,
                          idArticle.source1 = 1)
           }
         }  else {
@@ -4178,7 +4178,7 @@ parse_gkg_mentioned_source_data <-
             unique
 
           fields_df <-
-            data_frame(nameSource = fields) %>%
+            tibble(nameSource = fields) %>%
             dplyr::mutate(idArticle.source = 1:n())
           if (return_wide) {
             fields_df <-
@@ -4326,7 +4326,7 @@ parse_gkg_mentioned_source_data <-
     }
 
     get_gdelt_url_data_safe <-
-      purrr::possibly(get_gdelt_url_data, data_frame())
+      purrr::possibly(get_gdelt_url_data, tibble())
 
     all_data <-
       urls %>%
@@ -4404,13 +4404,13 @@ get_data_gkg_days_detailed <-
            empty_trash = T,
            return_message = T) {
     .get_data_gkg_day_detailed_safe <-
-    purrr::possibly(.get_data_gkg_day_detailed, data_frame())
+    purrr::possibly(.get_data_gkg_day_detailed, tibble())
 
   var_matrix <-
     expand.grid(date = dates,
                 table_name = table_name,
                 stringsAsFactors = F) %>%
-    as_data_frame()
+    as_tibble()
 
   all_data <-
     seq_len(var_matrix %>% nrow()) %>%
@@ -4515,7 +4515,7 @@ get_data_gkg_day_summary <- function(date_data = "2016-06-01",
     .$urlData
 
   get_gdelt_url_data_safe <-
-    purrr::possibly(get_gdelt_url_data, data_frame())
+    purrr::possibly(get_gdelt_url_data, tibble())
 
   all_data <-
     urls %>%
@@ -4584,7 +4584,7 @@ get_data_gkg_days_summary <- function(dates = c("2016-06-01"),
                                       nest_data = F,
                                       return_message = T) {
   get_data_gkg_day_summary_safe <-
-    purrr::possibly(get_data_gkg_day_summary, data_frame())
+    purrr::possibly(get_data_gkg_day_summary, tibble())
 
   var_matrix <-
     expand.grid(
@@ -4592,7 +4592,7 @@ get_data_gkg_days_summary <- function(dates = c("2016-06-01"),
       is_count_file = is_count_file,
       stringsAsFactors = F
     ) %>%
-    as_data_frame %>%
+    as_tibble %>%
     suppressWarnings()
 
   all_data <-
@@ -4666,7 +4666,7 @@ get_data_gdelt_period_event <- function(period = 1983,
     .$urlData
 
   get_gdelt_url_data_safe <-
-    purrr::possibly(get_gdelt_url_data, data_frame())
+    purrr::possibly(get_gdelt_url_data, tibble())
 
   all_data <-
     urls %>%
@@ -4712,7 +4712,7 @@ get_data_gdelt_periods_event <- function(periods = c(1983, 1989),
                                          empty_trash = T,
                                          return_message = T) {
   get_data_gdelt_period_event_safe <-
-    purrr::possibly(get_data_gdelt_period_event, data_frame())
+    purrr::possibly(get_data_gdelt_period_event, tibble())
   periods <-
     periods %>%
     str_replace_all('\\-', '')
@@ -4737,12 +4737,12 @@ get_data_gdelt_periods_event <- function(periods = c(1983, 1989),
 #' get_vgkg_schema
 #'
 #' @return
-#' @importFrom dplyr data_frame
+#' @importFrom dplyr tibble
 #'
 #' @examples
 get_vgkg_schema  <- function() {
   cv_schema <-
-    data_frame(
+    tibble(
       nameGDELT = c(
         "DATE",
         "DocumentIdentifier",
@@ -4782,7 +4782,7 @@ get_vgkg_schema  <- function() {
 #' @return
 #' @export
 #' @importFrom lubridate ymd_hms
-#' @importFrom dplyr data_frame
+#' @importFrom dplyr tibble
 #' @examples
 get_urls_vgkg <- function() {
   options(scipen = 999999)
@@ -4798,7 +4798,7 @@ get_urls_vgkg <- function() {
         by = '15 min')
 
   url_df <-
-    data_frame(
+    tibble(
       dateTimeData = all_dates,
       isoPeriod = dateTimeData %>% format("%Y%m%d%H%M%S") %>% as.numeric(),
       urlCloudVisionTags = 'http://data.gdeltproject.org/gdeltv2_cloudvision/' %>% paste0(isoPeriod, '.imagetags.csv.gz'),
@@ -4837,7 +4837,7 @@ get_urls_vgkg_most_recent  <- function() {
     c('idVGKPeriod', 'idVGKHash', 'urlCloudVisionTags')
 
   log_df <-
-    data_frame(item = items, value = values) %>%
+    tibble(item = items, value = values) %>%
     spread(item, value) %>%
     mutate(idVGKPeriod = idVGKPeriod %>% as.numeric())
 
@@ -4943,7 +4943,7 @@ get_urls_vgkg_most_recent  <- function() {
     }
 
     .get_data_vgkg_url_safe <-
-      purrr::possibly(.get_data_vgkg_url, data_frame())
+      purrr::possibly(.get_data_vgkg_url, tibble())
 
     all_data <-
       urls %>%
@@ -5001,7 +5001,7 @@ get_data_vgkg_dates <-
     }
 
     .get_data_vgkg_day_safe <-
-      purrr::possibly(.get_data_vgkg_day, data_frame())
+      purrr::possibly(.get_data_vgkg_day, tibble())
 
     all_data <-
       dates %>%
@@ -5056,7 +5056,7 @@ get_data_vgkg_dates <-
         xml2::xml_name()
 
       xml_df <-
-        data_frame(item = items, value = values)
+        tibble(item = items, value = values)
 
       xml_df <-
         xml_df$item %>%
@@ -5069,7 +5069,7 @@ get_data_vgkg_dates <-
             str_split('\\;') %>%
             flatten_chr()
 
-          data_frame(item = x, value = item_value) %>%
+          tibble(item = x, value = item_value) %>%
             group_by(item) %>%
             mutate(idXMLItem = seq_along(item)) %>%
             ungroup() %>%
@@ -5077,7 +5077,7 @@ get_data_vgkg_dates <-
         })
     } else {
       xml_df <-
-        data_frame()
+        tibble()
     }
     return(xml_df)
   }
@@ -5299,7 +5299,7 @@ parse_xml_labels <-
 
     if (xmlData %>% is.na()) {
       xml_df <-
-        data_frame(idVGKG = id_vgkg)
+        tibble(idVGKG = id_vgkg)
     } else {
       if (xmlData %>% str_detect('<RECORD>')) {
         xmlData <-
@@ -5310,7 +5310,7 @@ parse_xml_labels <-
 
 
       xml_df <-
-        data_frame(xmlData) %>%
+        tibble(xmlData) %>%
         separate(
           xmlData,
           into = c('nameLabel', 'scoreConfidenceLabel', 'midGoogle'),
@@ -5343,7 +5343,7 @@ parse_vgkg_labels <- function(gdelt_data,
                               filter_na = T,
                               return_wide = T) {
   parse_xml_labels_safe <-
-    purrr::possibly(parse_xml_labels, data_frame())
+    purrr::possibly(parse_xml_labels, tibble())
 
   allxmlLabels <-
     gdelt_data$idVGKG %>%
@@ -5383,7 +5383,7 @@ parse_xml_landmarks <-
 
     if (xmlData %>% is.na()) {
       xml_df <-
-        data_frame(idVGKG = id_vgkg)
+        tibble(idVGKG = id_vgkg)
     } else {
       if (xmlData %>% str_detect('<RECORD>')) {
         xmlData <-
@@ -5394,7 +5394,7 @@ parse_xml_landmarks <-
 
 
       xml_df <-
-        data_frame(xmlData) %>%
+        tibble(xmlData) %>%
         separate(
           xmlData,
           into = c(
@@ -5438,7 +5438,7 @@ parse_vgkg_landmarks <- function(gdelt_data,
                                  filter_na = T,
                                  return_wide = T) {
   parse_xml_landmarks_safe <-
-    purrr::possibly(parse_xml_landmarks, data_frame())
+    purrr::possibly(parse_xml_landmarks, tibble())
 
   all_data <-
     gdelt_data$idVGKG %>%
@@ -5483,7 +5483,7 @@ parse_xml_logos <-
 
     if (xmlData %>% is.na()) {
       xml_df <-
-        data_frame(idVGKG = id_vgkg)
+        tibble(idVGKG = id_vgkg)
     } else {
       xmlData <-
         xmlData %>%
@@ -5491,7 +5491,7 @@ parse_xml_logos <-
         flatten_chr()
 
       xml_df <-
-        data_frame(xmlData) %>%
+        tibble(xmlData) %>%
         separate(
           xmlData,
           into = c('nameLogo', 'scoreConfidenceLogo', 'midGoogle'),
@@ -5524,7 +5524,7 @@ parse_vgkg_logos <- function(gdelt_data,
                              filter_na = T,
                              return_wide = T) {
   parse_xml_logos_safe <-
-    purrr::possibly(parse_xml_logos,data_frame())
+    purrr::possibly(parse_xml_logos,tibble())
 
   all_data <-
     gdelt_data$idVGKG %>%
@@ -5574,7 +5574,7 @@ parse_xml_safe_search <-
 
     if (xmlData %>% is.na()) {
       xml_df <-
-        data_frame(idVGKG = id_vgkg)
+        tibble(idVGKG = id_vgkg)
     } else {
       xmlData <-
         xmlData %>%
@@ -5582,7 +5582,7 @@ parse_xml_safe_search <-
         flatten_chr()
 
       xml_df <-
-        data_frame(xmlData) %>%
+        tibble(xmlData) %>%
         separate(
           xmlData,
           into = c(
@@ -5623,7 +5623,7 @@ parse_vgkg_safe_search <- function(gdelt_data,
                                    filter_na = T,
                                    return_wide = T) {
   parse_xml_safe_search_safe <-
-    purrr::possibly(parse_xml_safe_search, data_frame())
+    purrr::possibly(parse_xml_safe_search, tibble())
 
   all_data <-
     gdelt_data$idVGKG %>%
@@ -5664,7 +5664,7 @@ parse_xml_faces <-
 
     if (xmlData %>% is.na()) {
       xml_df <-
-        data_frame(idVGKG = id_vgkg)
+        tibble(idVGKG = id_vgkg)
     } else {
       xmlData <-
         xmlData %>%
@@ -5672,7 +5672,7 @@ parse_xml_faces <-
         flatten_chr()
 
       xml_df <-
-        data_frame(xmlData) %>%
+        tibble(xmlData) %>%
         separate(
           xmlData,
           into = c(
@@ -5728,7 +5728,7 @@ parse_vgkg_faces <- function(gdelt_data,
                              filter_na = T,
                              return_wide = T) {
   parse_xml_faces_search_safe <-
-    purrr::possibly(parse_xml_faces, data_frame())
+    purrr::possibly(parse_xml_faces, tibble())
 
   all_data <-
     gdelt_data$idVGKG %>%
@@ -5773,7 +5773,7 @@ parse_xml_ocr <-
 
     if (xmlData %>% is.na()) {
       xml_df <-
-        data_frame(idVGKG = id_vgkg)
+        tibble(idVGKG = id_vgkg)
     } else {
       xmlData <-
         xmlData %>%
@@ -5782,7 +5782,7 @@ parse_xml_ocr <-
         gsub('\\n', '', .)
 
       xml_df <-
-        data_frame(textOCR = xmlData)
+        tibble(textOCR = xmlData)
 
       xml_df <-
         xml_df %>%
@@ -5810,7 +5810,7 @@ parse_vgkg_ocr <- function(gdelt_data,
                            filter_na = T,
                            return_wide = T) {
   parse_xml_ocr_safe <-
-    purrr::possibly(parse_xml_ocr, data_frame())
+    purrr::possibly(parse_xml_ocr, tibble())
 
   all_data <-
     gdelt_data$idVGKG %>%
@@ -5856,7 +5856,7 @@ parse_language_types <-
 
     if (xmlData %>% is.na()) {
       xml_df <-
-        data_frame(idVGKG = id_vgkg)
+        tibble(idVGKG = id_vgkg)
     } else {
       xmlData <-
         xmlData %>%
@@ -5864,7 +5864,7 @@ parse_language_types <-
         flatten_chr()
 
       xml_df <-
-        data_frame(idLanguage = xmlData) %>%
+        tibble(idLanguage = xmlData) %>%
         mutate(idVGKG = id_vgkg,
                idItemLanguage = 1:n()) %>%
         dplyr::select(idVGKG, idItemLanguage, everything()) %>%
@@ -5889,7 +5889,7 @@ parse_vgkg_languages <- function(gdelt_data,
                                  filter_na = T,
                                  return_wide = T) {
   parse_language_types_safe <-
-    purrr::possibly(parse_language_types, data_frame())
+    purrr::possibly(parse_language_types, tibble())
 
   all_data <-
     gdelt_data$idVGKG %>%
@@ -5955,13 +5955,13 @@ get_urls_gkgtv_most_recent_log <- function() {
 #' Retrieves GKG TV Schema
 #'
 #' @return
-#' @importFrom dplyr data_frame
+#' @importFrom dplyr tibble
 #' @examples
 #' get_tv_schema
 
 get_tv_schema  <- function() {
   tv_schema <-
-    data_frame(
+    tibble(
       nameGDELT = c(
         "GKGRECORDID",
         "DATE",
@@ -6194,7 +6194,7 @@ get_urls_gkg_tv_daily_summaries <-
   }
 
   get_data_gkg_tv_safe <-
-    purrr::possibly(.get_data_gkg_tv, data_frame())
+    purrr::possibly(.get_data_gkg_tv, tibble())
 
   all_data <-
     urls %>%
@@ -6233,7 +6233,7 @@ get_data_gkg_tv_days <-
            only_most_recent = F,
            return_message = T) {
     get_data_gkg_tv_day_safe <-
-      purrr::possibly(.get_data_gkg_tv_day, data_frame())
+      purrr::possibly(.get_data_gkg_tv_day, tibble())
 
     all_data <-
       dates %>%
@@ -6306,7 +6306,7 @@ date_columns_to_numeric <-
 check_for_trelliscope_js <-
   function() {
     missing <-
-      installed.packages() %>% dplyr::as_data_frame() %>%
+      installed.packages() %>% dplyr::as_tibble() %>%
       dplyr::filter(Package == 'trelliscopejs') %>%
       nrow() == 0
     if (missing) {

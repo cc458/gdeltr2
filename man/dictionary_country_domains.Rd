@@ -7,7 +7,7 @@
 dictionary_country_domains()
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 GDELT news outlets as of May 2018

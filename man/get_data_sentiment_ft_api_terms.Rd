@@ -36,7 +36,7 @@ get_data_sentiment_ft_api_terms(terms = c("Zika",
 \item{return_message}{if `TRUE` returns a messaage}
 }
 \value{
-a `data_frame` or a ggplot visualiation
+a `tibble` or a ggplot visualiation
 }
 \description{
 Get V1 API sentiment for terms

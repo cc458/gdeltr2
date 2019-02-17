@@ -7,7 +7,7 @@
 dictionary_gdelt_tv_stations()
 }
 \value{
-a \code{data_frame}
+a \code{tibble}
 }
 \description{
 Returns information about the television

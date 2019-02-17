@@ -100,14 +100,14 @@ default \code{NULL}}
 \item id_columns: initial columns
 }}
 
-\item{nest_data}{if \code{TRUE} returns a nested \code{data_frame()}}
+\item{nest_data}{if \code{TRUE} returns a nested \code{tibble()}}
 
 \item{return_message}{if \code{TRUE} returns a messag}
 
 \item{...}{- additional parameters}
 }
 \value{
-a \code{data_frame} or a form of visualization
+a \code{tibble} or a form of visualization
 }
 \description{
 Queries GDELT's full text API for
