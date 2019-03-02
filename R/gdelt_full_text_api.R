@@ -3443,7 +3443,7 @@ plot_panel_trelliscope <-
       data <-
         data %>%
         mutate_at(data %>% dplyr::select(dplyr::matches("^date")) %>% names(),
-                  funs(. %>% as.character()))
+                  list(. %>% as.character()))
 
     }
 
@@ -3487,6 +3487,7 @@ plot_panel_trelliscope <-
 
       viz <-
         data %>%
+        mutate(urlImage = trelliscopejs::img_panel(urlImage)) %>%
         trelliscopejs::trelliscope(
           name = title,
           nrow = df_trelliscope_params$rows,
@@ -3499,6 +3500,7 @@ plot_panel_trelliscope <-
     }
 
     data %>%
+      mutate(urlImage = trelliscopejs::img_panel(urlImage)) %>%
       trelliscopejs::trelliscope(
         name = title,
         nrow = df_trelliscope_params$rows,
@@ -3716,7 +3718,7 @@ plot_trelliscopes <-
 
     df_viz <-
       1:nrow(all_data) %>%
-      future_map_dfr(function(x){
+      map_dfr(function(x){
         df_row <- all_data %>% slice(x)
         trelliscope_type <-
           df_row$packageVisualization
